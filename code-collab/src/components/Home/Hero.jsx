@@ -5,7 +5,7 @@ import { BsFillLightningChargeFill } from "react-icons/bs";
 
 const Hero = () => {
   return (
-    <section className="py-10 h-[92.4vh] bg-gradient-to-b from-[#0a0a12] to-[#2a2a4a]">
+    <section className="py-10 h-[92.4vh] bg-gradient-to-b from-[#0a0a12] to-[#2a2a4a] border-b-1 border-white">
       <div className=" w-full h-[80%] ">
         <div className="flex flex-col gap-10 items-center h-full py-10">
           <div className="hero-text">

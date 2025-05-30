@@ -5,9 +5,7 @@ import { useNavigate } from "react-router-dom";
 const Header = () => {
   const navigate = useNavigate();
 
-  const handleNavigation = (path) => {
-    navigate(`/${path}`);
-  };
+  
 
   return (
     <>
@@ -48,7 +46,7 @@ const Header = () => {
 
       <header className="bg-[#0a0a12]  sticky top-0 z-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 md:h-20">
+          <div className="flex items-center justify-between h-13 md:h-17">
             {/* Logo */}
             <div className="flex-shrink-0 flex items-center">
               <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#6e44ff] to-[#1cb8ff]">
@@ -61,26 +59,28 @@ const Header = () => {
               <div
                 
                 className="text-[#e0e0e8] hover:text-[#1cb8ff] transition-colors duration-200 font-medium cursor-pointer"
+                onClick={() => navigate('/')}
               >
                 Home
               </div>
               <div
                 
                 className="text-[#e0e0e8] hover:text-[#1cb8ff] transition-colors duration-200 font-medium cursor-pointer"
+                onClick={() => navigate('/problems')}
               >
-                Features
+                Problems
               </div>
               <div
                 
                 className="text-[#e0e0e8] hover:text-[#1cb8ff] transition-colors duration-200 font-medium cursor-pointer"
               >
-                Pricing
+                Preparations
               </div>
               <div
                 
                 className="text-[#e0e0e8] hover:text-[#1cb8ff] transition-colors duration-200 font-medium cursor-pointer"
               >
-                Docs
+                About
               </div>
               <div
                

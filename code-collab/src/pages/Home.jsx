@@ -1,7 +1,12 @@
 import React from 'react';
 import Header from '../components/Header';
-import Hero from '../components/Hero';
-import FeatureCard from '../components/FeatureCard';
+import Hero from '../components/Home/Hero';
+import FeatureCard from '../components/Home/FeatureCard';
+import Playground from '../components/Home/Playground';
+import Testimonial from '../components/Home/Testimonial';
+import Confirmation from '../components/Home/confirmation';
+import Footer from '../components/Footer';
+
 
 
 
@@ -11,6 +16,10 @@ const Home = () => {
             <Header/>
             <Hero/>
             <FeatureCard/>
+            <Playground />
+            <Testimonial />
+            <Confirmation />
+            <Footer />
         </div>
     )
 };
