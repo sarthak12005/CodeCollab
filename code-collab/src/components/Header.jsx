@@ -95,12 +95,14 @@ const Header = () => {
               <div
                 
                 className="px-4 py-2 text-[#c4c4c4] hover:text-white transition-colors duration-200 font-medium cursor-pointer"
+                onClick={() => navigate('/login')}
               >
                 Login
               </div>
               <div
                 
                 className="px-4 py-2 bg-gradient-to-r from-[#6e44ff] to-[#1cb8ff] text-white rounded-md  transition-all duration-300 font-medium cursor-pointer hover:shadow-[0_0_15px_rgba(110,68,255,0.5)]"
+                onClick={() => navigate('/signup')}
               >
                 Sign Up
               </div>
