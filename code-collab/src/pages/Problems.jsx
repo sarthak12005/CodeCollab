@@ -1,15 +1,25 @@
 // src/pages/Problems.js
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, Bell, ChevronDown, ChevronRight, Star } from "lucide-react";
 import FilterSidebar from "../components/Problems/FilterSidebar";
 import ActivitySidebar from "../components/Problems/ActivitySidebar";
 import ProblemList from "../components/Problems/ProblemList";
 
+import { useAuth } from "../context/userContext";
+
 const Problems = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState({});
   const navigate = useNavigate();
+
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (user === null) {
+      navigate("/login");
+    }
+  }), [navigate, user];
 
   const handleFilterChange = (newFilters) => {
     setFilters(newFilters);

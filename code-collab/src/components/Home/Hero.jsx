@@ -2,8 +2,10 @@ import { TypeAnimation } from "react-type-animation";
 import { FaUsers } from "react-icons/fa";
 import { FaShieldAlt } from "react-icons/fa";
 import { BsFillLightningChargeFill } from "react-icons/bs";
+import { useNavigate } from "react-router-dom";
 
 const Hero = () => {
+  const Navigate = useNavigate();
   return (
     <section className="py-10 h-[92.4vh] bg-gradient-to-b from-[#0a0a12] to-[#2a2a4a] border-b-1 border-white">
       <div className=" w-full h-[80%] ">
@@ -63,7 +65,9 @@ const Hero = () => {
             </div>
           </div>
 
-          <button className="mt-6 px-6 py-3 bg-gradient-to-r from-[#6e44ff] to-[#1cb8ff] cursor-pointer text-white rounded-md shadow-glow hover:shadow-[0_0_15px_rgba(110,68,255,0.5)] transition duration-300">
+          <button className="mt-6 px-6 py-3 bg-gradient-to-r from-[#6e44ff] to-[#1cb8ff] cursor-pointer text-white rounded-md shadow-glow hover:shadow-[0_0_15px_rgba(110,68,255,0.5)] transition duration-300"
+            onClick={() => Navigate('/problems')}
+          >
             Start Coding Now
           </button>
 
