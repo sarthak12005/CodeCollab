@@ -104,6 +104,7 @@ const ProblemList = ({ filters, searchQuery }) => {
                     <div
                         key={problem.id}
                         className="bg-slate-800 hover:bg-slate-750 border border-slate-700 rounded-lg p-4 cursor-pointer transition-all duration-200 group"
+                        onClick={() => console.log(`Navigating to problem ${problem.id}`)}
                     >
                         <div className="flex items-start justify-between">
                             <div className="flex-1">
