@@ -16,7 +16,7 @@ export const UserProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const navigate = useNavigate();
 
-    localStorage.setItem('user', JSON.stringify(userdata));
+    // localStorage.setItem('user', JSON.stringify(userdata));
 
     useEffect(() => {
         const storedUser = localStorage.getItem('user');
@@ -24,9 +24,10 @@ export const UserProvider = ({ children }) => {
             setUser(JSON.parse(storedUser));
         } else {
             setUser(null);
+            navigate('/login')
         }
 
-    }, []); // <== ADD navigate as dependency
+    }, [navigate]); // <== ADD navigate as dependency
 
     const updateUser = (newUser) => {
         setUser(newUser);

@@ -5,7 +5,7 @@ const router = express.Router();
 
 
 router.post('/login', userController.loginUser);
-router.post('register', userController.signUpUser);
+router.post('/register', userController.signUpUser);
 router.put('/editProfile', userController.editUser);
 
 
