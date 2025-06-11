@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import MicrosoftLogo from '../logo/MicrosoftLogo';
+import { FcGoogle } from "react-icons/fc";
+import AWSLogo from '../logo/AwsLogo';
 
 const Testimonial = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -28,10 +31,12 @@ const Testimonial = () => {
     }
   ];
 
+  
+
   const companyLogos = [
-    { name: 'Google', icon: 'G' },
-    { name: 'Microsoft', icon: '⊞' },
-    { name: 'AWS', icon: 'aws' },
+    { name: 'Google', icon: <FcGoogle size={30} /> },
+    { name: 'Microsoft', icon: <MicrosoftLogo /> },
+    { name: 'AWS', icon: <AWSLogo /> },
     { name: 'GitHub', icon: '⚡' },
     { name: 'Slack', icon: '#' },
     { name: 'Spotify', icon: '♪' }
@@ -72,7 +77,7 @@ const Testimonial = () => {
         {/* Testimonials Carousel */}
         <div className="relative mb-16">
           <div className="overflow-hidden">
-            <div 
+            <div
               className="flex transition-transform duration-500 ease-in-out"
               style={{ transform: `translateX(-${currentSlide * 100}%)` }}
             >
@@ -127,9 +132,8 @@ const Testimonial = () => {
               <button
                 key={index}
                 onClick={() => goToSlide(index)}
-                className={`w-3 h-3 rounded-full transition-colors duration-200 ${
-                  index === currentSlide ? 'bg-blue-400' : 'bg-gray-600'
-                }`}
+                className={`w-3 h-3 rounded-full transition-colors duration-200 ${index === currentSlide ? 'bg-blue-400' : 'bg-gray-600'
+                  }`}
               />
             ))}
           </div>
@@ -142,7 +146,7 @@ const Testimonial = () => {
             {companyLogos.map((company, index) => (
               <div
                 key={index}
-                className="flex items-center justify-center w-12 h-12 text-2xl font-bold text-gray-400 hover:text-white transition-colors duration-200 cursor-pointer"
+                className="flex items-center justify-center   w-12 h-12 text-2xl font-bold text-gray-400 hover:text-white transition-colors duration-200 cursor-pointer"
               >
                 {company.icon}
               </div>

@@ -17,9 +17,10 @@ const Problems = () => {
 
   useEffect(() => {
     if (!user) {
+      console.log('user not found ');
       navigate("/login");
     }
-  }), [];
+  }, [navigate]);
 
   const handleFilterChange = (newFilters) => {
     setFilters(newFilters);
@@ -33,12 +34,9 @@ const Problems = () => {
           {/* Logo and Navigation */}
           <div className="flex items-center space-x-8">
             <div className="flex items-center space-x-2">
-              <div
-                className="bg-clip-text bg-gradient-to-r text-transparent from-[#6e44ff] to-[#1cb8ff] text-3xl font-bold cursor-pointer"
-                onClick={() => navigate("/")}
-              >
-                CodeCollab
-              </div>
+               <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#6e44ff] to-[#1cb8ff] cursor-pointer" onClick={() => navigate('/')}>
+                CODE COLLAB
+              </h1>
             </div>
           </div>
 

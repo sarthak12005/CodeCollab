@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { FaArrowLeftLong } from 'react-icons/fa6';
+import axios from 'axios';
+
+const API_URL = import.meta.env.VITE_API_ENDPOINT;
 
 const Signup = () => {
     const [email, setEmail] = useState('you@example.com');
@@ -14,13 +17,29 @@ const Signup = () => {
 
     const navigate = useNavigate();
 
-    const handleSignup = () => {
+    const handleSignup = async () => {
         if (password !== confirmPassword) {
             alert('Passwords do not match!');
             return;
         }
         console.log('Signup attempt:', { email, username, password });
         // Add your signup logic here
+
+        try {
+            const res = await axios.post(`${API_URL}/register`, {
+                username, 
+                email,
+                password
+            });
+            console.log('Signup successful:', res.data);
+            alert('Signup successful! Redirecting to login...');
+            navigate('/login');
+        } catch (err) {
+            console.error('Signup error:', err);
+            alert('An error occurred during signup. Please try again.');
+            return;
+        }
+
     };
 
     const handlePasswordChange = (value) => {

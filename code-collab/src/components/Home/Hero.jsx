@@ -11,19 +11,19 @@ const Hero = () => {
    const [isLogin, setIsLogin] = useState(false);
    const {user} = useAuth();
 
-   console.log(user)
+  //  console.log(user)
 
-   
-
+   const Navigate = useNavigate();
 
    useEffect(() => {
       if (user) {
          setIsLogin(true)
+      } else {
+         setIsLogin(false)
       }
    },[])
 
 
-  const Navigate = useNavigate();
 
 
   const handleButtonLogin = () => {

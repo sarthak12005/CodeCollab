@@ -2,21 +2,45 @@ import React, { useState } from "react";
 import { Eye, EyeOff, Github } from "lucide-react";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
+import {useAuth} from '../context/userContext';
+import axios from 'axios';
+const API_URL = import.meta.env.VITE_API_ENDPOINT;
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  // const [isFullscreen, setIsFullscreen] = useState(true);
+
+  const {updateUser} = useAuth();
+  
+
 
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     if (!username || !password) {
-        alert('')
+        return alert('Credentials required');
     }
     // Add your login logic here
+
+    try {
+        const response = await axios.post(`${API_URL}/login`, {
+            username,
+            password
+        });
+
+        const data = response.data
+        console.log(data);
+
+        updateUser(data.user, data.token);
+        // localStorage.setItem("token", data.token);
+        navigate('/problems');
+
+    } catch (err) {
+        console.error('error in login ', err);
+    }
+
   };
 
   const handleGithubLogin = () => {

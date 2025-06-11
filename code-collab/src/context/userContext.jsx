@@ -3,20 +3,20 @@ import { useNavigate } from 'react-router-dom';
 
 const userContext = createContext();
 
-const userdata = {
-    name: "John Doe",
-    email: "johndoe@example.com",
-    id: "12345",
-    profilePicture: "https://example.com/profile.jpg",
-    bio: "A passionate coder and tech enthusiast.",
-    skills: ["JavaScript", "React", "Node.js"],
-}
+// const userdata = {
+//     name: "John Doe",
+//     email: "johndoe@example.com",
+//     id: "12345",
+//     profilePicture: "https://example.com/profile.jpg",
+//     bio: "A passionate coder and tech enthusiast.",
+//     skills: ["JavaScript", "React", "Node.js"],
+// }
 
 export const UserProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const navigate = useNavigate();
 
-    // localStorage.setItem('user', JSON.stringify(userdata));
+    
 
     useEffect(() => {
         const storedUser = localStorage.getItem('user');
@@ -24,18 +24,20 @@ export const UserProvider = ({ children }) => {
             setUser(JSON.parse(storedUser));
         } else {
             setUser(null);
-            navigate('/login')
+            
         }
 
     }, [navigate]); // <== ADD navigate as dependency
 
-    const updateUser = (newUser) => {
+    const updateUser = (newUser, token) => {
         setUser(newUser);
+        localStorage.setItem('token', token);
         localStorage.setItem('user', JSON.stringify(newUser));
     };
 
     const logout = () => {
         setUser(null);
+        localStorage.removeItem('token');
         localStorage.removeItem('user');
         navigate('/login');
     };
