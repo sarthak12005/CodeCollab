@@ -6,8 +6,8 @@
     "dev": "nodemon server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["codeCollab", "server", "DSA", "collaboration", "real-time-collaboration"],
+  "author": "Sarthak Joshi",
   "license": "ISC",
   "description": "",
   "dependencies": {

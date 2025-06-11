@@ -14,6 +14,8 @@ const Login = () => {
     const handleLogin = (e) => {
         e.preventDefault();
         console.log('Login attempt:', { email, password });
+
+        
         // Add your login logic here
     };
 
