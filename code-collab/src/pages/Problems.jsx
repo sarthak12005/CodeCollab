@@ -16,10 +16,10 @@ const Problems = () => {
   const { user } = useAuth();
 
   useEffect(() => {
-    if (user === null) {
+    if (!user) {
       navigate("/login");
     }
-  }), [navigate, user];
+  }), [];
 
   const handleFilterChange = (newFilters) => {
     setFilters(newFilters);

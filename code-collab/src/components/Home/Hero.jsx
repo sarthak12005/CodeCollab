@@ -3,9 +3,38 @@ import { FaUsers } from "react-icons/fa";
 import { FaShieldAlt } from "react-icons/fa";
 import { BsFillLightningChargeFill } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/userContext";
+import { useState } from "react";
+import { useEffect } from "react";
 
 const Hero = () => {
+   const [isLogin, setIsLogin] = useState(false);
+   const {user} = useAuth();
+
+   console.log(user)
+
+   
+
+
+   useEffect(() => {
+      if (user) {
+         setIsLogin(true)
+      }
+   },[])
+
+
   const Navigate = useNavigate();
+
+
+  const handleButtonLogin = () => {
+      if (user === null) {
+          Navigate('/login');
+      } else {
+         Navigate('/problems')
+      }
+  }
+
+
   return (
     <section className="py-10 h-[92.4vh] bg-gradient-to-b from-[#0a0a12] to-[#2a2a4a] border-b-1 border-white">
       <div className=" w-full h-[80%] ">
@@ -66,7 +95,7 @@ const Hero = () => {
           </div>
 
           <button className="mt-6 px-6 py-3 bg-gradient-to-r from-[#6e44ff] to-[#1cb8ff] cursor-pointer text-white rounded-md shadow-glow hover:shadow-[0_0_15px_rgba(110,68,255,0.5)] transition duration-300"
-            onClick={() => Navigate('/problems')}
+            onClick={handleButtonLogin}
           >
             Start Coding Now
           </button>

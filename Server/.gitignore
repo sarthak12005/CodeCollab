@@ -15,7 +15,7 @@ dist-ssr
 
 .env
 
-/package-lock.json
+package-lock.json
 
 
 # Editor directories and files

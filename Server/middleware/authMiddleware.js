@@ -11,13 +11,13 @@ const authMiddelware = (req, res, next) => {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         console.log("The decoded data from the verify is ",decoded);
 
-        if (!decoded.userId) {
+        if (!decoded.id) {
              console.log("the userId is not provided ");
              res.status(404).json({message: "the userid is not found"});
         }
 
 
-        req.user = {userId: decoded.userId}
+        req.user = {userId: decoded.id}
 
         next();
 
@@ -27,3 +27,5 @@ const authMiddelware = (req, res, next) => {
     }
 
 }
+
+module.export = authMiddelware;
