@@ -70,7 +70,16 @@ exports.signUpUser = async (req, res) => {
 };
 
 exports.editUser = async (req, res) => {
+    try {
+         const {userId} = req.user;
+         
+         if (!userId) {
+             return res.status(401).json({message: "user id does not found "})
+         }
 
+     } catch (err) {
+         
+     }
 }
 
 

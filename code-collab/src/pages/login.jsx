@@ -147,7 +147,7 @@ const Login = () => {
               {/* Email Field */}
               <div>
                 <label className="block text-gray-300 text-sm font-medium mb-2">
-                  Email Address
+                  Username
                 </label>
                 <div className="relative">
                   <input
