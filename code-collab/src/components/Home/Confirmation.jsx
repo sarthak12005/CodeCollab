@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { IoPlay } from "react-icons/io5";
 import { FaShareAlt } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const Confirmation = () => {
+
+  const navigate = useNavigate();
   return (
     <section className="bg-[#0a0a12] text-white py-20 px-4 flex flex-col items-center justify-center gap-2.5 border-b border-white">
       <div className="header-text flex justify-center items-center gap-2">
@@ -21,7 +24,7 @@ const Confirmation = () => {
         </h1>
       </div>
       <div className="middle-btn flex justify-center items-center gap-7 mt-8">
-        <button className="bg-gradient-to-r from-[#6e44ff] to-[#1cb8ff] flex gap-2 justify-center items-center text-white px-4 py-4 rounded-md text-sm font-medium hover:bg-[#6e44ff]/90 transition">
+        <button className="bg-gradient-to-r from-[#6e44ff] to-[#1cb8ff] flex gap-2 justify-center items-center text-white px-4 py-4 rounded-md text-sm font-medium hover:bg-[#6e44ff]/90 transition" onClick={() => navigate('/login')}>
           <IoPlay />
           Getting Started For Free
         </button>

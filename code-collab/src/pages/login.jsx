@@ -72,7 +72,7 @@ const Login = () => {
             )} */}
 
       <div
-        className="absolute top-4 left-4 w-12 h-12 rounded-full cursor-pointer bg-gradient-to-r from-[#6e44ff] to-[#1cb8ff] flex items-center justify-center text-white z-10 "
+        className="absolute top-4 left-4 w-10 h-10 rounded-full cursor-pointer bg-gradient-to-r from-[#6e44ff] to-[#1cb8ff] flex items-center justify-center text-white z-10 "
         onClick={() => navigate("/")}
       >
         <FaArrowLeftLong size={20} />
