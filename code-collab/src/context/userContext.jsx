@@ -19,7 +19,7 @@ export const UserProvider = ({ children }) => {
     const navigate = useNavigate();
     const token = localStorage.getItem('token');
 
-    
+
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -28,22 +28,28 @@ export const UserProvider = ({ children }) => {
             return;
         }
 
-        try {
-            const fetchUser = async () => {
-                const res = await axios.get(`${API_URL}/getUser`, {
-                    headers : {
-                        Authorization : `Bearer ${token}`
-                    }
+
+        const fetchUser = async () => {
+            try {
+                const response = await axios.get(`${API_URL}/getUser`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
                 });
 
-                console.log("the user is ", res.data.user);
-                setUser(res.data.user);
-
+                if (response.data) {
+                    setUser(response.data);
+                } else {
+                    setUser(null);
+                }
+            } catch (error) {
+                console.error('Error fetching user:', error);
+                setUser(null);
+                navigate('/login');
             }
-        } catch (err) {
-            console.error("Error in fetching user is : ", err);
-            setUser(null);
+
         }
+
 
 
         fetchUser();
@@ -51,9 +57,9 @@ export const UserProvider = ({ children }) => {
     }, [navigate]);
 
 
-   
 
-    
+
+
 
     const updateUser = (newUser, token) => {
         setUser(newUser);
@@ -69,11 +75,11 @@ export const UserProvider = ({ children }) => {
         setUser(null);
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        navigate('/login');
+        navigate('/');
     };
 
     return (
-        <userContext.Provider value={{ user, updateUser,updateToken, logout }}>
+        <userContext.Provider value={{ user, updateUser, updateToken, logout }}>
             {children}
         </userContext.Provider>
     );
