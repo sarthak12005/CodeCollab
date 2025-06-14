@@ -1,5 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+
+const API_URL = import.meta.env.VITE_API_ENDPOINT;
 
 const userContext = createContext();
 
@@ -19,15 +22,55 @@ export const UserProvider = ({ children }) => {
     
 
     useEffect(() => {
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
-        } else {
+        const token = localStorage.getItem('token');
+        if (!token) {
             setUser(null);
-            
+            return;
         }
 
-    }, [navigate]); // <== ADD navigate as dependency
+        try {
+            const fetchUser = async () => {
+                const res = await axios.get(`${API_URL}/getUser`, {
+                    headers : {
+                        Authorization : `Bearer ${token}`
+                    }
+                });
+
+                console.log("the user is ", res.data.user);
+                setUser(res.data.user);
+
+            }
+        } catch (err) {
+            console.error("Error in fetching user is : ", err);
+            setUser(null);
+        }
+
+
+        fetchUser();
+
+    }, [navigate]);
+
+
+    /* 
+
+        useEffect(() => {
+             const token = localStorage.getItem('token');
+            
+              if (!token) {
+                setUser(null);
+                }
+
+                try {
+                  const res = await fetch('https://api.example.com/user', {
+                    headers; {
+                     Authorization: `Bearer ${token}`
+                    }
+                  });
+                     }})
+                }
+        })
+    
+    */
 
     const updateUser = (newUser, token) => {
         setUser(newUser);
