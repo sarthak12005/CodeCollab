@@ -35,7 +35,7 @@ const Login = () => {
 
         updateUser(data.user, data.token);
         // localStorage.setItem("token", data.token);
-        navigate('/problems');
+        navigate('/');
 
     } catch (err) {
         console.error('error in login ', err);
