@@ -6,6 +6,7 @@ const router = express.Router();
 
 router.post('/login', userController.loginUser);
 router.post('/register', userController.signUpUser);
+router.get('/getUser', authMiddelware, userController.getUser);
 router.put('/editProfile', userController.editUser);
 
 

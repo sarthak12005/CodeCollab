@@ -22,44 +22,38 @@ export const UserProvider = ({ children }) => {
     
 
     useEffect(() => {
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
-        } else {
+        const token = localStorage.getItem('token');
+        if (!token) {
             setUser(null);
             return;
         }
 
-    }, [navigate]); // <== ADD navigate as dependency
+        try {
+            const fetchUser = async () => {
+                const res = await axios.get(`${API_URL}/getUser`, {
+                    headers : {
+                        Authorization : `Bearer ${token}`
+                    }
+                });
 
-    // useEffect(() => {
-    //     if (!token) {
-    //         setUser(null);
-    //         localStorage.removeItem('token');
-    //         return;
-    //     }
+                console.log("the user is ", res.data.user);
+                setUser(res.data.user);
 
-    //     const fetchUser = async () => {
-    //           try {
-    //                 const res = await axios.get(` ${API_URL}/getUser `, {
-    //                     headers : {
-    //                         Authorization: `Bearer ${token}`
-    //                     }
-    //                 });
-
-    //                 console.log("the user is : ", res.data.user);
-    //                 setUser(res.data.user);
-    //           } catch (err) {
-    //               console.error('the error in fetchin user is: ', err);
-    //               setUser(null);
-    //           }
-    //     }
-
-    //     fetchUser();
+            }
+        } catch (err) {
+            console.error("Error in fetching user is : ", err);
+            setUser(null);
+        }
 
 
+        fetchUser();
 
-    // },[navigate])
+    }, [navigate]);
+
+
+   
+
+    
 
     const updateUser = (newUser, token) => {
         setUser(newUser);
