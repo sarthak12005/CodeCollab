@@ -29,7 +29,7 @@ exports.loginUser = async (req, res) => {
         }
 
         const token = generateToken(user._id, process.env.JWT_SECRET, process.env.JWT_EXPIRY);
-        console.log("User login successfull", token);
+        // console.log("User login successfull", token);
 
         res.status(200).json({ message: "User login successful", token});
     } catch (err) {

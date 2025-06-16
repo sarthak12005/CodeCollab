@@ -45,7 +45,9 @@ export const UserProvider = ({ children }) => {
             } catch (error) {
                 console.error('Error fetching user:', error);
                 setUser(null);
-                navigate('/login');
+                if (!window.location.path === '/'){
+                    navigate('/login');
+                }
             }
 
         }
