@@ -6,6 +6,7 @@ import Login from './pages/login';
 import Signup from './pages/SignUp';
 import Profile from './pages/Profile';
 import NotFoundPage from './pages/NotFoundPage';
+import CodeCollaborationHub from './pages/CodeCollaborationHub';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
       <Route path='/signup' element={<Signup />} />
       <Route path='/profile' element={<Profile />}/>
       <Route path='/*' element={<NotFoundPage/>}/>
+      <Route path='/code-profile' element= {<CodeCollaborationHub />} />
     </Routes>
   );
 }
