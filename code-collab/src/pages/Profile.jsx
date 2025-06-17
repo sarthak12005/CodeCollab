@@ -11,9 +11,7 @@ import {
   EyeOff,
   User,
   Settings,
-  Home,
-  FileText,
-  BookOpen,
+  
 } from "lucide-react";
 
 const Profile = () => {
@@ -64,9 +62,6 @@ const Profile = () => {
   ];
 
   const sidebarItems = [
-    { id: "home", icon: Home, label: "Home" },
-    { id: "problems", icon: FileText, label: "Problems" },
-    { id: "preparations", icon: BookOpen, label: "Preparations" },
     { id: "profile", icon: User, label: "Profile" },
     { id: "settings", icon: Settings, label: "Settings" },
   ];
@@ -420,7 +415,7 @@ const Profile = () => {
       <Header />
       <div className="min-h-[91.1vh] bg-gradient-to-b from-[#0a0a12] to-[#2a2a4a] flex">
         {/* Sidebar - Fixed to left edge */}
-        <div className="w-64 bg-gray-800 border-r border-gray-700 flex-shrink-0 sticky top-0 h-[91.1vh]">
+        <div className="w-64 bg-[#0a0a12] border-r border-gray-700 flex-shrink-0 sticky top-0 h-screen z-10">
           <div className="p-4 border-b border-gray-700">
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
