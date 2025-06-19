@@ -3,13 +3,16 @@ const cors = require('cors');
 const db = require('./config/db')
 require('dotenv').config();
 
-const PORT = process.env.PORT || 9000;
+const PORT = process.env.PORT;
 
 const authRoutes = require('./routes/authRoute');
 
 
 const app = express();
-app.use(cors());
+app.use(cors({
+     origin: ['http://localhost:5173', 'http://localhost:5174'], // Your frontend URL
+     methods: ['GET', 'POST', 'PUT', 'DELETE'],
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -17,12 +20,147 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/codecollab', authRoutes);
 
 // Server Home path
-app.get('/', (req, res) => {
-     res.send("Welcome to the server of code collab");
-})
+// In your route handler
+app.get("/", (req, res) => {
+     res.send(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Welcome to CodeCollab Server</title>
+      <style>
+        :root {
+          --primary: #6c5ce7;
+          --primary-dark: #5649c0;
+          --background: #121212;
+          --surface: #1e1e1e;
+          --text: #e0e0e0;
+          --text-secondary: #a0a0a0;
+        }
+        
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+        
+        body {
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          background-color: var(--background);
+          color: var(--text);
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 2rem;
+          line-height: 1.6;
+        }
+        
+        .container {
+          background-color: var(--surface);
+          border-radius: 12px;
+          padding: 3rem 4rem;
+          text-align: center;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+          max-width: 800px;
+          width: 100%;
+          border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        h1 {
+          font-size: 2.5rem;
+          margin-bottom: 1.5rem;
+          color: var(--primary);
+          background: linear-gradient(135deg, var(--primary), #a29bfe);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+        
+        p {
+          font-size: 1.1rem;
+          margin-bottom: 2rem;
+          color: var(--text-secondary);
+        }
+        
+        .logo {
+          font-size: 3rem;
+          margin-bottom: 1.5rem;
+          display: inline-block;
+        }
+        
+        .features {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 1.5rem;
+          margin: 2rem 0;
+        }
+        
+        .feature {
+          background: rgba(108, 92, 231, 0.1);
+          padding: 1rem 1.5rem;
+          border-radius: 8px;
+          border: 1px solid rgba(108, 92, 231, 0.2);
+          min-width: 200px;
+        }
+        
+        .feature h3 {
+          color: var(--primary);
+          margin-bottom: 0.5rem;
+        }
+        
+        .footer {
+          margin-top: 2rem;
+          font-size: 0.9rem;
+          color: var(--text-secondary);
+        }
+        
+        @media (max-width: 600px) {
+          .container {
+            padding: 2rem;
+          }
+          
+          h1 {
+            font-size: 2rem;
+          }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="logo">👨‍💻👩‍💻</div>
+        <h1>Welcome to CodeCollab Server</h1>
+        <p>Your collaborative coding platform is up and running!</p>
+        
+        <div class="features">
+          <div class="feature">
+            <h3>Real-time Collaboration</h3>
+            <p>Code together in real-time with your team</p>
+          </div>
+          <div class="feature">
+            <h3>Multiple Languages</h3>
+            <p>Support for all popular programming languages</p>
+          </div>
+          <div class="feature">
+            <h3>Secure & Reliable</h3>
+            <p>Your code is safe with us</p>
+          </div>
+        </div>
+        
+        <div class="footer">
+          <p>Server is running smoothly | © ${new Date().getFullYear()} CodeCollab</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `);
+});
 
 
 // listener route
 app.listen(PORT, () => {
-     console.log(`server is running on http://localhost:${PORT}`);
+     console.log(`server is running on ${PORT}`);
 })

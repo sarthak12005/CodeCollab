@@ -17,10 +17,9 @@ const Problems = () => {
 
   useEffect(() => {
     if (!user) {
-      console.log('user not found ');
       navigate("/login");
     }
-  }, [navigate]);
+  }, []);
 
   const handleFilterChange = (newFilters) => {
     setFilters(newFilters);
@@ -34,7 +33,10 @@ const Problems = () => {
           {/* Logo and Navigation */}
           <div className="flex items-center space-x-8">
             <div className="flex items-center space-x-2">
-               <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#6e44ff] to-[#1cb8ff] cursor-pointer" onClick={() => navigate('/')}>
+              <h1
+                className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#6e44ff] to-[#1cb8ff] cursor-pointer"
+                onClick={() => navigate("/")}
+              >
                 CODE COLLAB
               </h1>
             </div>
@@ -61,8 +63,17 @@ const Problems = () => {
               <Bell className="w-5 h-5" />
             </button>
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center">
-                <span className="text-white text-sm font-medium">JS</span>
+              <div
+                className="hidden md:flex items-center space-x-4"
+                onClick={() => navigate("/profile")}
+              >
+                <div className="w-[32px] h-[32px] rounded-full bg-white/80">
+                  <img
+                    src="https://images.unsplash.com/photo-1660680299120-c7c132df1b1f?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                    alt="user-profile"
+                    className="w-full h-full rounded-full object-center object-cover"
+                  />
+                </div>
               </div>
             </div>
           </div>
