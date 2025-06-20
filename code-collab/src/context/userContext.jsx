@@ -16,6 +16,7 @@ const userContext = createContext();
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [userImage, setUserImage] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -34,7 +35,9 @@ export const UserProvider = ({ children }) => {
         });
 
         if (response.data) {
-          setUser(response.data);
+          setUser(response.data.user);
+          console.log(response.data);
+          setUserImage(response.data.user.userImage);
         } else {
           setUser(null);
         }
@@ -49,6 +52,8 @@ export const UserProvider = ({ children }) => {
 
     fetchUser();
   }, [navigate]);
+
+  
 
   const updateUser = (newUser, token) => {
     setUser(newUser);
@@ -68,7 +73,7 @@ export const UserProvider = ({ children }) => {
   };
 
   return (
-    <userContext.Provider value={{ user, updateUser, updateToken, logout }}>
+    <userContext.Provider value={{ user,userImage,updateUser, updateToken, logout }}>
       {children}
     </userContext.Provider>
   );

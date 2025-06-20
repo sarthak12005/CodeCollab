@@ -44,6 +44,10 @@ const ProblemSchema = new mongoose.Schema({
     type: [String],
     default: []
   },
+  solvedBy: {
+    type: [String],
+    default: []
+  },
   solution: String,
   isDailyProblem: {
     type: Boolean,

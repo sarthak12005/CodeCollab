@@ -44,17 +44,17 @@ exports.addProblem = async (req, res) => {
         const problem = new Problem({
             title,
             description,
-            difficulty,
-            tags,
-            companies,
-            acceptanceRate,
+            difficulty ,
+            tags : tags || [],
+            companies : companies || [],
+            acceptanceRate: acceptanceRate || 0,
             constraints,
-            examples,
-            testCases,
-            hints,
+            examples: examples || [],
+            testCases: testCases || [],
+            hints: hints || [],
             solution,
-            isDailyProblem,
-            dailyProblemDate
+            isDailyProblem: isDailyProblem || false,
+            dailyProblemDate : isDailyProblem ? new Date() : null
         });
 
         await problem.save();

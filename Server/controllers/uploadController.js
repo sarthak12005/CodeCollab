@@ -19,7 +19,7 @@ exports.uploadProfilePicture = async (req, res) => {
     }
 
     const user = await User.findByIdAndUpdate(userId,
-        { profilePicture: result.secure_url },
+        { userImage: result.secure_url },
         { new: true, runValidators: true }
     );
 

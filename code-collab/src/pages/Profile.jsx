@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/userContext";
 import Header from "../components/Header";
 import {
@@ -11,8 +11,8 @@ import {
   EyeOff,
   User,
   Settings,
-  
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
   const { logout, user } = useAuth();
@@ -26,6 +26,21 @@ const Profile = () => {
     newPassword: "",
     confirmPassword: "",
   });
+
+  const navigate = useNavigate();
+
+  const [recentProblemSolve, setRecentProblemSolve] = useState([]);
+
+  useEffect(() => {
+    try {
+      if (user && user.solveProblems.lenght !== 0) {
+        const solveProblems = user.solveProblems.slice().reverse().slice(0, 3);
+        setRecentProblemSolve(solveProblems);
+      }
+    } catch (err) {
+      console.log("the error in recentProblemSolve", err);
+    }
+  }, [user]); // 👈 this is important
 
   const recentProblems = [
     {
@@ -211,62 +226,83 @@ const Profile = () => {
 
       {/* Recent Solved Problems */}
       <div>
-        <h2 className="text-xl font-semibold text-white mb-4">
-          Recent Solved Problems
-        </h2>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-semibold text-white">
+            Recent Solved Problems
+          </h2>
+          <button
+            onClick={() => navigate("/problems")}
+            className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-4 py-2 rounded-md hover:opacity-90 transition-opacity"
+          >
+            Solve Problems
+          </button>
+        </div>
+
         <div className="bg-gray-800 rounded-lg border border-gray-700 overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-700">
-            <thead className="bg-gradient-to-r from-blue-600 to-cyan-600">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
-                  #
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
-                  Problem
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
-                  Difficulty
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
-                  Time
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
-                  Date
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-700">
-              {recentProblems.map((problem) => (
-                <tr key={problem.id}>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-400">
-                    {problem.id}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-white font-medium">
-                    {problem.name}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                        problem.difficulty === "EASY"
-                          ? "bg-green-900 text-green-300"
-                          : problem.difficulty === "MEDIUM"
-                          ? "bg-orange-900 text-orange-300"
-                          : "bg-red-900 text-red-300"
-                      }`}
-                    >
-                      {problem.difficulty}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-400">
-                    {problem.time}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-400">
-                    {problem.date}
-                  </td>
+          {recentProblemSolve.length > 0 ? (
+            <table className="min-w-full divide-y divide-gray-700">
+              <thead className="bg-gradient-to-r from-blue-600 to-cyan-600">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                    #
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                    Problem
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                    Difficulty
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                    Time
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                    Date
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-gray-700">
+                {recentProblemSolve.map((problem) => (
+                  <tr key={problem.id}>
+                    <td className="px-6 py-4 whitespace-nowrap text-gray-400">
+                      {problem.id}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-white font-medium">
+                      {problem.name}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                          problem.difficulty === "EASY"
+                            ? "bg-green-900 text-green-300"
+                            : problem.difficulty === "MEDIUM"
+                            ? "bg-orange-900 text-orange-300"
+                            : "bg-red-900 text-red-300"
+                        }`}
+                      >
+                        {problem.difficulty}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-gray-400">
+                      {problem.time}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-gray-400">
+                      {problem.date}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <div className="p-8 text-center">
+              <p className="text-gray-400 mb-4">No problems solved yet</p>
+              <button
+                onClick={() => navigate("/problems")}
+                className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-4 py-2 rounded-md hover:opacity-90 transition-opacity"
+              >
+                Start Solving Problems
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -484,8 +520,4 @@ const Profile = () => {
   );
 };
 
-<<<<<<< HEAD
 export default Profile;
-=======
-export default Profile;
->>>>>>> 9a2e8b1c92f78a9c8ed353f3f63240b23a6227d9
