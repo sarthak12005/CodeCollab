@@ -6,6 +6,8 @@ require('dotenv').config();
 const PORT = process.env.PORT;
 
 const authRoutes = require('./routes/authRoute');
+const problemRoutes = require('./routes/problemRoute');
+
 
 
 const app = express();
@@ -18,6 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 
 //Import routes
 app.use('/api/codecollab', authRoutes);
+app.use('/api/codecollab/problem', problemRoutes);
 
 // Server Home path
 // In your route handler
