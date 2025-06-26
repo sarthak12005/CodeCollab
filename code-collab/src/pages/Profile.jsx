@@ -30,7 +30,7 @@ const Profile = () => {
   });
 
   const [profileImage, setProfileImage] = useState(
-    userInfo.profileImage ||
+    user?.userImage ||
       "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
   );
   const fileInputRef = useRef(null);

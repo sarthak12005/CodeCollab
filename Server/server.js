@@ -1,15 +1,21 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+
+//db connection 
 const db = require('./config/db')
 require('dotenv').config();
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 5000;
 
 
 
 const origin_enpoint1 = process.env.ORIGIN_ADDRESS1;
 const origin_enpoint2 = process.env.ORIGIN_ADDRESS2;
+
+
+
+
 
 const startAPI = process.env.API_START;
 
@@ -20,10 +26,14 @@ const problemRoutes = require('./routes/problemRoute');
 
 
 const app = express();
+
+
 app.use(cors({
   origin: [`${origin_enpoint1}`, `${origin_enpoint2}`], // Your frontend URL
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
 }));
+
+
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json({limit: '50mb'}));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));

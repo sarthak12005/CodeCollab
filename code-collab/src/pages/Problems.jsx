@@ -18,8 +18,9 @@ const Problems = () => {
   useEffect(() => {
     if (!user) {
       navigate("/login");
+      return
     }
-  }, []);
+  }, [navigate,user]);
 
   const handleFilterChange = (newFilters) => {
     setFilters(newFilters);
@@ -69,7 +70,7 @@ const Problems = () => {
               >
                 <div className="w-[32px] h-[32px] rounded-full bg-white/80">
                   <img
-                    src={user.userImage}
+                    src={user?.userImage || "https://via.placeholder.com/32"}
                     alt="user-profile"
                     className="w-full h-full rounded-full object-center object-cover"
                   />

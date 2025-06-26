@@ -5,18 +5,8 @@ import { useAuth } from "../context/userContext";
 const Header = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [userImage, setUserImage] = useState("");
+  const [userImage, setUserImage] = useState(user?.userImage || "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" );
 
-  console.log(user)
-
-  useEffect(() => {
-    if (user && user.userImage) {
-      setUserImage(user.userImage);
-      console.log("User image:", user.userImage);
-    } else {
-      console.log("No user image found.");
-    }
-  }, [user]);
 
   return (
     <>

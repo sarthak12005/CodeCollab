@@ -7,8 +7,8 @@ import axios from 'axios';
 const API_URL = import.meta.env.VITE_API_ENDPOINT;
 
 const Signup = () => {
-    const [email, setEmail] = useState('you@example.com');
-    const [username, setUsername] = useState('codehero');
+    const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -22,7 +22,7 @@ const Signup = () => {
             alert('Passwords do not match!');
             return;
         }
-        console.log('Signup attempt:', { email, username, password });
+        
         // Add your signup logic here
 
         try {
@@ -31,7 +31,7 @@ const Signup = () => {
                 email,
                 password
             });
-            console.log('Signup successful:', res.data);
+           
             alert('Signup successful! Redirecting to login...');
             navigate('/login');
         } catch (err) {

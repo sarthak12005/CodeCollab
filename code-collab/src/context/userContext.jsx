@@ -18,7 +18,7 @@ const userContext = createContext();
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [userImage, setUserImage] = useState(null);
+  // const [userImage, setUserImage] = useState(null);
   const navigate = useNavigate();
 
 
@@ -28,50 +28,45 @@ export const UserProvider = ({ children }) => {
       const userData = result.user;
       const token = await userData.getIdToken();
 
-      const response = await axios.post(`${API_URL}/login`, {
-        name: userData.displayName,
+      const response = await axios.post(`${API_URL}/addUser`, {
+        username: userData.displayName,
         email: userData.email,
+        password: userData.uid, // ✅ Fixed the typo here
         userImage: userData.photoURL,
-        uid: userData.uid,
       });
 
-      if (response.data) {
-        setUser(response.data.user);
-        setUserImage(userData.photoURL);
-        localStorage.setItem("token", token);
-        localStorage.setItem("user", JSON.stringify(response.data.user));
+      if (response.data.token) {
+        localStorage.setItem("token", response.data.token); // ✅ also fixed `res` → `response`
         navigate("/");
       }
+
     } catch (err) {
       console.error("Error logging in with Google:", err);
       if (err.code === 'auth/popup-closed-by-user') {
         console.log("Popup closed by user");
-      }
-      else {
-        console.error("Error logging in with Google:", err);
+      } else {
         alert("Failed to login with Google. Please try again.");
       }
     }
-  }
+  };
+
 
   const loginWithgithub = async () => {
     try {
       const result = await signInWithPopup(auth, githubProvider)
       const userData = result.user;
-      const token = await userData.getIdToken();
 
-      const response = await axios.post(`${API_URL}/login`, {
+
+      const response = await axios.post(`${API_URL}/addUser`, {
         username: userData.displayName,
         email: userData.email,
+        password: userData.uid,
         userImage: userData.photoURL,
-        uid: userData.uid,
       });
 
-      if (response.data) {
-        setUser(response.data.user);
-        setUserImage(userData.photoURL);
-        localStorage.setItem("token", token);
-        localStorage.setItem("user", JSON.stringify(response.data.user));
+      if (response.data.token) {
+
+        localStorage.setItem("token", response.data.token);
         navigate("/");
       }
     } catch (err) {
@@ -98,8 +93,8 @@ export const UserProvider = ({ children }) => {
 
         if (response.data) {
           setUser(response.data.user);
-          console.log(response.data);
-          setUserImage(response.data.user.userImage);
+
+          // setUserImage(response.data.user.userImage);
         } else {
           setUser(null);
         }
@@ -135,7 +130,7 @@ export const UserProvider = ({ children }) => {
   };
 
   return (
-    <userContext.Provider value={{ user, userImage, updateUser, updateToken, logout, loginWithGoogle, loginWithgithub }}>
+    <userContext.Provider value={{ user, updateUser, updateToken, logout, loginWithGoogle, loginWithgithub }}>
       {children}
     </userContext.Provider>
   );

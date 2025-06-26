@@ -91,6 +91,54 @@ exports.getUser = async (req, res) => {
     }
 }
 
+exports.addUser = async (req, res) => {
+    try {
+        const { username, email, password, userImage } = req.body;
+        console.log("addUser called with data:", req.body);
+
+        if (!username || !email || !password) {
+            return res.status(400).json({ message: "Username, email, and password are required." });
+        }
+
+        // Check if user already exists
+        let user = await User.findOne({ $or: [{ email }, { username }] });
+
+        if (!user) {
+            // Register new user
+            const hashedPassword = await bcrypt.hash(password, 10);
+
+            user = new User({
+                username,
+                email,
+                password: hashedPassword,
+                userImage: userImage || "https://example.com/default-avatar.png", // Default image if not provided
+            });
+
+            await user.save();
+        } else {
+            // Login existing user: check password match
+            const isMatch = await bcrypt.compare(password, user.password);
+            if (!isMatch) {
+                return res.status(401).json({ message: "Invalid password." });
+            }
+        }
+
+        // Generate token for both login & register
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+            expiresIn: "7d",
+        });
+
+        res.status(200).json({
+            message: "User logged in successfully.",
+            token,
+        });
+
+    } catch (error) {
+        console.error("Error in addUser:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
 exports.editUser = async (req, res) => {
     try {
         const { userId } = req.user;
