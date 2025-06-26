@@ -50,7 +50,7 @@ const Header = () => {
               <div className="text-[#e0e0e8] hover:text-[#1cb8ff] transition-colors duration-200 font-medium cursor-pointer">
                 Preparations
               </div>
-              <div className="text-[#e0e0e8] hover:text-[#1cb8ff] transition-colors duration-200 font-medium cursor-pointer">
+              <div className="text-[#e0e0e8] hover:text-[#1cb8ff] transition-colors duration-200 font-medium cursor-pointer"  onClick={() => navigate("/about")}>
                 About
               </div>
               <div className="text-[#e0e0e8] hover:text-[#1cb8ff] transition-colors duration-200 font-medium cursor-pointer">
