@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Eye, EyeOff, Github } from "lucide-react";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
-import {useAuth} from '../context/userContext';
+import { useAuth } from '../context/userContext';
 import axios from 'axios';
 const API_URL = import.meta.env.VITE_API_ENDPOINT;
 
@@ -11,8 +11,8 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const {updateUser} = useAuth();
-  
+  const { updateUser, loginWithGoogle, loginWithgithub } = useAuth();
+
 
 
   const navigate = useNavigate();
@@ -20,37 +20,48 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     if (!username || !password) {
-        return alert('Credentials required');
+      return alert('Credentials required');
     }
     // Add your login logic here
 
     try {
-        const response = await axios.post(`${API_URL}/login`, {
-            username,
-            password
-        });
+      const response = await axios.post(`${API_URL}/login`, {
+        username,
+        password
+      });
 
-        const data = response.data
-        console.log(data);
+      const data = response.data
+      console.log(data);
 
-        updateUser(data.user, data.token);
-        // localStorage.setItem("token", data.token);
-        navigate('/');
+      updateUser(data.user, data.token);
+      // localStorage.setItem("token", data.token);
+      navigate('/');
 
     } catch (err) {
-        console.error('error in login ', err);
+      console.error('error in login ', err);
     }
 
   };
 
   const handleGithubLogin = () => {
-    console.log("GitHub login clicked");
-    // Add GitHub OAuth logic here
+
+    try {
+      loginWithgithub();
+    } catch (err) {
+      console.error("Error logging in with GitHub:", err);
+      alert("Failed to login with GitHub. Please try again.");
+    }
+
   };
 
   const handleGoogleLogin = () => {
-    console.log("Google login clicked");
-    // Add Google OAuth logic here
+    try {
+      loginWithGoogle();
+    } catch (err) {
+      console.error("Error logging in with Google:", err);
+      alert("Failed to login with Google. Please try again.");
+    }
+
   };
 
   // const exitFullscreen = () => {
@@ -196,16 +207,15 @@ const Login = () => {
 
               {/* Login Button */}
               <button
-                 onClick={handleLogin}
-                className={`w-full ${
-                  username && password ? (
-                    
-                     " bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 hover:scale-105 transition-all duration-200 transform"
-                    
-                  ) : (
-                    "bg-gradient-to-r from-blue-900 to-purple-800"
-                  )
-                } text-white font-medium py-3 px-4 rounded-lg   shadow-lg`}
+                onClick={handleLogin}
+                className={`w-full ${username && password ? (
+
+                  " bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 hover:scale-105 transition-all duration-200 transform"
+
+                ) : (
+                  "bg-gradient-to-r from-blue-900 to-purple-800"
+                )
+                  } text-white font-medium py-3 px-4 rounded-lg   shadow-lg`}
               >
                 Login →
               </button>

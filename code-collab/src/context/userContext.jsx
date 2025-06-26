@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { signInWithPopup } from "firebase/auth";
+import { auth, googleProvider, githubProvider } from "../config/FirebaseConfig";
 import axios from "axios";
 const API_URL = import.meta.env.VITE_API_ENDPOINT;
 
@@ -18,6 +20,66 @@ export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [userImage, setUserImage] = useState(null);
   const navigate = useNavigate();
+
+
+  const loginWithGoogle = async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const userData = result.user;
+      const token = await userData.getIdToken();
+
+      const response = await axios.post(`${API_URL}/login`, {
+        name: userData.displayName,
+        email: userData.email,
+        userImage: userData.photoURL,
+        uid: userData.uid,
+      });
+
+      if (response.data) {
+        setUser(response.data.user);
+        setUserImage(userData.photoURL);
+        localStorage.setItem("token", token);
+        localStorage.setItem("user", JSON.stringify(response.data.user));
+        navigate("/");
+      }
+    } catch (err) {
+      console.error("Error logging in with Google:", err);
+      if (err.code === 'auth/popup-closed-by-user') {
+        console.log("Popup closed by user");
+      }
+      else {
+        console.error("Error logging in with Google:", err);
+        alert("Failed to login with Google. Please try again.");
+      }
+    }
+  }
+
+  const loginWithgithub = async () => {
+    try {
+      const result = await signInWithPopup(auth, githubProvider)
+      const userData = result.user;
+      const token = await userData.getIdToken();
+
+      const response = await axios.post(`${API_URL}/login`, {
+        username: userData.displayName,
+        email: userData.email,
+        userImage: userData.photoURL,
+        uid: userData.uid,
+      });
+
+      if (response.data) {
+        setUser(response.data.user);
+        setUserImage(userData.photoURL);
+        localStorage.setItem("token", token);
+        localStorage.setItem("user", JSON.stringify(response.data.user));
+        navigate("/");
+      }
+    } catch (err) {
+      console.error("the error in login user", err);
+    }
+  }
+
+
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -53,7 +115,7 @@ export const UserProvider = ({ children }) => {
     fetchUser();
   }, [navigate]);
 
-  
+
 
   const updateUser = (newUser, token) => {
     setUser(newUser);
@@ -73,7 +135,7 @@ export const UserProvider = ({ children }) => {
   };
 
   return (
-    <userContext.Provider value={{ user,userImage,updateUser, updateToken, logout }}>
+    <userContext.Provider value={{ user, userImage, updateUser, updateToken, logout, loginWithGoogle, loginWithgithub }}>
       {children}
     </userContext.Provider>
   );
