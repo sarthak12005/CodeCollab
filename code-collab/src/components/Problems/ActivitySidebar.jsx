@@ -71,7 +71,7 @@ const ActivitySidebar = () => {
     const hardProgress = createCircleProgress(progressData.difficulty.hard, 80, 6);
 
     return (
-        <div className="w-80 bg-slate-800 text-white p-6 ">
+        <div className="w-80 bg-[#0a0a12] text-white p-6 ">
             {/* Today's Goal */}
             <div className="mb-8">
                 <h3 className="text-sm font-medium text-gray-300 uppercase tracking-wide mb-4">TODAY'S GOAL</h3>

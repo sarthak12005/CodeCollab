@@ -1,12 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {useAuth} from '../context/userContext';
-
+import { useAuth } from "../context/userContext";
 
 const Header = () => {
   const navigate = useNavigate();
-  const {user} = useAuth();
+  const { user } = useAuth();
+  const [userImage, setUserImage] = useState("");
 
+  console.log(user)
+
+  useEffect(() => {
+    if (user && user.userImage) {
+      setUserImage(user.userImage);
+      console.log("User image:", user.userImage);
+    } else {
+      console.log("No user image found.");
+    }
+  }, [user]);
 
   return (
     <>
@@ -15,7 +25,10 @@ const Header = () => {
           <div className="flex items-center justify-between h-13 md:h-17">
             {/* Logo */}
             <div className="flex-shrink-0 flex items-center">
-              <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#6e44ff] to-[#1cb8ff] cursor-pointer" onClick={() => navigate('/')}>
+              <h1
+                className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#6e44ff] to-[#1cb8ff] cursor-pointer"
+                onClick={() => navigate("/")}
+              >
                 CODE COLLAB
               </h1>
             </div>
@@ -23,73 +36,63 @@ const Header = () => {
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center space-x-8">
               <div
-
                 className="text-[#e0e0e8] hover:text-[#1cb8ff] transition-colors duration-200 font-medium cursor-pointer"
-                onClick={() => navigate('/')}
+                onClick={() => navigate("/")}
               >
                 Home
               </div>
               <div
-
                 className="text-[#e0e0e8] hover:text-[#1cb8ff] transition-colors duration-200 font-medium cursor-pointer"
-                onClick={() => navigate('/problems')}
+                onClick={() => navigate("/problems")}
               >
                 Problems
               </div>
-              <div
-
-                className="text-[#e0e0e8] hover:text-[#1cb8ff] transition-colors duration-200 font-medium cursor-pointer"
-              >
+              <div className="text-[#e0e0e8] hover:text-[#1cb8ff] transition-colors duration-200 font-medium cursor-pointer">
                 Preparations
               </div>
-              <div
-
-                className="text-[#e0e0e8] hover:text-[#1cb8ff] transition-colors duration-200 font-medium cursor-pointer"
-              >
+              <div className="text-[#e0e0e8] hover:text-[#1cb8ff] transition-colors duration-200 font-medium cursor-pointer"  onClick={() => navigate("/about")}>
                 About
               </div>
-              <div
-
-                className="text-[#e0e0e8] hover:text-[#1cb8ff] transition-colors duration-200 font-medium cursor-pointer"
-              >
+              <div className="text-[#e0e0e8] hover:text-[#1cb8ff] transition-colors duration-200 font-medium cursor-pointer">
                 Blog
               </div>
             </nav>
 
             {/* Auth Buttons */}
 
-
-            {user ? 
-            (<>
-               <div className="hidden md:flex items-center space-x-4" onClick={() => navigate('/profile')}>
+            {user ? (
+              <>
+                <div
+                  className="hidden md:flex items-center space-x-4"
+                  onClick={() => navigate("/profile")}
+                >
                   <div className="w-[32px] h-[32px] rounded-full bg-white/80">
-                     <img 
-                     src="https://images.unsplash.com/photo-1660680299120-c7c132df1b1f?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
-                     alt="user-profile" 
-                     className="w-full h-full rounded-full object-center object-cover"
-                     />
+                    <img
+                      src={userImage}
+                      alt="user-profile"
+                      className="w-full h-full rounded-full object-center object-cover"
+                    />
                   </div>
-               </div>
-            </>) 
-            : 
-
-            (<>
-              <div className="hidden md:flex items-center space-x-4">
-                <div
-
-                  className="px-4 py-2 text-[#c4c4c4] hover:text-white transition-colors duration-200 font-medium cursor-pointer"
-                  onClick={() => navigate('/login')}
-                >
-                  Login
                 </div>
-                <div
-
-                  className="px-4 py-2 bg-gradient-to-r from-[#6e44ff] to-[#1cb8ff] text-white rounded-md  transition-all duration-300 font-medium cursor-pointer hover:shadow-[0_0_15px_rgba(110,68,255,0.5)]"
-                  onClick={() => navigate('/signup')}
-                >
-                  Sign Up
+              </>
+            ) : (
+              <>
+                <div className="hidden md:flex items-center space-x-4">
+                  <div
+                    className="px-4 py-2 text-[#c4c4c4] hover:text-white transition-colors duration-200 font-medium cursor-pointer"
+                    onClick={() => navigate("/login")}
+                  >
+                    Login
+                  </div>
+                  <div
+                    className="px-4 py-2 bg-gradient-to-r from-[#6e44ff] to-[#1cb8ff] text-white rounded-md  transition-all duration-300 font-medium cursor-pointer hover:shadow-[0_0_15px_rgba(110,68,255,0.5)]"
+                    onClick={() => navigate("/signup")}
+                  >
+                    Sign Up
+                  </div>
                 </div>
-              </div></>)}
+              </>
+            )}
 
             {/* Mobile menu button */}
             <div className="md:hidden flex items-center">

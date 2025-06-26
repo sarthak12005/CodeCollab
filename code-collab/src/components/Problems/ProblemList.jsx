@@ -62,7 +62,7 @@ const ProblemList = ({ filters, searchQuery }) => {
     const sortOptions = ['Most Recent', 'Difficulty', 'Acceptance Rate', 'Title'];
 
     return (
-        <div className="flex-1 bg-slate-900 text-white">
+        <div className="flex-1 bg-[#10101f] text-white">
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-slate-700">
                 <div className="flex items-center space-x-4">

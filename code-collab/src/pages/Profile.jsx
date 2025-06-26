@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useAuth } from "../context/userContext";
 import Header from "../components/Header";
 import {
@@ -11,8 +11,10 @@ import {
   EyeOff,
   User,
   Settings,
-  
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+const API_URL = import.meta.env.VITE_API_ENDPOINT;
 
 const Profile = () => {
   const { logout, user } = useAuth();
@@ -26,6 +28,69 @@ const Profile = () => {
     newPassword: "",
     confirmPassword: "",
   });
+
+  const [profileImage, setProfileImage] = useState(
+    userInfo.profileImage ||
+      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
+  );
+  const fileInputRef = useRef(null);
+
+  const handleImageClick = () => {
+    fileInputRef.current.click();
+  };
+
+
+
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setProfileImage(event.target.result);
+        updateProfilePicture(profileImage);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const updateProfilePicture = async (image) => {
+      try {
+         if (!image) {
+           console.log("image is not provided");
+         }
+
+         const res = await axios.put(`${API_URL}/change-picture/${user._id}`, image);
+
+         const message = res.data.message;
+
+         alert(message);
+
+      } catch (err) {
+         console.error("the error in the uploading image is", err);
+      }
+  }
+
+  const removeImage = () => {
+    setProfileImage(""); // or set to a default avatar
+    // Here you would typically call your backend to remove the image
+    // removeProfileImage();
+  };
+
+  const navigate = useNavigate();
+
+  const [recentProblemSolve, setRecentProblemSolve] = useState([]);
+
+  useEffect(() => {
+    try {
+      if (user && user.solveProblems.lenght !== 0) {
+        const solveProblems = user.solveProblems.slice().reverse().slice(0, 3);
+        setRecentProblemSolve(solveProblems);
+      }
+    } catch (err) {
+      console.log("the error in recentProblemSolve", err);
+    }
+  }, [user]); // 👈 this is important
 
   const recentProblems = [
     {
@@ -104,10 +169,27 @@ const Profile = () => {
       {/* Header */}
       <div className="flex items-center space-x-6">
         <div className="relative">
-          <img
-            src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
-            alt={userInfo.name}
-            className="w-20 h-20 rounded-full border-4 border-blue-500"
+          <div
+            className="group relative cursor-pointer"
+            onClick={handleImageClick}
+          >
+            <img
+              src={profileImage || "/default-avatar.png"}
+              alt={userInfo.name}
+              className="w-20 h-20 rounded-full border-4 border-blue-500 group-hover:opacity-80 transition-opacity"
+            />
+            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+              <span className="text-white text-xs font-medium bg-black bg-opacity-50 px-2 py-1 rounded">
+                Change
+              </span>
+            </div>
+          </div>
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            accept="image/*"
+            className="hidden"
           />
           <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
             <Code className="w-3 h-3 text-white" />
@@ -127,6 +209,14 @@ const Profile = () => {
               <span className="text-sm text-gray-300">Pro</span>
             </div>
           </div>
+          {profileImage && (
+            <button
+              onClick={removeImage}
+              className="mt-2 text-xs text-red-400 hover:text-red-300 cursor-pointer"
+            >
+              Remove profile image
+            </button>
+          )}
         </div>
       </div>
 
@@ -211,62 +301,83 @@ const Profile = () => {
 
       {/* Recent Solved Problems */}
       <div>
-        <h2 className="text-xl font-semibold text-white mb-4">
-          Recent Solved Problems
-        </h2>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-semibold text-white">
+            Recent Solved Problems
+          </h2>
+          <button
+            onClick={() => navigate("/problems")}
+            className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-4 py-2 rounded-md hover:opacity-90 transition-opacity"
+          >
+            Solve Problems
+          </button>
+        </div>
+
         <div className="bg-gray-800 rounded-lg border border-gray-700 overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-700">
-            <thead className="bg-gradient-to-r from-blue-600 to-cyan-600">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
-                  #
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
-                  Problem
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
-                  Difficulty
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
-                  Time
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
-                  Date
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-700">
-              {recentProblems.map((problem) => (
-                <tr key={problem.id}>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-400">
-                    {problem.id}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-white font-medium">
-                    {problem.name}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                        problem.difficulty === "EASY"
-                          ? "bg-green-900 text-green-300"
-                          : problem.difficulty === "MEDIUM"
-                          ? "bg-orange-900 text-orange-300"
-                          : "bg-red-900 text-red-300"
-                      }`}
-                    >
-                      {problem.difficulty}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-400">
-                    {problem.time}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-400">
-                    {problem.date}
-                  </td>
+          {recentProblemSolve.length > 0 ? (
+            <table className="min-w-full divide-y divide-gray-700">
+              <thead className="bg-gradient-to-r from-blue-600 to-cyan-600">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                    #
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                    Problem
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                    Difficulty
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                    Time
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                    Date
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-gray-700">
+                {recentProblemSolve.map((problem) => (
+                  <tr key={problem.id}>
+                    <td className="px-6 py-4 whitespace-nowrap text-gray-400">
+                      {problem.id}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-white font-medium">
+                      {problem.name}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                          problem.difficulty === "EASY"
+                            ? "bg-green-900 text-green-300"
+                            : problem.difficulty === "MEDIUM"
+                            ? "bg-orange-900 text-orange-300"
+                            : "bg-red-900 text-red-300"
+                        }`}
+                      >
+                        {problem.difficulty}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-gray-400">
+                      {problem.time}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-gray-400">
+                      {problem.date}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <div className="p-8 text-center">
+              <p className="text-gray-400 mb-4">No problems solved yet</p>
+              <button
+                onClick={() => navigate("/problems")}
+                className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-4 py-2 rounded-md hover:opacity-90 transition-opacity"
+              >
+                Start Solving Problems
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -26,9 +26,9 @@ const Problems = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900">
+    <div className="min-h-screen bg-[#0a0a12]">
       {/* Header/Navbar */}
-      <header className="bg-[#0f0f24] border-b border-slate-700">
+      <header className="bg-[#0a0a12]] border-b border-slate-700">
         <div className="flex items-center justify-between px-6 py-4">
           {/* Logo and Navigation */}
           <div className="flex items-center space-x-8">
@@ -69,7 +69,7 @@ const Problems = () => {
               >
                 <div className="w-[32px] h-[32px] rounded-full bg-white/80">
                   <img
-                    src="https://images.unsplash.com/photo-1660680299120-c7c132df1b1f?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                    src={user.userImage}
                     alt="user-profile"
                     className="w-full h-full rounded-full object-center object-cover"
                   />

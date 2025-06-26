@@ -78,8 +78,8 @@ exports.addProblem = async (req, res) => {
             testCases: testCases || [],
             hints: hints || [],
             solution,
-            isDailyProblem,
-            dailyProblemDate: isDailyProblem ? dailyProblemDate : null
+            isDailyProblem: isDailyProblem || false,
+            dailyProblemDate: isDailyProblem ? new Date() : null
         });
 
         await problem.save();
@@ -149,6 +149,28 @@ exports.getProblemById = async (req, res) => {
             message: "Internal server error",
             error: process.env.NODE_ENV === 'development' ? err.message : undefined
         });
+
+    }
+}
+
+
+exports.editProblem = async (req, res) => {
+    try {
+        const { problemId } = req.params;
+
+        if (!problemId) return res.status(400).json({ message: "the problem id is not found" });
+
+        const problem = await Problem.findByIdAndUpdate(problemId, { isDailyProblem: true }, { new: true, runValidators: true });
+
+        if (!problem) {
+            return res.status(404).json({message: "problem not found"});
+        }
+
+
+        res.status(200).json({message: "successfully updated the problem "});
+    } catch (err) {
+        console.log("the error in editing problem is ", err) 
+        res.status(500).json({message: "internal server error"});
     }
 }
 
