@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useAuth } from "../context/userContext";
 import Header from "../components/Header";
 import {
@@ -13,6 +13,8 @@ import {
   Settings,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+const API_URL = import.meta.env.VITE_API_ENDPOINT;
 
 const Profile = () => {
   const { logout, user } = useAuth();
@@ -26,6 +28,54 @@ const Profile = () => {
     newPassword: "",
     confirmPassword: "",
   });
+
+  const [profileImage, setProfileImage] = useState(
+    userInfo.profileImage ||
+      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
+  );
+  const fileInputRef = useRef(null);
+
+  const handleImageClick = () => {
+    fileInputRef.current.click();
+  };
+
+
+
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setProfileImage(event.target.result);
+        updateProfilePicture(profileImage);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const updateProfilePicture = async (image) => {
+      try {
+         if (!image) {
+           console.log("image is not provided");
+         }
+
+         const res = await axios.put(`${API_URL}/change-picture/${user._id}`, image);
+
+         const message = res.data.message;
+
+         alert(message);
+
+      } catch (err) {
+         console.error("the error in the uploading image is", err);
+      }
+  }
+
+  const removeImage = () => {
+    setProfileImage(""); // or set to a default avatar
+    // Here you would typically call your backend to remove the image
+    // removeProfileImage();
+  };
 
   const navigate = useNavigate();
 
@@ -119,10 +169,27 @@ const Profile = () => {
       {/* Header */}
       <div className="flex items-center space-x-6">
         <div className="relative">
-          <img
-            src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
-            alt={userInfo.name}
-            className="w-20 h-20 rounded-full border-4 border-blue-500"
+          <div
+            className="group relative cursor-pointer"
+            onClick={handleImageClick}
+          >
+            <img
+              src={profileImage || "/default-avatar.png"}
+              alt={userInfo.name}
+              className="w-20 h-20 rounded-full border-4 border-blue-500 group-hover:opacity-80 transition-opacity"
+            />
+            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+              <span className="text-white text-xs font-medium bg-black bg-opacity-50 px-2 py-1 rounded">
+                Change
+              </span>
+            </div>
+          </div>
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            accept="image/*"
+            className="hidden"
           />
           <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
             <Code className="w-3 h-3 text-white" />
@@ -142,6 +209,14 @@ const Profile = () => {
               <span className="text-sm text-gray-300">Pro</span>
             </div>
           </div>
+          {profileImage && (
+            <button
+              onClick={removeImage}
+              className="mt-2 text-xs text-red-400 hover:text-red-300 cursor-pointer"
+            >
+              Remove profile image
+            </button>
+          )}
         </div>
       </div>
 

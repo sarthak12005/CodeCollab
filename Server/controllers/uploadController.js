@@ -31,6 +31,4 @@ exports.uploadProfilePicture = async (req, res) => {
 
     res.status(200).json({ message: "Image upload successfully", url: result.secure_url });
 
-
-
 }

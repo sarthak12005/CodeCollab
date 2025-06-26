@@ -44,9 +44,9 @@ exports.addProblem = async (req, res) => {
         const problem = new Problem({
             title,
             description,
-            difficulty ,
-            tags : tags || [],
-            companies : companies || [],
+            difficulty,
+            tags: tags || [],
+            companies: companies || [],
             acceptanceRate: acceptanceRate || 0,
             constraints,
             examples: examples || [],
@@ -54,7 +54,7 @@ exports.addProblem = async (req, res) => {
             hints: hints || [],
             solution,
             isDailyProblem: isDailyProblem || false,
-            dailyProblemDate : isDailyProblem ? new Date() : null
+            dailyProblemDate: isDailyProblem ? new Date() : null
         });
 
         await problem.save();
@@ -69,16 +69,16 @@ exports.addProblem = async (req, res) => {
 
 exports.deleteProblem = async (req, res) => {
     try {
-        const {problemId} = req.body;
+        const { problemId } = req.body;
 
         if (!problemId) {
             console.log("the problem id is undefined");
-            return res.status(400).json({message: "problem id is undefined"});
+            return res.status(400).json({ message: "problem id is undefined" });
         }
 
         const problem = await Problem.findByIdAndDelete(problemId);
 
-        
+
 
     } catch (err) {
         console.log("The error in deleting problem is : ", err);
@@ -87,5 +87,22 @@ exports.deleteProblem = async (req, res) => {
 }
 
 exports.editProblem = async (req, res) => {
+    try {
+        const { problemId } = req.params;
 
+        if (!problemId) return res.status(400).json({ message: "the problem id is not found" });
+
+        const problem = await Problem.findByIdAndUpdate(problemId, { isDailyProblem: true }, { new: true, runValidators: true });
+
+        if (!problem) {
+            return res.status(404).json({message: "problem not found"});
+        }
+
+
+        res.status(200).json({message: "successfully updated the problem "});
+    } catch (err) {
+        console.log("the error in editing problem is ", err) 
+        res.status(500).json({message: "internal server error"});
+    }
 }
+
