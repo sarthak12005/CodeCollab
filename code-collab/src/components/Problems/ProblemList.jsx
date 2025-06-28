@@ -36,32 +36,35 @@ const ProblemList = ({ filters, searchQuery }) => {
   return (
     <div className="p-6 space-y-6">
       {/* Sort Dropdown */}
-      <div className="relative">
-        <button
-          onClick={() => setShowSortDropdown(!showSortDropdown)}
-          className="flex items-center space-x-2 bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-lg border border-slate-600"
-        >
-          <span className="text-sm">{sortBy}</span>
-          <ChevronDown size={16} />
-        </button>
+      <div className="flex justify-end">
+        <div className="relative">
+          <button
+            onClick={() => setShowSortDropdown(!showSortDropdown)}
+            className="flex items-center space-x-2 bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-lg border border-slate-600 text-white"
+          >
+            <span className="text-sm">{sortBy}</span>
+            <ChevronDown size={16} />
+          </button>
 
-        {showSortDropdown && (
-          <div className="absolute right-0 top-full mt-1 bg-slate-800 border border-slate-600 rounded-lg shadow-lg z-10 min-w-[140px]">
-            {sortOptions.map((option) => (
-              <button
-                key={option}
-                onClick={() => {
-                  setSortBy(option);
-                  setShowSortDropdown(false);
-                }}
-                className="w-full text-left px-4 py-2 text-sm hover:bg-slate-700 first:rounded-t-lg last:rounded-b-lg"
-              >
-                {option}
-              </button>
-            ))}
-          </div>
-        )}
+          {showSortDropdown && (
+            <div className="absolute right-0 top-full mt-1 bg-slate-800 border border-slate-600 rounded-lg shadow-lg z-10 min-w-[140px]">
+              {sortOptions.map((option) => (
+                <button
+                  key={option}
+                  onClick={() => {
+                    setSortBy(option);
+                    setShowSortDropdown(false);
+                  }}
+                  className="w-full text-left px-4 py-2 text-sm text-white hover:bg-slate-700 first:rounded-t-lg last:rounded-b-lg"
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
+
 
       {/* Problem List */}
       <div className="space-y-4">
@@ -91,10 +94,10 @@ const ProblemList = ({ filters, searchQuery }) => {
                 <div className="flex items-center space-x-4 mb-3">
                   <span
                     className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${problem.difficulty === 'Easy'
-                        ? 'bg-green-500'
-                        : problem.difficulty === 'Medium'
-                          ? 'bg-yellow-500'
-                          : 'bg-red-500'
+                      ? 'bg-green-500'
+                      : problem.difficulty === 'Medium'
+                        ? 'bg-yellow-500'
+                        : 'bg-red-500'
                       } text-white`}
                   >
                     {problem.difficulty}
@@ -125,8 +128,8 @@ const ProblemList = ({ filters, searchQuery }) => {
                 <button className="p-2 hover:bg-slate-700 rounded transition-colors">
                   <Star
                     className={`w-4 h-4 ${problem.isFavorited
-                        ? 'text-yellow-400 fill-current'
-                        : 'text-gray-400'
+                      ? 'text-yellow-400 fill-current'
+                      : 'text-gray-400'
                       }`}
                   />
                 </button>
