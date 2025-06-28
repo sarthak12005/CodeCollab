@@ -15,12 +15,11 @@ const Problems = () => {
 
   const { user } = useAuth();
 
-  useEffect(() => {
-    if (!user) {
-      navigate("/login");
-      return
-    }
-  }, [navigate,user]);
+  if (!user) {
+     navigate('/login');
+  }
+  
+
 
   const handleFilterChange = (newFilters) => {
     setFilters(newFilters);

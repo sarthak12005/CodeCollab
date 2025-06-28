@@ -10,7 +10,7 @@ exports.getProblems = async (req, res) => {
             return res.status(404).json({ message: "no problems found" });
         }
 
-        res.status(200).json({ message: "fetched problems successfully" });
+        res.status(200).json({ message: "fetched problems successfully", problems });
     } catch (err) {
         console.log("The error in getting all problems is: ", err);
         res.status(500).json({ message: "internal server error", err });

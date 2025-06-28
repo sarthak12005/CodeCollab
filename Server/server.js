@@ -1,6 +1,12 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const app = express();
+const { createServer } = require('http');
+
+const server = createServer(app);
+
+// const io = socketIo(server);
 
 //db connection 
 const db = require('./config/db')
@@ -25,7 +31,7 @@ const authRoutes = require('./routes/authRoute');
 const problemRoutes = require('./routes/problemRoute');
 
 
-const app = express();
+
 
 
 app.use(cors({
@@ -35,16 +41,13 @@ app.use(cors({
 
 
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.json({limit: '50mb'}));
+app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // declare route with end point
-app.use(`${startAPI}`, authRoutes);
-app.use(`${startAPI}`, problemRoutes);
+app.use(`/api/codecollab`, authRoutes);
+app.use(`/api/codecollab/problem`, problemRoutes);
 
-//Import routes
-app.use('/api/codecollab', authRoutes);
-app.use('/api/codecollab/problem', problemRoutes);
 
 // In your route handler
 app.get("/", (req, res) => {

@@ -1,10 +1,37 @@
 // src/components/ProblemList.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronDown, Star } from 'lucide-react';
+import axios from 'axios';
+const API_URL = import.meta.env.VITE_API_ENDPOINT;
 
 const ProblemList = ({ filters, searchQuery }) => {
     const [sortBy, setSortBy] = useState('Most Recent');
     const [showSortDropdown, setShowSortDropdown] = useState(false);
+    const [problemData, setProblemData] = useState([]);
+
+
+    useEffect(() => {
+        const fetchProblems = async () => {
+            try {
+                const response = await axios.get(`${API_URL}/problem/get-problems`, {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                if (response.status === 200) {
+                    setProblemData(response.data.problems);
+                    console.log("Fetched problems:", response.data.problems);
+                }
+            } catch (err) {
+                console.error("Error fetching problems:", err);
+            }
+        }
+
+        fetchProblems();
+
+    }, []);
+
 
     const problems = [
         {
@@ -12,7 +39,7 @@ const ProblemList = ({ filters, searchQuery }) => {
             title: "Two Sum",
             difficulty: "Easy",
             tags: ["Array", "Hash Table"],
-            acceptance: "72%",
+            acceptanceRate: "72%",
             description: "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.",
             isFavorited: false,
             isSolved: false
@@ -22,7 +49,7 @@ const ProblemList = ({ filters, searchQuery }) => {
             title: "Longest Substring Without Repeating Characters",
             difficulty: "Medium",
             tags: ["String", "Sliding Window"],
-            acceptance: "64%",
+            acceptanceRate: "64%",
             description: "Given a string s, find the length of the longest substring without repeating characters.",
             isFavorited: true,
             isSolved: false
@@ -32,7 +59,7 @@ const ProblemList = ({ filters, searchQuery }) => {
             title: "Median of Two Sorted Arrays",
             difficulty: "Hard",
             tags: ["Array", "Binary Search"],
-            acceptance: "35%",
+            acceptanceRate: "35%",
             description: "Given two sorted arrays nums1 and nums2 of size m and n respectively, return the median of the two sorted arrays.",
             isFavorited: false,
             isSolved: false
@@ -42,7 +69,7 @@ const ProblemList = ({ filters, searchQuery }) => {
             title: "Valid Parentheses",
             difficulty: "Easy",
             tags: ["String", "Stack"],
-            acceptance: "68%",
+            acceptanceRate: "68%",
             description: "Given a string s containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.",
             isFavorited: false,
             isSolved: true
@@ -52,7 +79,7 @@ const ProblemList = ({ filters, searchQuery }) => {
             title: "Merge k Sorted Lists",
             difficulty: "Hard",
             tags: ["Linked List", "Divide and Conquer"],
-            acceptance: "45%",
+            acceptanceRate: "45%",
             description: "You are given an array of k linked-lists lists, each linked-list is sorted in ascending order.",
             isFavorited: false,
             isSolved: false
@@ -100,7 +127,7 @@ const ProblemList = ({ filters, searchQuery }) => {
 
             {/* Problem List */}
             <div className="p-6 space-y-4">
-                {problems.map((problem) => (
+                {problemData.map((problem) => (
                     <div
                         key={problem.id}
                         className="bg-slate-800 hover:bg-slate-750 border border-slate-700 rounded-lg p-4 cursor-pointer transition-all duration-200 group"
@@ -139,7 +166,7 @@ const ProblemList = ({ filters, searchQuery }) => {
                                     </div>
 
                                     <span className="text-sm text-gray-400">
-                                        {problem.acceptance}
+                                        {problem.acceptanceRate}
                                     </span>
                                 </div>
 
