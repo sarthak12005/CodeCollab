@@ -40,11 +40,8 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // declare route with end point
 app.use(`${startAPI}`, authRoutes);
-app.use(`${startAPI}`, problemRoutes);
+app.use(`${startAPI}/problem`, problemRoutes);
 
-//Import routes
-app.use('/api/codecollab', authRoutes);
-app.use('/api/codecollab/problem', problemRoutes);
 
 // In your route handler
 app.get("/", (req, res) => {
