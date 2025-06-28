@@ -4,7 +4,7 @@ import Hero from '../components/Home/Hero';
 import FeatureCard from '../components/Home/FeatureCard';
 import Playground from '../components/Home/Playground';
 import Testimonial from '../components/Home/Testimonial';
-import Confirmation from '../components/Home/confirmation';
+import Confirmation from '../components/Home/Confirmation';
 import Footer from '../components/Footer';
 
 
