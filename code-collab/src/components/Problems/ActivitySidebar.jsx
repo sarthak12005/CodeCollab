@@ -74,7 +74,7 @@ const ActivitySidebar = () => {
         <div className="w-80 bg-[#0a0a12] text-white p-6 ">
             {/* Today's Goal */}
             <div className="mb-8">
-                <h3 className="text-sm font-medium text-gray-300 uppercase tracking-wide mb-4">TODAY'S GOAL</h3>
+
                 <div className="bg-slate-900 rounded-lg p-4">
                     <div className="flex items-center justify-between mb-2">
                         <span className="text-white font-medium">
@@ -240,7 +240,7 @@ const ActivitySidebar = () => {
             </div>
 
             {/* Recent Activity */}
-            <div>
+            {/* <div>
                 <h3 className="text-sm font-medium text-gray-300 uppercase tracking-wide mb-4">RECENT ACTIVITY</h3>
                 <div className="space-y-3">
                     {recentActivity.map((activity) => {
@@ -264,7 +264,7 @@ const ActivitySidebar = () => {
                         );
                     })}
                 </div>
-            </div>
+            </div> */}
         </div>
     );
 };

@@ -5,7 +5,7 @@ import { useAuth } from "../context/userContext";
 const Header = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [userImage, setUserImage] = useState(user?.userImage || "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" );
+  const [userImage, setUserImage] = useState(user?.userImage || "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png");
 
 
   return (
@@ -40,7 +40,7 @@ const Header = () => {
               <div className="text-[#e0e0e8] hover:text-[#1cb8ff] transition-colors duration-200 font-medium cursor-pointer">
                 Preparations
               </div>
-              <div className="text-[#e0e0e8] hover:text-[#1cb8ff] transition-colors duration-200 font-medium cursor-pointer"  onClick={() => navigate("/about")}>
+              <div className="text-[#e0e0e8] hover:text-[#1cb8ff] transition-colors duration-200 font-medium cursor-pointer" onClick={() => navigate("/about")}>
                 About
               </div>
               <div className="text-[#e0e0e8] hover:text-[#1cb8ff] transition-colors duration-200 font-medium cursor-pointer">
@@ -58,7 +58,7 @@ const Header = () => {
                 >
                   <div className="w-[32px] h-[32px] rounded-full bg-white/80">
                     <img
-                      src={userImage}
+                      src={user?.userImage || "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"}
                       alt="user-profile"
                       className="w-full h-full rounded-full object-center object-cover"
                     />

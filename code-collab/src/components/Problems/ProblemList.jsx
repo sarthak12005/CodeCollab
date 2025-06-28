@@ -1,7 +1,8 @@
-// src/components/ProblemList.js
 import React, { useState, useEffect } from 'react';
 import { ChevronDown, Star } from 'lucide-react';
 import axios from 'axios';
+import ProblemSkeletonCard from './ProblemSkeletonCard';
+import PageSkeleton from './PageSkeleton';
 
 const API_URL = import.meta.env.VITE_API_ENDPOINT;
 
@@ -9,10 +10,12 @@ const ProblemList = ({ filters, searchQuery }) => {
   const [sortBy, setSortBy] = useState('Most Recent');
   const [showSortDropdown, setShowSortDropdown] = useState(false);
   const [problemData, setProblemData] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchProblems = async () => {
       try {
+        setLoading(true);
         const response = await axios.get(`${API_URL}/problem/get-problems`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -21,10 +24,11 @@ const ProblemList = ({ filters, searchQuery }) => {
 
         if (response.status === 200) {
           setProblemData(response.data.problems);
-          console.log("Fetched problems:", response.data.problems);
         }
       } catch (err) {
         console.error("Error fetching problems:", err);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -32,6 +36,8 @@ const ProblemList = ({ filters, searchQuery }) => {
   }, []);
 
   const sortOptions = ['Most Recent', 'Difficulty', 'Acceptance Rate', 'Title'];
+
+  if (loading) return <PageSkeleton />;
 
   return (
     <div className="p-6 space-y-6">
@@ -65,7 +71,6 @@ const ProblemList = ({ filters, searchQuery }) => {
         </div>
       </div>
 
-
       {/* Problem List */}
       <div className="space-y-4">
         {problemData.map((problem) => (
@@ -80,7 +85,6 @@ const ProblemList = ({ filters, searchQuery }) => {
                   <h3 className="text-lg font-medium text-white group-hover:text-blue-400 transition-colors">
                     {problem.title}
                   </h3>
-
                   <div className="flex items-center space-x-2">
                     {problem.isSolved && (
                       <div className="w-2 h-2 bg-green-500 rounded-full"></div>
@@ -93,12 +97,13 @@ const ProblemList = ({ filters, searchQuery }) => {
 
                 <div className="flex items-center space-x-4 mb-3">
                   <span
-                    className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${problem.difficulty === 'Easy'
-                      ? 'bg-green-500'
-                      : problem.difficulty === 'Medium'
+                    className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
+                      problem.difficulty === 'Easy'
+                        ? 'bg-green-500'
+                        : problem.difficulty === 'Medium'
                         ? 'bg-yellow-500'
                         : 'bg-red-500'
-                      } text-white`}
+                    } text-white`}
                   >
                     {problem.difficulty}
                   </span>
@@ -127,10 +132,11 @@ const ProblemList = ({ filters, searchQuery }) => {
               <div className="ml-4 flex items-start space-x-2">
                 <button className="p-2 hover:bg-slate-700 rounded transition-colors">
                   <Star
-                    className={`w-4 h-4 ${problem.isFavorited
-                      ? 'text-yellow-400 fill-current'
-                      : 'text-gray-400'
-                      }`}
+                    className={`w-4 h-4 ${
+                      problem.isFavorited
+                        ? 'text-yellow-400 fill-current'
+                        : 'text-gray-400'
+                    }`}
                   />
                 </button>
               </div>
