@@ -7,6 +7,7 @@ exports.getProblems = async (req, res) => {
         const problems = await Problem.find();
 
         if (!problems) {
+            console.log("No problems found");
             return res.status(404).json({ message: "no problems found" });
         }
 

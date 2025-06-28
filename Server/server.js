@@ -45,8 +45,8 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // declare route with end point
-app.use(`/api/codecollab`, authRoutes);
-app.use(`/api/codecollab/problem`, problemRoutes);
+app.use(`${startAPI}`, authRoutes);
+app.use(`${startAPI}/problem`, problemRoutes);
 
 
 // In your route handler
