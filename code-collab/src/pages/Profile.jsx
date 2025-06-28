@@ -27,11 +27,13 @@ const Profile = () => {
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
+
   });
+
 
   const [profileImage, setProfileImage] = useState(
     user?.userImage ||
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
+    "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
   );
   const fileInputRef = useRef(null);
 
@@ -55,20 +57,20 @@ const Profile = () => {
   };
 
   const updateProfilePicture = async (image) => {
-      try {
-         if (!image) {
-           console.log("image is not provided");
-         }
-
-         const res = await axios.put(`${API_URL}/change-picture/${user._id}`, image);
-
-         const message = res.data.message;
-
-         alert(message);
-
-      } catch (err) {
-         console.error("the error in the uploading image is", err);
+    try {
+      if (!image) {
+        console.log("image is not provided");
       }
+
+      const res = await axios.put(`${API_URL}/change-picture/${user._id}`, image);
+
+      const message = res.data.message;
+
+      alert(message);
+
+    } catch (err) {
+      console.error("the error in the uploading image is", err);
+    }
   }
 
   const removeImage = () => {
@@ -83,7 +85,7 @@ const Profile = () => {
 
   useEffect(() => {
     try {
-      if (user && user.solveProblems.lenght !== 0) {
+      if (user && user.solveProblems.length !== 0) {
         const solveProblems = user.solveProblems.slice().reverse().slice(0, 3);
         setRecentProblemSolve(solveProblems);
       }
@@ -228,7 +230,7 @@ const Profile = () => {
             <div className="flex items-center justify-center w-12 h-12 bg-blue-600 rounded-lg mb-4">
               <Code className="w-6 h-6 text-white" />
             </div>
-            <div className="text-3xl font-bold text-white mb-1">127</div>
+            <div className="text-3xl font-bold text-white mb-1">{user?.solveProblems.length}</div>
             <div className="text-gray-400 text-sm">Problems Solved</div>
           </div>
           <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
@@ -268,13 +270,12 @@ const Profile = () => {
                   {day.problems.map((level, pIndex) => (
                     <div
                       key={pIndex}
-                      className={`w-4 h-4 rounded ${
-                        level === 1
+                      className={`w-4 h-4 rounded ${level === 1
                           ? "bg-green-400"
                           : level === 2
-                          ? "bg-green-500"
-                          : "bg-green-600"
-                      }`}
+                            ? "bg-green-500"
+                            : "bg-green-600"
+                        }`}
                     />
                   ))}
                 </div>
@@ -346,13 +347,12 @@ const Profile = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
-                        className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                          problem.difficulty === "EASY"
+                        className={`px-3 py-1 rounded-full text-xs font-semibold ${problem.difficulty === "EASY"
                             ? "bg-green-900 text-green-300"
                             : problem.difficulty === "MEDIUM"
-                            ? "bg-orange-900 text-orange-300"
-                            : "bg-red-900 text-red-300"
-                        }`}
+                              ? "bg-orange-900 text-orange-300"
+                              : "bg-red-900 text-red-300"
+                          }`}
                       >
                         {problem.difficulty}
                       </span>
@@ -545,11 +545,10 @@ const Profile = () => {
                   <button
                     key={item.id}
                     onClick={() => setActiveTab(item.id)}
-                    className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors ${
-                      activeTab === item.id
+                    className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors ${activeTab === item.id
                         ? "bg-blue-600 text-white"
                         : "text-gray-300 hover:bg-gray-700 hover:text-white"
-                    }`}
+                      }`}
                   >
                     <Icon className="w-5 h-5" />
                     <span>{item.label}</span>
