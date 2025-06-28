@@ -35,7 +35,7 @@ const problemRoutes = require('./routes/problemRoute');
 
 
 app.use(cors({
-  origin: [`${origin_enpoint1}`, `${origin_enpoint2}`], // Your frontend URL
+  origin: [`${origin_enpoint1}`, `https://code-collab-sable.vercel.app`], // Your frontend URL
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
 }));
 
