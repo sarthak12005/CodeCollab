@@ -129,13 +129,14 @@ exports.deleteProblem = async (req, res) => {
 
 exports.getProblemById = async (req, res) => {
     try {
-        const {problemId} = req.params;
+        const { problemId } = req.params;
 
         if (!problemId) {
             return res.status(400).json({ message: "Problem ID is required" });
         }
 
         const problem = await Problem.findById(problemId);
+        console.log(problem);
 
         if (!problem) {
             return res.status(404).json({ message: "Problem not found" });
@@ -164,14 +165,14 @@ exports.editProblem = async (req, res) => {
         const problem = await Problem.findByIdAndUpdate(problemId, { isDailyProblem: true }, { new: true, runValidators: true });
 
         if (!problem) {
-            return res.status(404).json({message: "problem not found"});
+            return res.status(404).json({ message: "problem not found" });
         }
 
 
-        res.status(200).json({message: "successfully updated the problem "});
+        res.status(200).json({ message: "successfully updated the problem " });
     } catch (err) {
-        console.log("the error in editing problem is ", err) 
-        res.status(500).json({message: "internal server error"});
+        console.log("the error in editing problem is ", err)
+        res.status(500).json({ message: "internal server error" });
     }
 }
 

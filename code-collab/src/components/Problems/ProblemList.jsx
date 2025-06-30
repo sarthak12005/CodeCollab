@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronDown, Star } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import ProblemSkeletonCard from './ProblemSkeletonCard';
 import PageSkeleton from './PageSkeleton';
@@ -11,6 +12,7 @@ const ProblemList = ({ filters, searchQuery }) => {
   const [showSortDropdown, setShowSortDropdown] = useState(false);
   const [problemData, setProblemData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProblems = async () => {
@@ -23,7 +25,7 @@ const ProblemList = ({ filters, searchQuery }) => {
         });
 
         if (response.status === 200) {
-          setProblemData(response.data.problems);
+          setProblemData(response.data.problems); // ✅ FIXED
         }
       } catch (err) {
         console.error("Error fetching problems:", err);
@@ -34,6 +36,12 @@ const ProblemList = ({ filters, searchQuery }) => {
 
     fetchProblems();
   }, []);
+
+
+
+  const handleProblemClick = (problemId) => {
+    navigate(`/problems/singleProblem/${problemId}`);
+  }
 
   const sortOptions = ['Most Recent', 'Difficulty', 'Acceptance Rate', 'Title'];
 
@@ -75,9 +83,9 @@ const ProblemList = ({ filters, searchQuery }) => {
       <div className="space-y-4">
         {problemData.map((problem) => (
           <div
-            key={problem.id}
+            key={problem._id}
             className="bg-slate-800 hover:bg-slate-750 border border-slate-700 rounded-lg p-4 cursor-pointer transition-all duration-200 group"
-            onClick={() => console.log(`Navigating to problem ${problem.id}`)}
+            onClick={() => handleProblemClick(problem._id)}
           >
             <div className="flex items-start justify-between">
               <div className="flex-1">
@@ -97,13 +105,12 @@ const ProblemList = ({ filters, searchQuery }) => {
 
                 <div className="flex items-center space-x-4 mb-3">
                   <span
-                    className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
-                      problem.difficulty === 'Easy'
-                        ? 'bg-green-500'
-                        : problem.difficulty === 'Medium'
+                    className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${problem.difficulty === 'Easy'
+                      ? 'bg-green-500'
+                      : problem.difficulty === 'Medium'
                         ? 'bg-yellow-500'
                         : 'bg-red-500'
-                    } text-white`}
+                      } text-white`}
                   >
                     {problem.difficulty}
                   </span>
@@ -132,11 +139,10 @@ const ProblemList = ({ filters, searchQuery }) => {
               <div className="ml-4 flex items-start space-x-2">
                 <button className="p-2 hover:bg-slate-700 rounded transition-colors">
                   <Star
-                    className={`w-4 h-4 ${
-                      problem.isFavorited
-                        ? 'text-yellow-400 fill-current'
-                        : 'text-gray-400'
-                    }`}
+                    className={`w-4 h-4 ${problem.isFavorited
+                      ? 'text-yellow-400 fill-current'
+                      : 'text-gray-400'
+                      }`}
                   />
                 </button>
               </div>
