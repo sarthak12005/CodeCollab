@@ -1,6 +1,6 @@
 // src/components/FilterSidebar.js
-import React, { useState } from 'react';
-import { ChevronDown, ChevronRight, X, Star } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ChevronDown, ChevronRight, X } from 'lucide-react';
 
 const FilterSidebar = ({ onFilterChange }) => {
     const [expandedSections, setExpandedSections] = useState({
@@ -16,16 +16,22 @@ const FilterSidebar = ({ onFilterChange }) => {
         companies: { Google: false, Amazon: false, Microsoft: false, Facebook: false }
     });
 
-    const [selectedTags, setSelectedTags] = useState([
-        'Dynamic Programming', 'Hash Table'
-    ]);
-
+    const [selectedTags, setSelectedTags] = useState([]);
     const [tagInput, setTagInput] = useState('');
 
     const tags = [
-        'Arrays', 'Trees', 'Dynamic Programming', 'Hash Table', 'Two Pointers',
+        'Array', 'Trees', 'Dynamic Programming', 'Hash Table', 'Two Pointers',
         'Strings', 'Linked List', 'Greedy', 'Graphs', 'Recursion', 'Binary Search'
     ];
+
+    useEffect(() => {
+        onFilterChange({
+            difficulty: selectedFilters.difficulty,
+            status: selectedFilters.status,
+            companies: selectedFilters.companies,
+            tags: selectedTags
+        });
+    }, [selectedFilters, selectedTags]);  // when these change, notify parent
 
     const toggleSection = (section) => {
         setExpandedSections(prev => ({
@@ -33,6 +39,8 @@ const FilterSidebar = ({ onFilterChange }) => {
             [section]: !prev[section]
         }));
     };
+
+
 
     const handleDifficultyChange = (level) => {
         setSelectedFilters(prev => ({
@@ -92,10 +100,7 @@ const FilterSidebar = ({ onFilterChange }) => {
         <div className="w-80 bg-[#0a0a12] text-white p-4 h-screen overflow-y-auto">
             {/* Difficulty Section */}
             <div className="mb-6">
-                <div
-                    className="flex items-center justify-between cursor-pointer mb-3"
-                    onClick={() => toggleSection('difficulty')}
-                >
+                <div className="flex items-center justify-between cursor-pointer mb-3" onClick={() => toggleSection('difficulty')}>
                     <h3 className="text-sm font-medium text-gray-300 uppercase tracking-wide">DIFFICULTY</h3>
                     {expandedSections.difficulty ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                 </div>
@@ -107,11 +112,9 @@ const FilterSidebar = ({ onFilterChange }) => {
                                     type="checkbox"
                                     checked={selectedFilters.difficulty[level]}
                                     onChange={() => handleDifficultyChange(level)}
-                                    className="w-4 h-4 text-blue-600 bg-slate-700 border-slate-600 rounded focus:ring-blue-500"
+                                    className="w-4 h-4 text-blue-600 bg-slate-700 border-slate-600 rounded"
                                 />
-                                <span className={`text-sm ${level === 'Easy' ? 'text-green-400' :
-                                    level === 'Medium' ? 'text-yellow-400' : 'text-red-400'
-                                    }`}>
+                                <span className={`text-sm ${level === 'Easy' ? 'text-green-400' : level === 'Medium' ? 'text-yellow-400' : 'text-red-400'}`}>
                                     {level}
                                 </span>
                             </label>
@@ -122,49 +125,32 @@ const FilterSidebar = ({ onFilterChange }) => {
 
             {/* Tags Section */}
             <div className="mb-6">
-                <div
-                    className="flex items-center justify-between cursor-pointer mb-3"
-                    onClick={() => toggleSection('tags')}
-                >
+                <div className="flex items-center justify-between cursor-pointer mb-3" onClick={() => toggleSection('tags')}>
                     <h3 className="text-sm font-medium text-gray-300 uppercase tracking-wide">TAGS</h3>
                     {expandedSections.tags ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                 </div>
                 {expandedSections.tags && (
                     <div>
-                        {/* Selected Tags */}
                         <div className="flex flex-wrap gap-2 mb-3">
                             {selectedTags.map((tag) => (
-                                <span
-                                    key={tag}
-                                    className="bg-purple-600 text-white px-2 py-1 rounded text-xs flex items-center space-x-1"
-                                >
+                                <span key={tag} className="bg-purple-600 text-white px-2 py-1 rounded text-xs flex items-center space-x-1">
                                     <span>{tag}</span>
-                                    <X
-                                        size={12}
-                                        className="cursor-pointer hover:text-gray-300"
-                                        onClick={() => removeTag(tag)}
-                                    />
+                                    <X size={12} className="cursor-pointer hover:text-gray-300" onClick={() => removeTag(tag)} />
                                 </span>
                             ))}
                         </div>
-
-                        {/* Tag Input */}
                         <div className="relative">
                             <input
                                 type="text"
                                 placeholder="Filter tags..."
                                 value={tagInput}
                                 onChange={(e) => setTagInput(e.target.value)}
-                                className="w-full bg-slate-700 border border-slate-600 rounded px-3 py-2 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                                className="w-full bg-slate-700 border border-slate-600 rounded px-3 py-2 text-sm text-white"
                             />
                             {tagInput && filteredTags.length > 0 && (
                                 <div className="absolute top-full left-0 right-0 bg-slate-700 border border-slate-600 rounded-b max-h-32 overflow-y-auto z-10">
                                     {filteredTags.map((tag) => (
-                                        <div
-                                            key={tag}
-                                            className="px-3 py-2 text-sm cursor-pointer hover:bg-slate-600"
-                                            onClick={() => addTag(tag)}
-                                        >
+                                        <div key={tag} className="px-3 py-2 text-sm cursor-pointer hover:bg-slate-600" onClick={() => addTag(tag)}>
                                             {tag}
                                         </div>
                                     ))}
@@ -177,10 +163,7 @@ const FilterSidebar = ({ onFilterChange }) => {
 
             {/* Status Section */}
             <div className="mb-6">
-                <div
-                    className="flex items-center justify-between cursor-pointer mb-3"
-                    onClick={() => toggleSection('status')}
-                >
+                <div className="flex items-center justify-between cursor-pointer mb-3" onClick={() => toggleSection('status')}>
                     <h3 className="text-sm font-medium text-gray-300 uppercase tracking-wide">STATUS</h3>
                     {expandedSections.status ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                 </div>
@@ -204,10 +187,7 @@ const FilterSidebar = ({ onFilterChange }) => {
 
             {/* Companies Section */}
             <div className="mb-6">
-                <div
-                    className="flex items-center justify-between cursor-pointer mb-3"
-                    onClick={() => toggleSection('companies')}
-                >
+                <div className="flex items-center justify-between cursor-pointer mb-3" onClick={() => toggleSection('companies')}>
                     <h3 className="text-sm font-medium text-gray-300 uppercase tracking-wide">COMPANIES</h3>
                     {expandedSections.companies ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                 </div>
@@ -219,21 +199,19 @@ const FilterSidebar = ({ onFilterChange }) => {
                                     type="checkbox"
                                     checked={selectedFilters.companies[company]}
                                     onChange={() => handleCompanyChange(company)}
-                                    className="w-4 h-4 text-blue-600 bg-slate-700 border-slate-600 rounded focus:ring-blue-500"
+                                    className="w-4 h-4 text-blue-600 bg-slate-700 border-slate-600 rounded"
                                 />
                                 <span className="text-sm text-gray-300">{company}</span>
                             </label>
                         ))}
                     </div>
                 )}
-                <button className="text-blue-400 text-sm mt-2 hover:text-blue-300">
-                    Show more
-                </button>
+                <button className="text-blue-400 text-sm mt-2 hover:text-blue-300">Show more</button>
             </div>
 
             {/* Reset Filters */}
             <button
-                className="w-full bg-slate-700 hover:bg-slate-600 text-gray-300 px-4 py-2 rounded text-sm font-medium transition-colors"
+                className="w-full bg-slate-700 hover:bg-slate-600 text-gray-300 px-4 py-2 rounded text-sm font-medium"
                 onClick={() => {
                     setSelectedFilters({
                         difficulty: { Easy: true, Medium: true, Hard: true },

@@ -108,7 +108,7 @@ export const UserProvider = ({ children }) => {
     };
 
     fetchUser();
-  }, [navigate]);
+  }, []);
 
 
 

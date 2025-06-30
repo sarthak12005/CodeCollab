@@ -11,6 +11,7 @@ router.get('/getUser', authMiddelware, userController.getUser);
 router.put('/editProfile', userController.editUser);
 router.put('/change-picture/:userId',uploadController.uploadProfilePicture);
 router.post('/addUser', userController.addUser);
+router.post('/favorite/:problemId', authMiddelware, userController.toogleFavorite);
 
 
 

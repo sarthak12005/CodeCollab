@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Eye, EyeOff, Github } from "lucide-react";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
@@ -11,11 +11,16 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const { updateUser, loginWithGoogle, loginWithgithub } = useAuth();
-
-
-
   const navigate = useNavigate();
+  const {user, updateUser, loginWithGoogle, loginWithgithub } = useAuth();
+
+  useEffect(() => {
+     if (user) {
+       navigate(-1);
+     }
+  },[user, navigate])
+
+
 
   const handleLogin = async (e) => {
     e.preventDefault();

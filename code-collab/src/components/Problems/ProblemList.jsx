@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ChevronDown, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import ProblemSkeletonCard from './ProblemSkeletonCard';
+import { useAuth } from '../../context/userContext';
 import PageSkeleton from './PageSkeleton';
 
 const API_URL = import.meta.env.VITE_API_ENDPOINT;
@@ -11,7 +11,9 @@ const ProblemList = ({ filters, searchQuery }) => {
   const [sortBy, setSortBy] = useState('Most Recent');
   const [showSortDropdown, setShowSortDropdown] = useState(false);
   const [problemData, setProblemData] = useState([]);
+  const [filteredProblems, setFilteredProblems] = useState([]);
   const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -25,7 +27,7 @@ const ProblemList = ({ filters, searchQuery }) => {
         });
 
         if (response.status === 200) {
-          setProblemData(response.data.problems); // ✅ FIXED
+          setProblemData(response.data.problems);
         }
       } catch (err) {
         console.error("Error fetching problems:", err);
@@ -37,10 +39,87 @@ const ProblemList = ({ filters, searchQuery }) => {
     fetchProblems();
   }, []);
 
+  useEffect(() => {
+    const applyFilters = (problems = []) => {
+      return problems.filter((problem) => {
+        const difficultyPass = filters.difficulty
+          ? Object.entries(filters.difficulty)
+            .filter(([_, val]) => val)
+            .map(([key]) => key)
+            .includes(problem.difficulty)
+          : true;
+
+        const statusFilter = filters.status || {};
+        const statusPass =
+          statusFilter.All ||
+          (statusFilter.Solved && problem.isSolved) ||
+          (statusFilter.Unsolved && !problem.isSolved) ||
+          (statusFilter.Favorited && problem.isFavorited);
+
+        const companies = filters.companies
+          ? Object.entries(filters.companies)
+            .filter(([_, val]) => val)
+            .map(([key]) => key)
+          : [];
+
+        const companyPass =
+          companies.length === 0 ||
+          (problem.companies &&
+            problem.companies.some((company) => companies.includes(company)));
+
+        const selectedTags = filters.tags || [];
+        const tagPass =
+          selectedTags.length === 0 ||
+          (problem.tags &&
+            problem.tags.some((tag) => selectedTags.includes(tag)));
+
+        const queryPass =
+          !searchQuery ||
+          problem.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          problem.description.toLowerCase().includes(searchQuery.toLowerCase());
+
+        return (
+          difficultyPass &&
+          statusPass &&
+          companyPass &&
+          tagPass &&
+          queryPass
+        );
+      });
+    };
+
+    const filtered = applyFilters(problemData || []);
+    setFilteredProblems(filtered);
+  }, [problemData, filters, searchQuery, sortBy]);
 
 
   const handleProblemClick = (problemId) => {
     navigate(`/problems/singleProblem/${problemId}`);
+  };
+
+  const handleToogleFavorite = async (problemId) => {
+    console.log("setting Favorites: ", problemId);
+    try {
+      setLoading(true);
+      const res = await axios.post(
+        `http://localhost:9000/api/codecollab/favorite/${problemId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        }
+      );
+
+      if (res.status === 200) {
+        alert(res.data.message);
+      }
+
+    } catch (err) {
+      console.error("the error in making favorite is: ", err);
+    } finally {
+      setLoading(false);
+    }
   }
 
   const sortOptions = ['Most Recent', 'Difficulty', 'Acceptance Rate', 'Title'];
@@ -56,7 +135,7 @@ const ProblemList = ({ filters, searchQuery }) => {
             onClick={() => setShowSortDropdown(!showSortDropdown)}
             className="flex items-center space-x-2 bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-lg border border-slate-600 text-white"
           >
-            <span className="text-sm">{sortBy}</span>
+            <span className="text-sm">Sort by: {sortBy}</span>
             <ChevronDown size={16} />
           </button>
 
@@ -81,82 +160,141 @@ const ProblemList = ({ filters, searchQuery }) => {
 
       {/* Problem List */}
       <div className="space-y-4">
-        {problemData.map((problem) => (
-          <div
-            key={problem._id}
-            className="bg-slate-800 hover:bg-slate-750 border border-slate-700 rounded-lg p-4 cursor-pointer transition-all duration-200 group"
-            onClick={() => handleProblemClick(problem._id)}
-          >
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <div className="flex items-center space-x-3 mb-2">
-                  <h3 className="text-lg font-medium text-white group-hover:text-blue-400 transition-colors">
-                    {problem.title}
-                  </h3>
-                  <div className="flex items-center space-x-2">
-                    {problem.isSolved && (
-                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    )}
-                    {problem.isFavorited && (
-                      <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                    )}
-                  </div>
-                </div>
+        {filteredProblems.length > 0 ? (
+          filteredProblems.map((problem) => (
+            <div
+              key={problem._id}
+              className="bg-slate-800 hover:bg-slate-750 border border-slate-700 rounded-lg p-4 cursor-pointer transition-all duration-200 group"
+              onClick={() => handleProblemClick(problem._id)}
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center space-x-3 mb-2">
+                    <h3 className="text-lg font-medium text-white group-hover:text-blue-400 transition-colors">
+                      {problem.title}
+                    </h3>
+                    <div className="flex items-center space-x-2">
+                      {problem.isSolved && (
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      )}
 
-                <div className="flex items-center space-x-4 mb-3">
-                  <span
-                    className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${problem.difficulty === 'Easy'
-                      ? 'bg-green-500'
-                      : problem.difficulty === 'Medium'
-                        ? 'bg-yellow-500'
-                        : 'bg-red-500'
-                      } text-white`}
-                  >
-                    {problem.difficulty}
-                  </span>
-
-                  <div className="flex items-center space-x-2">
-                    {problem.tags.map((tag, index) => (
-                      <span
-                        key={index}
-                        className="text-xs text-gray-400 bg-slate-700 px-2 py-1 rounded"
-                      >
-                        {tag}
-                      </span>
-                    ))}
+                    </div>
                   </div>
 
-                  <span className="text-sm text-gray-400">
-                    {problem.acceptanceRate}
-                  </span>
+                  <div className="flex items-center space-x-4 mb-3">
+                    <span
+                      className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${problem.difficulty === 'Easy'
+                        ? 'bg-green-500'
+                        : problem.difficulty === 'Medium'
+                          ? 'bg-yellow-500'
+                          : 'bg-red-500'
+                        } text-white`}
+                    >
+                      {problem.difficulty}
+                    </span>
+
+                    <div className="flex items-center space-x-2">
+                      {problem.tags.map((tag, index) => (
+                        <span
+                          key={index}
+                          className="text-xs text-gray-400 bg-slate-700 px-2 py-1 rounded"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+
+                    <span className="text-sm text-gray-400">
+                      {problem.acceptanceRate}
+                    </span>
+                  </div>
+
+                  <p className="text-sm text-gray-300 leading-relaxed">
+                    {problem.description}
+                  </p>
                 </div>
 
-                <p className="text-sm text-gray-300 leading-relaxed">
-                  {problem.description}
-                </p>
-              </div>
+                <div className="ml-4 flex items-start space-x-2">
+                  <button className="p-2 hover:bg-slate-700 rounded transition-colors">
+                    <Star
+                      className={`w-4 h-4 ${user.userFavorites.includes(problem._id)
+                        ? 'text-yellow-400 fill-current'
+                        : 'text-gray-400'
+                        }`}
 
-              <div className="ml-4 flex items-start space-x-2">
-                <button className="p-2 hover:bg-slate-700 rounded transition-colors">
-                  <Star
-                    className={`w-4 h-4 ${problem.isFavorited
-                      ? 'text-yellow-400 fill-current'
-                      : 'text-gray-400'
-                      }`}
-                  />
-                </button>
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleToogleFavorite(problem._id)
+                      }}
+                    />
+                  </button>
+                </div>
               </div>
             </div>
+          ))
+        ) : (
+          <div className="flex flex-col items-center justify-center py-16 px-4  w-[836px] mx-auto">
+            <div className="relative mb-6">
+              <div className="w-24 h-24 bg-gradient-to-br from-purple-900/30 to-blue-900/30 rounded-full flex items-center justify-center">
+                <svg
+                  className="w-12 h-12 text-gray-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <div className="absolute inset-0 rounded-full border-2 border-dashed border-gray-700/50 animate-spin-slow" style={{ animationDuration: '8s' }}></div>
+              </div>
+            </div>
+
+            <h3 className="text-xl font-medium text-gray-300 mb-2">No problems found</h3>
+            <p className="text-gray-500 max-w-md text-center mb-6">
+              We couldn't find any problems matching your current filters. Try adjusting your search criteria.
+            </p>
+
+            <div className="flex space-x-3">
+              <button
+                onClick={() => {
+
+                }}
+                className="px-4 py-2 text-sm font-medium text-blue-400 hover:text-blue-300 transition-colors"
+              >
+                Clear all filters
+              </button>
+              <button
+                onClick={() => {
+                  // Add your reset logic here
+                }}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md transition-colors"
+              >
+                Browse all problems
+              </button>
+            </div>
+
+            <div className="mt-8 pt-8 border-t border-gray-800 w-full max-w-xs">
+              <p className="text-xs text-gray-600">
+                Need help? <span className="text-blue-400 cursor-pointer hover:underline">Contact support</span>
+              </p>
+            </div>
           </div>
-        ))}
+        )}
       </div>
 
       {/* Load More Button */}
-      <div className="flex justify-center p-6">
-        <button className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
-          Load More Problems
-        </button>
-      </div>
+      {filteredProblems.length > 0 && (
+        <div className="flex justify-center p-6">
+          <button className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+            Load More Problems
+          </button>
+        </div>
+      )}
     </div>
   );
 };

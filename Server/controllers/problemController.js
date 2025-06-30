@@ -1,4 +1,5 @@
 const Problem = require('../models/Problem');
+const User = require('../models/user');
 require('dotenv').config();
 
 
@@ -136,7 +137,7 @@ exports.getProblemById = async (req, res) => {
         }
 
         const problem = await Problem.findById(problemId);
-        console.log(problem);
+        
 
         if (!problem) {
             return res.status(404).json({ message: "Problem not found" });
@@ -175,4 +176,6 @@ exports.editProblem = async (req, res) => {
         res.status(500).json({ message: "internal server error" });
     }
 }
+
+
 

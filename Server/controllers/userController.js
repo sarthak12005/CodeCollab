@@ -162,5 +162,42 @@ exports.editUser = async (req, res) => {
 }
 
 
+exports.toogleFavorite = async (req, res) => {
+    try {
+        const { problemId } = req.params;
+        const { userId } = req.user;
+
+        const user = await User.findById(userId).select('-password');
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const isFavorite = user.userFavorites.includes(problemId);
+        const favoirtes = user.userFavorites;
+
+        if (isFavorite) {
+            user.userFavorites = favoirtes.filter((id) => id !== problemId);
+        } else {
+            user.userFavorites.push(problemId);
+        }
+
+        await user.save();
+
+        // ✅ Add a response back to the client
+        res.status(200).json({
+            message: isFavorite
+                ? "Removed from favorites"
+                : "Added to favorites",
+            updatedFavorites: user.userFavorites
+        });
+
+    } catch (err) {
+        console.log("the error in adding the problem to favorite: ", err);
+        res.status(500).json({ message: "internal server errro" });
+    }
+}
+
+
 
 
