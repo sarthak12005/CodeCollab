@@ -1,6 +1,6 @@
 # 🚀 CodeCollab — A Collaborative Coding Platform
 
-![CodeCollab Banner](https://imgur.com/your-banner-url.png) <!-- (Optional: Add a banner image here) -->
+![CodeCollab Banner](https://sdmntprwestus2.oaiusercontent.com/files/00000000-1f2c-61f8-b635-414d7a831761/raw?se=2025-06-30T18%3A16%3A17Z&sp=r&sv=2024-08-04&sr=b&scid=b1521431-4be1-55bf-b91e-73c50391dd11&skoid=c953efd6-2ae8-41b4-a6d6-34b1475ac07c&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-06-29T18%3A53%3A21Z&ske=2025-06-30T18%3A53%3A21Z&sks=b&skv=2024-08-04&sig=eLGmDW/h4SxB11bBgkJmnzprXywH0owDrBOIfVYhjtA%3D) <!-- (Optional: Add a banner image here) -->
 
 A modern, full-stack web application designed for collaborative coding, problem-solving, and tracking progress across challenges. Built with the **MERN stack** (MongoDB, Express.js, React.js, Node.js), CodeCollab provides a dynamic interface to search, solve, and manage coding problems effectively.
 
@@ -32,12 +32,11 @@ A modern, full-stack web application designed for collaborative coding, problem-
 
 ## 🛠️ Tech Stack
 
-| Frontend   | Backend     | Database |
-|------------|-------------|----------|
-| React.js   | Node.js     | MongoDB  |
-| Tailwind CSS | Express.js | Mongoose |
+| Frontend       | Backend        | Database | Real-Time & Others       |
+|----------------|----------------|----------|---------------------------|
+| React.js       | Node.js        | MongoDB  | WebRTC, Socket.io         |
+| Tailwind CSS   | Express.js     | Mongoose | JWT Auth, RESTful APIs    |
 
----
 
 ## 📂 Folder Structure
 
@@ -92,12 +91,26 @@ npm install
 npm run dev
 ```
 
----
+- Create a `.env` file with:
+  # Backend API Endpoint
+  VITE_API_ENDPOINT=http://localhost:9000/api
+
+  # Firebase Configuration
+  VITE_FIRE_API_KEY=your_firebase_api_key
+  VITE_FIRE_AUTH_DOMAIN=your_firebase_auth_domain
+  VITE_FIRE_PROJECT_ID=your_firebase_project_id
+  VITE_FIRE_STORAGE_BUCKET=your_firebase_storage_bucket
+  VITE_FIRE_MESSAGING_SENDER_ID=your_firebase_messaging_sender_id
+  VITE_FIRE_APP_ID=your_firebase_app_id
+  VITE_FIRE_MEASUREMENT_ID=your_firebase_measurement_id
+
+
+
 
 ## 🔐 Auth System
 
 - JWT Token based login
-- Google OAuth (if integrated)
+- Firebase auth 
 - Auth middleware for protected routes
 
 ---
@@ -112,15 +125,14 @@ npm run dev
 
 ## 📸 Preview
 
-![CodeCollab Preview](https://imgur.com/your-preview-url.png) <!-- (Optional: Add screenshot of the UI) -->
+![CodeCollab Preview](https://res.cloudinary.com/dmhm7q4ow/image/upload/v1751304445/Screenshot_2025-06-30_225819_akz9ci.png) <!-- (Optional: Add screenshot of the UI) -->
 
 ---
 
 ## 👤 Author
 
-**Sarthak Joshi**  
-💼 [Portfolio](https://sarthak12005.github.io)  
-🔗 [LinkedIn](https://www.linkedin.com/in/sarthak12005)  
+**Sarthak Joshi**   
+🔗 [LinkedIn](https://www.linkedin.com/in/sarthakjoshi1535)  
 📧 sarthakjoshi12005@gmail.com
 
 ---
