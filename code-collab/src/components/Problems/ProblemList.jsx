@@ -102,7 +102,7 @@ const ProblemList = ({ filters, searchQuery }) => {
     try {
       setLoading(true);
       const res = await axios.post(
-        `http://localhost:9000/api/codecollab/favorite/${problemId}`,
+        `${API_URL}/favorite/${problemId}`,
         {},
         {
           headers: {
