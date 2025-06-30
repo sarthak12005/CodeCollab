@@ -92,7 +92,8 @@ npm run dev
 ```
 
 - Create a `.env` file with:
-  # Backend API Endpoint
+  ```env
+   # Backend API Endpoint
   VITE_API_ENDPOINT=http://localhost:9000/api
 
   # Firebase Configuration
@@ -103,6 +104,7 @@ npm run dev
   VITE_FIRE_MESSAGING_SENDER_ID=your_firebase_messaging_sender_id
   VITE_FIRE_APP_ID=your_firebase_app_id
   VITE_FIRE_MEASUREMENT_ID=your_firebase_measurement_id
+  ```
 
 
 
