@@ -25,7 +25,7 @@ const About = () => {
       <section className="px-6 py-24 text-center bg-gradient-to-b from-slate-900 to-slate-800">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-6xl font-bold mb-8 bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
-            About CodeForge
+            About CodeCollab
           </h1>
           <p className="text-xl text-slate-300 mb-10 max-w-3xl mx-auto leading-relaxed">
             We are a passionate team of developers and innovators dedicated to
@@ -50,7 +50,7 @@ const About = () => {
                   Democratizing Coding Excellence
                 </h2>
                 <p className="text-slate-300 text-lg leading-relaxed mb-8">
-                  At CodeForge, we believe that exceptional software development
+                  At CodeCollab, we believe that exceptional software development
                   should be accessible to everyone. Our mission is to
                   democratize coding excellence by providing innovative
                   solutions that empower businesses to thrive in the digital
@@ -305,7 +305,7 @@ const About = () => {
                 </div>
               </div>
               <p className="text-slate-300 leading-relaxed">
-                "CodeForge transformed our legacy system into a modern, scalable
+                "CodeCollab transformed our legacy system into a modern, scalable
                 platform. Their expertise in cloud architecture and
                 microservices helped us achieve 99.9% uptime."
               </p>
