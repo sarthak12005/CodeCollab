@@ -54,6 +54,10 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'server.html'));
 });
 
+app.get('/ping', (req, res) => {
+  res.status(200).json({ message: "pong" });
+})
+
 
 // listener route
 app.listen(PORT, () => {
