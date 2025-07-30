@@ -27,15 +27,15 @@ const Problems = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a12]">
+    <div className="min-h-screen bg-slate-900">
       {/* Header/Navbar */}
-      <header className="bg-[#0a0a12]] border-b border-slate-700">
+      <header className="bg-slate-800 border-b border-slate-700 sticky top-0 z-50">
         <div className="flex items-center justify-between px-6 py-4">
           {/* Logo and Navigation */}
           <div className="flex items-center space-x-8">
             <div className="flex items-center space-x-2">
               <h1
-                className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#6e44ff] to-[#1cb8ff] cursor-pointer"
+                className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-blue-400 cursor-pointer"
                 onClick={() => navigate("/")}
               >
                 CODE COLLAB
@@ -44,21 +44,21 @@ const Problems = () => {
           </div>
 
           {/* Search Bar */}
+          <div className="flex-1 max-w-md mx-8">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <input
+                type="text"
+                placeholder="Search problems..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-slate-700 border border-slate-600 rounded-lg pl-10 pr-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
+          </div>
 
           {/* User Actions */}
           <div className="flex items-center space-x-4">
-            <div className="flex-1 max-w-md mx-8">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <input
-                  type="text"
-                  placeholder="Search problems..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-slate-700 border border-slate-600 rounded-lg pl-10 pr-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
-            </div>
 
             <button className="p-2 text-gray-400 hover:text-white transition-colors">
               <Bell className="w-5 h-5" />
@@ -82,15 +82,21 @@ const Problems = () => {
       </header>
 
       {/* Main Content */}
-      <div className="flex">
+      <div className="flex min-h-screen">
         {/* Filter Sidebar */}
-        <FilterSidebar onFilterChange={handleFilterChange} />
+        <div className="w-80 flex-shrink-0">
+          <FilterSidebar onFilterChange={handleFilterChange} />
+        </div>
 
         {/* Problem List */}
-        <ProblemList filters={filters} searchQuery={searchQuery} />
+        <div className="flex-1 min-w-0">
+          <ProblemList filters={filters} searchQuery={searchQuery} />
+        </div>
 
         {/* Activity Sidebar */}
-        <ActivitySidebar />
+        <div className="w-80 flex-shrink-0 hidden lg:block">
+          <ActivitySidebar />
+        </div>
       </div>
     </div>
   );

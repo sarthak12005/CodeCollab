@@ -49,11 +49,38 @@ const ProblemSchema = new mongoose.Schema({
     default: []
   },
   solution: String,
+  functionTemplates: {
+    python: {
+      type: String,
+      default: ''
+    },
+    javascript: {
+      type: String,
+      default: ''
+    },
+    java: {
+      type: String,
+      default: ''
+    },
+    cpp: {
+      type: String,
+      default: ''
+    },
+    c: {
+      type: String,
+      default: ''
+    }
+  },
   isDailyProblem: {
     type: Boolean,
     default: false
   },
-  dailyProblemDate: Date
+  dailyProblemDate: Date,
+  solvedBy: {
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: 'User',
+    default: []
+  }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Problem', ProblemSchema);

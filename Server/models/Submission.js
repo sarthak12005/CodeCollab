@@ -17,7 +17,7 @@ const SubmissionSchema = new mongoose.Schema({
   },
   language: {
     type: String,
-    enum: ['JavaScript', 'Python', 'Java', 'C++'],
+    enum: ['javascript', 'python', 'java', 'cpp', 'c'],
     required: true
   },
   status: {
@@ -31,7 +31,19 @@ const SubmissionSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
-  errorMessage: String
+  totalTestCases: {
+    type: Number,
+    required: true
+  },
+  executionTime: {
+    type: Number,
+    default: 0
+  },
+  errorMessage: String,
+  username: {
+    type: String,
+    required: true
+  }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Submission', SubmissionSchema);

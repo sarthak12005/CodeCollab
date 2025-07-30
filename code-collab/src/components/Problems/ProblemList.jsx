@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronDown, Star } from 'lucide-react';
+import { ChevronDown, Star, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../../context/userContext';
@@ -127,9 +127,10 @@ const ProblemList = ({ filters, searchQuery }) => {
   if (loading) return <PageSkeleton />;
 
   return (
-    <div className="p-6 space-y-6">
-      {/* Sort Dropdown */}
-      <div className="flex justify-end">
+    <div className="p-6 space-y-6 bg-slate-900 min-h-screen">
+      {/* Header and Sort */}
+      <div className="flex justify-between items-center">
+        <h2 className="text-xl font-semibold text-white">Problems</h2>
         <div className="relative">
           <button
             onClick={() => setShowSortDropdown(!showSortDropdown)}
@@ -175,9 +176,11 @@ const ProblemList = ({ filters, searchQuery }) => {
                     </h3>
                     <div className="flex items-center space-x-2">
                       {problem.isSolved && (
-                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <div className="flex items-center gap-1 bg-green-600 px-2 py-1 rounded text-xs font-medium text-white">
+                          <CheckCircle size={12} />
+                          Solved
+                        </div>
                       )}
-
                     </div>
                   </div>
 

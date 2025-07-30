@@ -7,6 +7,9 @@ const API_URL = import.meta.env.VITE_API_ENDPOINT;
 
 const userContext = createContext();
 
+// Export the context for direct use
+export const UserContext = userContext;
+
 // const userdata = {
 //     name: "John Doe",
 //     email: "johndoe@example.com",
@@ -91,24 +94,26 @@ export const UserProvider = ({ children }) => {
           },
         });
 
-        if (response.data) {
+        if (response.data && response.data.user) {
           setUser(response.data.user);
-
-          // setUserImage(response.data.user.userImage);
         } else {
           setUser(null);
+          localStorage.removeItem("token");
         }
       } catch (error) {
         console.error("Error fetching user:", error);
         setUser(null);
-        if (!window.location.path === "/") {
+        // Remove invalid token
+        localStorage.removeItem("token");
+        // Fix the condition - should check if NOT on login/signup pages
+        if (window.location.pathname !== "/" && window.location.pathname !== "/login" && window.location.pathname !== "/signup") {
           navigate("/login");
         }
       }
     };
 
     fetchUser();
-  }, []);
+  }, [navigate]);
 
 
 

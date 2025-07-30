@@ -24,11 +24,13 @@ const userSchema = new mongoose.Schema({
         default: [],
     },
     solveProblems: {
-        type: [String],
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: 'Problem',
         default: [],
     },
     userFavorites: {
-        type: [String],
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: 'Problem',
         default: [],
     },
     Verified: {

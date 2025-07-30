@@ -97,7 +97,7 @@ const FilterSidebar = ({ onFilterChange }) => {
     );
 
     return (
-        <div className="w-80 bg-[#0a0a12] text-white p-4 h-screen overflow-y-auto">
+        <div className="w-80 bg-slate-800 text-white p-4 h-screen overflow-y-auto border-r border-slate-700">
             {/* Difficulty Section */}
             <div className="mb-6">
                 <div className="flex items-center justify-between cursor-pointer mb-3" onClick={() => toggleSection('difficulty')}>

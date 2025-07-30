@@ -5,6 +5,9 @@ require('dotenv').config();
 
 exports.getProblems = async (req, res) => {
     try {
+        const userId = req.user.id; // Get user ID from auth middleware
+
+        // Get all problems
         const problems = await Problem.find();
 
         if (!problems) {
@@ -12,7 +15,23 @@ exports.getProblems = async (req, res) => {
             return res.status(404).json({ message: "no problems found" });
         }
 
-        res.status(200).json({ message: "fetched problems successfully", problems });
+        // Get user's solved problems
+        const user = await User.findById(userId).select('solveProblems userFavorites');
+        const solvedProblemIds = user?.solveProblems || [];
+        const favoriteProblemIds = user?.userFavorites || [];
+
+        // Add solved and favorite status to each problem
+        const problemsWithStatus = problems.map(problem => {
+            const problemObj = problem.toObject();
+            problemObj.isSolved = solvedProblemIds.some(solvedId => solvedId.toString() === problem._id.toString());
+            problemObj.isFavorited = favoriteProblemIds.some(favId => favId.toString() === problem._id.toString());
+            return problemObj;
+        });
+
+        res.status(200).json({
+            message: "fetched problems successfully",
+            problems: problemsWithStatus
+        });
     } catch (err) {
         console.log("The error in getting all problems is: ", err);
         res.status(500).json({ message: "internal server error", err });
@@ -128,6 +147,239 @@ exports.deleteProblem = async (req, res) => {
     }
 }
 
+// Generate default function templates based on problem title
+const generateFunctionTemplates = (title) => {
+    const functionName = title.toLowerCase()
+        .replace(/[^a-z0-9\s]/g, '')
+        .replace(/\s+/g, '_')
+        .substring(0, 30);
+
+    return {
+        python: `def ${functionName}(nums, target):
+    """
+    Complete this function to solve the problem.
+
+    Args:
+        nums: List of integers
+        target: Target integer
+
+    Returns:
+        List of integers representing the solution
+    """
+    # Write your code here
+    pass
+
+# Driver code - DO NOT MODIFY
+if __name__ == "__main__":
+    import json
+    import sys
+
+    # Read input from stdin or use default test case
+    try:
+        line = input().strip()
+        if line:
+            test_data = json.loads(line)
+        else:
+            test_data = [[2, 7, 11, 15], 9]  # Default test case
+    except:
+        test_data = [[2, 7, 11, 15], 9]  # Default test case
+
+    # Call the function with test data
+    result = ${functionName}(*test_data)
+    print(json.dumps(result))`,
+
+        javascript: `function ${functionName}(nums, target) {
+    /**
+     * Complete this function to solve the problem.
+     *
+     * @param {number[]} nums - Array of integers
+     * @param {number} target - Target integer
+     * @returns {number[]} Array representing the solution
+     */
+    // Write your code here
+
+}
+
+// Driver code - DO NOT MODIFY
+const readline = require('readline');
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
+
+let input = '';
+rl.on('line', (line) => {
+    input = line;
+    rl.close();
+});
+
+rl.on('close', () => {
+    try {
+        let testData;
+        if (input.trim()) {
+            testData = JSON.parse(input);
+        } else {
+            testData = [[2, 7, 11, 15], 9]; // Default test case
+        }
+
+        const result = ${functionName}(...testData);
+        console.log(JSON.stringify(result));
+    } catch (error) {
+        console.log(JSON.stringify([]));
+    }
+});`,
+
+        java: `import java.util.*;
+import java.io.*;
+
+public class Solution {
+    public int[] ${functionName}(int[] nums, int target) {
+        /*
+         * Complete this function to solve the problem.
+         *
+         * @param nums Array of integers
+         * @param target Target integer
+         * @return Array representing the solution
+         */
+        // Write your code here
+        return new int[0];
+    }
+
+    // Driver code - DO NOT MODIFY
+    public static void main(String[] args) {
+        try {
+            Scanner scanner = new Scanner(System.in);
+            String input = "";
+            if (scanner.hasNextLine()) {
+                input = scanner.nextLine();
+            }
+
+            // Parse input or use default
+            int[] nums;
+            int target;
+            if (!input.isEmpty()) {
+                // Parse JSON input
+                input = input.replaceAll("[\\[\\]]", "");
+                String[] parts = input.split(",");
+                nums = new int[parts.length - 1];
+                for (int i = 0; i < nums.length; i++) {
+                    nums[i] = Integer.parseInt(parts[i].trim());
+                }
+                target = Integer.parseInt(parts[parts.length - 1].trim());
+            } else {
+                nums = new int[]{2, 7, 11, 15};
+                target = 9;
+            }
+
+            Solution solution = new Solution();
+            int[] result = solution.${functionName}(nums, target);
+
+            System.out.print("[");
+            for (int i = 0; i < result.length; i++) {
+                System.out.print(result[i]);
+                if (i < result.length - 1) System.out.print(",");
+            }
+            System.out.println("]");
+
+        } catch (Exception e) {
+            System.out.println("[]");
+        }
+    }
+}`,
+
+        cpp: `#include <vector>
+#include <iostream>
+#include <string>
+#include <sstream>
+using namespace std;
+
+class Solution {
+public:
+    vector<int> ${functionName}(vector<int>& nums, int target) {
+        /*
+         * Complete this function to solve the problem.
+         *
+         * @param nums Vector of integers
+         * @param target Target integer
+         * @return Vector representing the solution
+         */
+        // Write your code here
+        return {};
+    }
+};
+
+// Driver code - DO NOT MODIFY
+int main() {
+    string input;
+    getline(cin, input);
+
+    vector<int> nums;
+    int target;
+
+    if (input.empty()) {
+        nums = {2, 7, 11, 15};
+        target = 9;
+    } else {
+        // Simple parsing for [[nums], target] format
+        // This is a simplified parser
+        nums = {2, 7, 11, 15};
+        target = 9;
+    }
+
+    Solution solution;
+    vector<int> result = solution.${functionName}(nums, target);
+
+    cout << "[";
+    for (int i = 0; i < result.size(); i++) {
+        cout << result[i];
+        if (i < result.size() - 1) cout << ",";
+    }
+    cout << "]" << endl;
+
+    return 0;
+}`,
+
+        c: `#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+/*
+ * Complete this function to solve the problem.
+ *
+ * @param nums Array of integers
+ * @param numsSize Size of the nums array
+ * @param target Target integer
+ * @param returnSize Pointer to store the size of returned array
+ * @return Array representing the solution
+ */
+int* ${functionName}(int* nums, int numsSize, int target, int* returnSize) {
+    // Write your code here
+    *returnSize = 0;
+    return NULL;
+}
+
+// Driver code - DO NOT MODIFY
+int main() {
+    int nums[] = {2, 7, 11, 15};
+    int numsSize = 4;
+    int target = 9;
+    int returnSize;
+
+    int* result = ${functionName}(nums, numsSize, target, &returnSize);
+
+    printf("[");
+    for (int i = 0; i < returnSize; i++) {
+        printf("%d", result[i]);
+        if (i < returnSize - 1) printf(",");
+    }
+    printf("]\\n");
+
+    if (result) free(result);
+    return 0;
+}`
+    };
+};
+
 exports.getProblemById = async (req, res) => {
     try {
         const { problemId } = req.params;
@@ -136,12 +388,20 @@ exports.getProblemById = async (req, res) => {
             return res.status(400).json({ message: "Problem ID is required" });
         }
 
-        const problem = await Problem.findById(problemId);
-        
+        let problem = await Problem.findById(problemId);
+
 
         if (!problem) {
             return res.status(404).json({ message: "Problem not found" });
         }
+
+        // Generate function templates if they don't exist
+        if (!problem.functionTemplates || Object.keys(problem.functionTemplates).length === 0) {
+            const templates = generateFunctionTemplates(problem.title);
+            problem.functionTemplates = templates;
+            await problem.save();
+        }
+
         res.status(200).json({
             message: "Problem fetched successfully",
             problem

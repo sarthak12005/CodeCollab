@@ -2,15 +2,13 @@ import React from 'react';
 import { ChevronDown } from 'lucide-react';
 
 const LanguageSelector = ({ language, setLanguage }) => {
+    // Languages supported by the backend
     const languages = [
         { id: 'python', name: 'Python', extension: '.py' },
         { id: 'javascript', name: 'JavaScript', extension: '.js' },
         { id: 'java', name: 'Java', extension: '.java' },
         { id: 'cpp', name: 'C++', extension: '.cpp' },
-        { id: 'c', name: 'C', extension: '.c' },
-        { id: 'go', name: 'Go', extension: '.go' },
-        { id: 'rust', name: 'Rust', extension: '.rs' },
-        { id: 'typescript', name: 'TypeScript', extension: '.ts' }
+        { id: 'c', name: 'C', extension: '.c' }
     ];
 
     const currentLanguage = languages.find(lang => lang.id === language) || languages[0];

@@ -2,8 +2,8 @@ const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-const generateToken = (userId, secret, expiry) => {
-    return jwt.sign({ id: userId, }, secret, { expiresIn: expiry });
+const generateToken = (userId, username, secret, expiry) => {
+    return jwt.sign({ id: userId, username: username }, secret, { expiresIn: expiry });
 }
 
 
@@ -28,7 +28,7 @@ exports.loginUser = async (req, res) => {
             return res.status(400).json({ message: "Incorrect password" });
         }
 
-        const token = generateToken(user._id, process.env.JWT_SECRET, process.env.JWT_EXPIRY);
+        const token = generateToken(user._id, user.username, process.env.JWT_SECRET, process.env.JWT_EXPIRY);
         // console.log("User login successfull", token);
 
         res.status(200).json({ message: "User login successful", token });
@@ -124,7 +124,10 @@ exports.addUser = async (req, res) => {
         }
 
         // Generate token for both login & register
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+        const token = jwt.sign({
+            id: user._id,
+            username: user.username
+        }, process.env.JWT_SECRET, {
             expiresIn: "7d",
         });
 

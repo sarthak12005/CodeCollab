@@ -9,6 +9,7 @@ import NotFoundPage from "./pages/NotFoundPage";
 import CodeCollaborationHub from "./pages/CodeCollaborationHub";
 import About from "./pages/About";
 import SingleProblemPage from "./pages/SingleProblemPage";
+import SubmissionResults from "./pages/SubmissionResults";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
       <Route path="/" element={<Home />} />
       <Route path="/problems" element={<Problems />} />
       <Route path="/problems/singleProblem/:problemId" element={<SingleProblemPage />} />
+      <Route path="/problems/:problemId/submissions" element={<SubmissionResults />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/profile" element={<Profile />} />

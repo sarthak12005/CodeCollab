@@ -3,10 +3,22 @@ const cors = require('cors');
 const path = require('path');
 const app = express();
 const { createServer } = require('http');
+const socketIo = require('socket.io');
+const CollaborationController = require('./controllers/collaborationController');
 
 const server = createServer(app);
 
-// const io = socketIo(server);
+// Initialize Socket.io with CORS
+const io = socketIo(server, {
+    cors: {
+        origin: ["http://localhost:5173", "http://localhost:5174", "https://code-collab-sable.vercel.app"],
+        methods: ["GET", "POST"],
+        credentials: true
+    }
+});
+
+// Initialize collaboration controller
+const collaborationController = new CollaborationController(io);
 
 //db connection 
 const db = require('./config/db')
@@ -26,16 +38,17 @@ const origin_enpoint2 = process.env.ORIGIN_ADDRESS2;
 const startAPI = process.env.API_START;
 
 
-// adding routes 
+// adding routes
 const authRoutes = require('./routes/authRoute');
 const problemRoutes = require('./routes/problemRoute');
+const codeExecutionRoutes = require('./routes/codeExecutionRoute');
 
 
 
 
 
 app.use(cors({
-  origin: [`${origin_enpoint1}`, `https://code-collab-sable.vercel.app`], // Your frontend URL
+  origin: [`${origin_enpoint1}`, `http://localhost:5174`, `https://code-collab-sable.vercel.app`], // Your frontend URL
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
 }));
 
@@ -47,6 +60,11 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 // declare route with end point
 app.use(`${startAPI}`, authRoutes);
 app.use(`${startAPI}/problem`, problemRoutes);
+app.use(`${startAPI}/code`, codeExecutionRoutes);
+
+// Collaboration routes
+app.get(`${startAPI}/collaboration/room/:roomId`, collaborationController.getRoomInfo.bind(collaborationController));
+app.get(`${startAPI}/collaboration/rooms`, collaborationController.getActiveRooms.bind(collaborationController));
 
 
 // In your route handler
@@ -60,6 +78,6 @@ app.get('/ping', (req, res) => {
 
 
 // listener route
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`server is running on ${PORT}`);
 })
