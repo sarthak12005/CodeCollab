@@ -35,6 +35,7 @@ const CollaborationModal = ({
     const localStreamRef = useRef(null);
     const [isCallActive, setIsCallActive] = useState(false);
     const [remoteUsers, setRemoteUsers] = useState([]);
+    const [localStream, setLocalStream] = useState(null);
 
     // Code synchronization
     const [lastCodeUpdate, setLastCodeUpdate] = useState(Date.now());
@@ -266,78 +267,60 @@ const CollaborationModal = ({
         return peerConnection;
     };
 
-    const requestPermissions = async () => {
+
+
+    // Simple video setup function
+    const setupVideo = async () => {
         try {
-            // First check if devices are available
-            const devices = await navigator.mediaDevices.enumerateDevices();
-            const hasCamera = devices.some(device => device.kind === 'videoinput');
-            const hasMicrophone = devices.some(device => device.kind === 'audioinput');
+            console.log('🎥 Setting up video...');
 
-            if (!hasCamera && !hasMicrophone) {
-                alert('No camera or microphone found. Please connect a device and try again.');
-                return null;
-            }
-
-            // Request permissions based on available devices and user preferences
-            const constraints = {};
-
-            if (isVideoOn && hasCamera) {
-                constraints.video = true;
-            }
-
-            if (isAudioOn && hasMicrophone) {
-                constraints.audio = true;
-            }
-
-            // If no constraints, default to audio if available
-            if (!constraints.video && !constraints.audio && hasMicrophone) {
-                constraints.audio = true;
-                setIsAudioOn(true);
-            }
-
-            if (!constraints.video && !constraints.audio) {
-                alert('No devices available for the call. Please check your camera and microphone.');
-                return null;
-            }
+            const constraints = {
+                video: isVideoOn ? {
+                    width: { ideal: 640 },
+                    height: { ideal: 480 }
+                } : false,
+                audio: isAudioOn
+            };
 
             const stream = await navigator.mediaDevices.getUserMedia(constraints);
-            return stream;
-
-        } catch (error) {
-            console.error('Permission request error:', error);
-
-            if (error.name === 'NotAllowedError') {
-                alert('Camera/microphone access denied. Please allow permissions in your browser settings and try again.');
-            } else if (error.name === 'NotFoundError') {
-                alert('No camera or microphone found. Please connect a device and try again.');
-            } else if (error.name === 'NotReadableError') {
-                alert('Camera or microphone is already in use by another application.');
-            } else {
-                alert('Failed to access camera/microphone. Please check your device settings.');
-            }
-            return null;
-        }
-    };
-
-    const startCall = async () => {
-        try {
-            // Request permissions first
-            const stream = await requestPermissions();
-            if (!stream) {
-                return; // Permission denied or no devices
-            }
+            console.log('✅ Got stream:', stream);
 
             // Store the stream
             localStreamRef.current = stream;
-            if (localVideoRef.current) {
-                localVideoRef.current.srcObject = stream;
-            }
+            setLocalStream(stream);
 
-            // Update state based on actual stream tracks
-            const videoTrack = stream.getVideoTracks()[0];
-            const audioTrack = stream.getAudioTracks()[0];
-            setIsVideoOn(!!videoTrack);
-            setIsAudioOn(!!audioTrack);
+            return stream;
+        } catch (error) {
+            console.error('❌ Video setup failed:', error);
+            alert('Failed to access camera/microphone. Please check permissions.');
+            throw error;
+        }
+    };
+
+    // Effect to handle video element when stream changes
+    useEffect(() => {
+        if (localStream && localVideoRef.current) {
+            console.log('🔗 Connecting stream to video element...');
+            localVideoRef.current.srcObject = localStream;
+            localVideoRef.current.muted = true;
+
+            localVideoRef.current.play().then(() => {
+                console.log('✅ Video is playing!');
+            }).catch(error => {
+                console.log('Video play error (might be normal):', error);
+            });
+        }
+    }, [localStream]);
+
+    const startCall = async () => {
+        try {
+            console.log('🚀 Starting call...');
+
+            // Get the video stream
+            const stream = await setupVideo();
+
+            setIsCallActive(true);
+            console.log('✅ Call started successfully!');
 
             const peerConnection = initializePeerConnection();
             peerConnectionRef.current = peerConnection;
@@ -357,6 +340,11 @@ const CollaborationModal = ({
             }
 
             setIsCallActive(true);
+
+            // Debug the video element after a short delay
+            setTimeout(() => {
+                debugVideoElement();
+            }, 1000);
 
             // Show success message
             const hasVideo = !!videoTrack;
@@ -422,23 +410,39 @@ const CollaborationModal = ({
     };
 
     const endCall = () => {
+        console.log('🛑 Ending call...');
+
+        // Stop all tracks
         if (localStreamRef.current) {
-            localStreamRef.current.getTracks().forEach(track => track.stop());
+            localStreamRef.current.getTracks().forEach(track => {
+                track.stop();
+                console.log(`Stopped ${track.kind} track`);
+            });
             localStreamRef.current = null;
         }
+
+        // Close peer connection
         if (peerConnectionRef.current) {
             peerConnectionRef.current.close();
             peerConnectionRef.current = null;
         }
+
+        // Clear video elements
         if (localVideoRef.current) {
             localVideoRef.current.srcObject = null;
         }
+
         if (remoteVideoRef.current) {
             remoteVideoRef.current.srcObject = null;
         }
+
+        // Reset state
         setIsCallActive(false);
+        setLocalStream(null);
         setIsVideoOn(false);
         setIsAudioOn(false);
+
+        console.log('✅ Call ended');
     };
 
     // Sync code changes to room with debouncing
@@ -461,7 +465,7 @@ const CollaborationModal = ({
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/80 bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-slate-800 rounded-lg w-full max-w-4xl h-[80vh] flex flex-col">
                 {/* Header */}
                 <div className="flex items-center justify-between p-4 border-b border-slate-700">
@@ -602,6 +606,8 @@ const CollaborationModal = ({
                                                     <span className="text-sm">Start Call</span>
                                                 </button>
 
+
+
                                                 <div className="text-xs text-gray-400 text-center">
                                                     {isVideoOn && isAudioOn ? 'Starting with video and audio' :
                                                      isVideoOn ? 'Starting with video only' :
@@ -652,23 +658,59 @@ const CollaborationModal = ({
                                     <div className="bg-slate-700 rounded-lg h-full relative overflow-hidden">
                                         {isCallActive ? (
                                             <Fragment key="video-active">
-                                                {/* Remote Video */}
-                                                <video
-                                                    ref={remoteVideoRef}
-                                                    autoPlay
-                                                    playsInline
-                                                    className="w-full h-full object-cover"
-                                                />
-
-                                                {/* Local Video (Picture-in-Picture) */}
-                                                <div className="absolute top-2 right-2 w-24 h-18 bg-slate-800 rounded-lg overflow-hidden border border-slate-600">
+                                                {/* Video Display Area */}
+                                                <div className="w-full h-full relative bg-slate-800 rounded-lg overflow-hidden">
+                                                    {/* Remote Video (Main Display - Other Person) */}
                                                     <video
-                                                        ref={localVideoRef}
+                                                        ref={remoteVideoRef}
                                                         autoPlay
                                                         playsInline
-                                                        muted
                                                         className="w-full h-full object-cover"
                                                     />
+
+                                                    {/* Remote Video Placeholder */}
+                                                    <div className="absolute inset-0 bg-slate-900 flex items-center justify-center">
+                                                        <div className="text-white text-center">
+                                                            <div className="w-16 h-16 bg-slate-600 rounded-full mx-auto mb-4 flex items-center justify-center text-2xl">
+                                                                👤
+                                                            </div>
+                                                            <p className="text-lg">Waiting for other person</p>
+                                                            <p className="text-sm text-gray-400">They will appear here when they join</p>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Local Video (Picture-in-Picture - Your Camera) */}
+                                                    <div className="absolute top-2 right-2 w-32 h-24 bg-slate-800 rounded-lg overflow-hidden border-2 border-green-500 shadow-lg">
+                                                        <video
+                                                            ref={localVideoRef}
+                                                            autoPlay
+                                                            playsInline
+                                                            muted
+                                                            className="w-full h-full object-cover"
+                                                        />
+
+                                                        {/* Your Video Status Overlay */}
+                                                        {!isVideoOn && (
+                                                            <div className="absolute inset-0 bg-slate-900 flex items-center justify-center">
+                                                                <div className="text-white text-xs text-center">
+                                                                    <div className="w-6 h-6 bg-slate-600 rounded-full mx-auto mb-1 flex items-center justify-center">
+                                                                        👤
+                                                                    </div>
+                                                                    You
+                                                                </div>
+                                                            </div>
+                                                        )}
+
+                                                        {/* "You" Label */}
+                                                        <div className="absolute bottom-1 left-1 bg-green-600 text-white text-xs px-2 py-1 rounded">
+                                                            You
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Call Status Indicator */}
+                                                <div className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded text-xs font-medium">
+                                                    🔴 Live
                                                 </div>
 
                                                 {/* Call Status */}

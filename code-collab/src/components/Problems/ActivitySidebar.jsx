@@ -1,8 +1,10 @@
 // src/components/ActivitySidebar.js
 import React from 'react';
 import { Target, CheckCircle, X, Bookmark } from 'lucide-react';
+import { useTheme } from '../../context/ThemeContext';
 
 const ActivitySidebar = () => {
+    const { theme } = useTheme();
     const progressData = {
         todayGoal: {
             completed: 2,
@@ -71,13 +73,13 @@ const ActivitySidebar = () => {
     const hardProgress = createCircleProgress(progressData.difficulty.hard, 80, 6);
 
     return (
-        <div className="w-80 bg-[#0a0a12] text-white p-6 ">
+        <div className={`w-80 ${theme.bg.secondary} ${theme.text.primary} p-6`}>
             {/* Today's Goal */}
             <div className="mb-8">
 
-                <div className="bg-slate-900 rounded-lg p-4">
+                <div className={`${theme.bg.tertiary} rounded-lg p-4`}>
                     <div className="flex items-center justify-between mb-2">
-                        <span className="text-white font-medium">
+                        <span className={`${theme.text.primary} font-medium`}>
                             {progressData.todayGoal.completed}/{progressData.todayGoal.total} problems
                         </span>
                         <span className="text-purple-400 font-medium">

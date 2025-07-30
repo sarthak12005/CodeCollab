@@ -14,26 +14,29 @@ import {
 } from "lucide-react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import { useTheme } from "../context/ThemeContext";
 
 const About = () => {
+  const { theme } = useTheme();
+
   return (
-    <div className="min-h-screen bg-slate-900 text-white">
+    <div className={`min-h-screen ${theme.bg.primary} ${theme.text.primary}`}>
       {/* Navigation */}
       <Header />
 
       {/* Hero Section */}
-      <section className="px-6 py-24 text-center bg-gradient-to-b from-slate-900 to-slate-800">
+      <section className={`px-6 py-24 text-center ${theme.gradient.secondary}`}>
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-6xl font-bold mb-8 bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
+          <h1 className={`text-6xl font-bold mb-8 ${theme.gradient.primary} bg-clip-text text-transparent`}>
             About CodeCollab
           </h1>
-          <p className="text-xl text-slate-300 mb-10 max-w-3xl mx-auto leading-relaxed">
+          <p className={`text-xl ${theme.text.secondary} mb-10 max-w-3xl mx-auto leading-relaxed`}>
             We are a passionate team of developers and innovators dedicated to
             transforming ideas into powerful digital solutions. Our expertise
             spans across modern web technologies, mobile development, and
             cutting-edge software architecture.
           </p>
-          <button className="bg-blue-500 hover:bg-blue-600 px-8 py-4 rounded-lg font-semibold text-lg transition-all hover:scale-105">
+          <button className={`${theme.button.primary} px-8 py-4 rounded-lg font-semibold text-lg transition-all hover:scale-105`}>
             Discover More
           </button>
         </div>
@@ -46,10 +49,10 @@ const About = () => {
             {/* Left Content */}
             <div className="space-y-8">
               <div>
-                <h2 className="text-4xl font-bold mb-6 text-white">
+                <h2 className={`text-4xl font-bold mb-6 ${theme.text.primary}`}>
                   Democratizing Coding Excellence
                 </h2>
-                <p className="text-slate-300 text-lg leading-relaxed mb-8">
+                <p className={`${theme.text.secondary} text-lg leading-relaxed mb-8`}>
                   At CodeCollab, we believe that exceptional software development
                   should be accessible to everyone. Our mission is to
                   democratize coding excellence by providing innovative
@@ -62,10 +65,10 @@ const About = () => {
                 <div className="flex items-start space-x-4">
                   <div className="w-2 h-2 bg-blue-400 rounded-full mt-3 flex-shrink-0"></div>
                   <div>
-                    <h4 className="font-semibold text-white mb-1">
+                    <h4 className={`font-semibold ${theme.text.primary} mb-1`}>
                       Innovation-Driven Development
                     </h4>
-                    <p className="text-slate-400 text-sm">
+                    <p className={`${theme.text.tertiary} text-sm`}>
                       Cutting-edge solutions using the latest technologies and
                       frameworks
                     </p>
@@ -74,10 +77,10 @@ const About = () => {
                 <div className="flex items-start space-x-4">
                   <div className="w-2 h-2 bg-blue-400 rounded-full mt-3 flex-shrink-0"></div>
                   <div>
-                    <h4 className="font-semibold text-white mb-1">
+                    <h4 className={`font-semibold ${theme.text.primary} mb-1`}>
                       Scalable Architecture
                     </h4>
-                    <p className="text-slate-400 text-sm">
+                    <p className={`${theme.text.tertiary} text-sm`}>
                       Robust and maintainable code built for long-term success
                     </p>
                   </div>
@@ -85,10 +88,10 @@ const About = () => {
                 <div className="flex items-start space-x-4">
                   <div className="w-2 h-2 bg-blue-400 rounded-full mt-3 flex-shrink-0"></div>
                   <div>
-                    <h4 className="font-semibold text-white mb-1">
+                    <h4 className={`font-semibold ${theme.text.primary} mb-1`}>
                       Agile Methodology
                     </h4>
-                    <p className="text-slate-400 text-sm">
+                    <p className={`${theme.text.tertiary} text-sm`}>
                       Fast, iterative development with continuous client
                       collaboration
                     </p>
@@ -97,10 +100,10 @@ const About = () => {
                 <div className="flex items-start space-x-4">
                   <div className="w-2 h-2 bg-blue-400 rounded-full mt-3 flex-shrink-0"></div>
                   <div>
-                    <h4 className="font-semibold text-white mb-1">
+                    <h4 className={`font-semibold ${theme.text.primary} mb-1`}>
                       24/7 Support
                     </h4>
-                    <p className="text-slate-400 text-sm">
+                    <p className={`${theme.text.tertiary} text-sm`}>
                       Comprehensive support and maintenance for peace of mind
                     </p>
                   </div>

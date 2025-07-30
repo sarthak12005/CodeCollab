@@ -3,8 +3,10 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import MicrosoftLogo from '../logo/MicrosoftLogo';
 import { FcGoogle } from "react-icons/fc";
 import AWSLogo from '../logo/AwsLogo';
+import { useTheme } from '../../context/ThemeContext';
 
 const Testimonial = () => {
+  const { theme } = useTheme();
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const testimonials = [
@@ -63,7 +65,7 @@ const Testimonial = () => {
   };
 
   return (
-    <section className="bg-[#0a0a12] text-white py-20 px-4 border-b-1 border-[white]">
+    <section className={`${theme.bg.secondary} ${theme.text.primary} py-20 px-4 border-b-1 border-[white]`}>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-16">

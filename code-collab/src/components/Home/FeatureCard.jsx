@@ -1,12 +1,15 @@
 import React from "react";
+import { useTheme } from "../../context/ThemeContext";
 
 const FeatureCard = () => {
+  const { theme } = useTheme();
+
   return (
-    <section className="py-16 bg-[#131320] border-b-1 border-white">
+    <section className={`py-16 ${theme.bg.tertiary} border-b-1 border-white`}>
       <div className="flex flex-col gap-8 w-full min-h-[700px]">
         {/* Title */}
         <div className="flex justify-center items-center py-10">
-          <h1 className="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-cyan-400">
+          <h1 className={`text-5xl font-bold bg-clip-text text-transparent ${theme.gradient.primary}`}>
             Seamless Collaboration
           </h1>
         </div>
@@ -15,21 +18,20 @@ const FeatureCard = () => {
         <div className="flex justify-center items-start gap-6 px-4">
           {/* Left Panel: Code Editor */}
           <div
-            className="w-96 h-96 rounded-lg border border-blue-500 shadow-lg hover:translate-y-[-10px] transition-all"
+            className={`w-96 h-96 rounded-lg border border-blue-500 ${theme.shadow.lg} hover:translate-y-[-10px] transition-all ${theme.bg.tertiary}`}
             style={{
-              backgroundColor: "#1e1e2e",
               width: "380px",
               height: "400px",
             }}
           >
             {/* Header */}
-            <div className="flex justify-between items-center p-4 border-b border-gray-700">
+            <div className={`flex justify-between items-center p-4 border-b ${theme.border.primary}`}>
               <div className="flex space-x-2">
                 <div className="w-3 h-3 rounded-full bg-red-500"></div>
                 <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
                 <div className="w-3 h-3 rounded-full bg-green-500"></div>
               </div>
-              <span className="text-white/65 font-medium text-sm">
+              <span className={`${theme.text.secondary} font-medium text-sm`}>
                 script.js
               </span>
             </div>

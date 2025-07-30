@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/userContext";
+import { useTheme } from "../context/ThemeContext";
+import { Sun, Moon } from "lucide-react";
 
 const Header = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [userImage, setUserImage] = useState(user?.userImage || "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png");
-
+  const { isDarkMode, toggleTheme, theme } = useTheme();
 
   return (
     <>
-      <header className="bg-[#0a0a12]  sticky top-0 z-50">
+      <header className={`${theme.bg.header} sticky top-0 z-50 shadow-lg transition-colors duration-300`}>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-13 md:h-17">
             {/* Logo */}
@@ -26,26 +27,41 @@ const Header = () => {
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center space-x-8">
               <div
-                className="text-[#e0e0e8] hover:text-[#1cb8ff] transition-colors duration-200 font-medium cursor-pointer"
+                className={`${theme.text.secondary} ${theme.text.accent.replace('text-', 'hover:text-')} transition-colors duration-200 font-medium cursor-pointer`}
                 onClick={() => navigate("/")}
               >
                 Home
               </div>
               <div
-                className="text-[#e0e0e8] hover:text-[#1cb8ff] transition-colors duration-200 font-medium cursor-pointer"
+                className={`${theme.text.secondary} ${theme.text.accent.replace('text-', 'hover:text-')} transition-colors duration-200 font-medium cursor-pointer`}
                 onClick={() => navigate("/problems")}
               >
                 Problems
               </div>
-              <div className="text-[#e0e0e8] hover:text-[#1cb8ff] transition-colors duration-200 font-medium cursor-pointer">
-                Preparations
+              <div
+                className={`${theme.text.secondary} ${theme.text.accent.replace('text-', 'hover:text-')} transition-colors duration-200 font-medium cursor-pointer`}
+                onClick={() => navigate("/preparation")}
+              >
+                Preparation
               </div>
-              <div className="text-[#e0e0e8] hover:text-[#1cb8ff] transition-colors duration-200 font-medium cursor-pointer" onClick={() => navigate("/about")}>
+              <div
+                className={`${theme.text.secondary} ${theme.text.accent.replace('text-', 'hover:text-')} transition-colors duration-200 font-medium cursor-pointer`}
+                onClick={() => navigate("/about")}
+              >
                 About
               </div>
-              <div className="text-[#e0e0e8] hover:text-[#1cb8ff] transition-colors duration-200 font-medium cursor-pointer">
+              <div className={`${theme.text.secondary} ${theme.text.accent.replace('text-', 'hover:text-')} transition-colors duration-200 font-medium cursor-pointer`}>
                 Blog
               </div>
+
+              {/* Theme Toggle */}
+              <button
+                onClick={toggleTheme}
+                className={`p-2 rounded-lg ${theme.bg.tertiary} ${theme.text.secondary} hover:${theme.text.accent.replace('text-', '')} transition-all duration-200`}
+                title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+              >
+                {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+              </button>
             </nav>
 
             {/* Auth Buttons */}

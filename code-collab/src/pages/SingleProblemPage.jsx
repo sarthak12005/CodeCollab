@@ -8,12 +8,15 @@ import '../styles/SingleProblem.css';
 import OutputConsole from '../components/SingleProblem/OutputConsole';
 import LanguageSelector from '../components/SingleProblem/LanguageSelector';
 import CollaborationModal from '../components/Collaboration/CollaborationModal';
+import Header from '../components/Header';
+import { useTheme } from '../context/ThemeContext';
 
 const API_URL = import.meta.env.VITE_API_ENDPOINT;
 
 const SingleProblem = () => {
     const { problemId } = useParams();
     const navigate = useNavigate();
+    const { theme } = useTheme();
 
     if (!problemId) {
         alert("problemId is required");
@@ -309,13 +312,14 @@ const SingleProblem = () => {
     }
 
     return (
-        <div className="min-h-screen bg-slate-900 text-white flex flex-col">
-            {/* Header */}
-            <div className="fixed top-0 left-0 right-0 bg-slate-800 border-b border-slate-700 px-6 py-3 flex items-center justify-between z-10 h-16">
+        <div className={`min-h-screen ${theme.bg.primary} ${theme.text.primary} flex flex-col`}>
+            <Header />
+
+            {/* Problem Header */}
+            <div className={`${theme.bg.secondary} border-b ${theme.border.primary} px-6 py-3 flex items-center justify-between`}>
                 <div className="flex items-center gap-3">
-                    <h1 className="text-xl font-bold text-white">CodeCollab</h1>
-                    <span className="text-sm bg-green-600 px-2 py-1 rounded font-medium">{problem?.title || 'Loading...'}</span>
-                    <span className="text-xs bg-green-500 px-2 py-1 rounded font-medium">{problem?.difficulty || 'Easy'}</span>
+                    <span className={`text-sm ${theme.bg.tertiary} px-2 py-1 rounded font-medium`}>{problem?.title || 'Loading...'}</span>
+                    <span className={`text-xs bg-green-500 px-2 py-1 rounded font-medium text-white`}>{problem?.difficulty || 'Easy'}</span>
                 </div>
                 <div className="flex items-center gap-3">
                     <button

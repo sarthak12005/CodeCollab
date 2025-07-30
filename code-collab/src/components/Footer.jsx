@@ -1,36 +1,39 @@
 import React from "react";
 import { FaGithub, FaTwitter, FaLinkedin } from "react-icons/fa";
 import { IoIosSend } from "react-icons/io";
+import { useTheme } from "../context/ThemeContext";
 
 const Footer = () => {
+  const { theme } = useTheme();
+
   return (
-    <section className="py-16 bg-[#0a0a12] border-b flex flex-col justify-between itmes-center gap-8 px-4">
-      <div className="h-60 grid md:grid-cols-4 grid-cols-1 hover:text-white items-center  px-10 ">
-        <div className="lists flex flex-col gap-4 items-start  justify-start   w-62">
-          <h1 className="text-2xl font-bold text-transparent bg-gradient-to-r bg-clip-text  from-[#6e44ff] to-[#1cb8ff]">
+    <section className={`py-16 ${theme.bg.secondary} border-b flex flex-col justify-between itmes-center gap-8 px-4`}>
+      <div className={`h-60 grid md:grid-cols-4 grid-cols-1 hover:${theme.text.primary.replace('text-', '')} items-center px-10`}>
+        <div className="lists flex flex-col gap-4 items-start justify-start w-62">
+          <h1 className={`text-2xl font-bold text-transparent ${theme.gradient.primary} bg-clip-text`}>
             CODE COLLAB
           </h1>
-          <h1 className="text-white text-2xl w-full">
+          <h1 className={`${theme.text.primary} text-2xl w-full`}>
             Build the future of code collaboration with us.
           </h1>
-          <div className="icons flex gap-5 items-center justify-center text-white/80 ">
-            <FaLinkedin className="hover:text-white" />
-            <FaGithub className="hover:text-white" />
-            <FaTwitter className="hover:text-white" />
+          <div className={`icons flex gap-5 items-center justify-center ${theme.text.secondary}`}>
+            <FaLinkedin className={`hover:${theme.text.primary.replace('text-', '')}`} />
+            <FaGithub className={`hover:${theme.text.primary.replace('text-', '')}`} />
+            <FaTwitter className={`hover:${theme.text.primary.replace('text-', '')}`} />
           </div>
         </div>
-        <div className="lists flex flex-col gap-3 items-start  justify-start">
-          <h1 className="text-2xl font-bold text-white text-start ">Product</h1>
-          <ul className="text-gray-600 flex flex-col items-start justify-start">
-            <li className="mb-1 hover:text-white font-bold">Features</li>
-            <li className="mb-1 hover:text-white font-bold">Pricing</li>
-            <li className="mb-1 hover:text-white font-bold">Documentation</li>
-            <li className="mb-1 hover:text-white font-bold">API Reference</li>
+        <div className="lists flex flex-col gap-3 items-start justify-start">
+          <h1 className={`text-2xl font-bold ${theme.text.primary} text-start`}>Product</h1>
+          <ul className={`${theme.text.secondary} flex flex-col items-start justify-start`}>
+            <li className={`mb-1 hover:${theme.text.primary.replace('text-', '')} font-bold`}>Features</li>
+            <li className={`mb-1 hover:${theme.text.primary.replace('text-', '')} font-bold`}>Pricing</li>
+            <li className={`mb-1 hover:${theme.text.primary.replace('text-', '')} font-bold`}>Documentation</li>
+            <li className={`mb-1 hover:${theme.text.primary.replace('text-', '')} font-bold`}>API Reference</li>
           </ul>
         </div>
 
         <div className="lists flex flex-col gap-3 items-start  justify-start">
-          <h1 className="text-2xl font-bold text-white text-start ">
+          <h1 className={`text-2xl font-bold ${theme.text.primary} text-start` }>
             Resources
           </h1>
           <ul className="text-gray-600 flex flex-col items-start justify-start">
@@ -42,7 +45,7 @@ const Footer = () => {
         </div>
 
         <div className="lists flex flex-col gap-3 items-start  justify-start">
-          <h1 className="text-2xl font-bold text-white text-start ">
+          <h1 className={`text-2xl font-bold ${theme.text.primary} text-start` }>
             Stay Updated
           </h1>
           <h1 className="text-white">

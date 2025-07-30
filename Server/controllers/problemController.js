@@ -232,7 +232,7 @@ rl.on('close', () => {
         java: `import java.util.*;
 import java.io.*;
 
-public class Solution {
+public class Main {
     public int[] ${functionName}(int[] nums, int target) {
         /*
          * Complete this function to solve the problem.
@@ -271,7 +271,7 @@ public class Solution {
                 target = 9;
             }
 
-            Solution solution = new Solution();
+            Main solution = new Main();
             int[] result = solution.${functionName}(nums, target);
 
             System.out.print("[");

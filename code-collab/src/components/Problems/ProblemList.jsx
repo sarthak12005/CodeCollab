@@ -3,6 +3,7 @@ import { ChevronDown, Star, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../../context/userContext';
+import { useTheme } from '../../context/ThemeContext';
 import PageSkeleton from './PageSkeleton';
 
 const API_URL = import.meta.env.VITE_API_ENDPOINT;
@@ -14,6 +15,7 @@ const ProblemList = ({ filters, searchQuery }) => {
   const [filteredProblems, setFilteredProblems] = useState([]);
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
+  const { theme } = useTheme();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -127,21 +129,21 @@ const ProblemList = ({ filters, searchQuery }) => {
   if (loading) return <PageSkeleton />;
 
   return (
-    <div className="p-6 space-y-6 bg-slate-900 min-h-screen">
+    <div className={`p-6 space-y-6 ${theme.bg.primary} min-h-screen`}>
       {/* Header and Sort */}
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-semibold text-white">Problems</h2>
+        <h2 className={`text-xl font-semibold ${theme.text.primary}`}>Problems</h2>
         <div className="relative">
           <button
             onClick={() => setShowSortDropdown(!showSortDropdown)}
-            className="flex items-center space-x-2 bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-lg border border-slate-600 text-white"
+            className={`flex items-center space-x-2 ${theme.bg.secondary} ${theme.bg.hover} px-4 py-2 rounded-lg border ${theme.border.primary} ${theme.text.primary}`}
           >
             <span className="text-sm">Sort by: {sortBy}</span>
             <ChevronDown size={16} />
           </button>
 
           {showSortDropdown && (
-            <div className="absolute right-0 top-full mt-1 bg-slate-800 border border-slate-600 rounded-lg shadow-lg z-10 min-w-[140px]">
+            <div className={`absolute right-0 top-full mt-1 ${theme.bg.secondary} border ${theme.border.primary} rounded-lg ${theme.shadow.lg} z-10 min-w-[140px]`}>
               {sortOptions.map((option) => (
                 <button
                   key={option}
@@ -149,7 +151,7 @@ const ProblemList = ({ filters, searchQuery }) => {
                     setSortBy(option);
                     setShowSortDropdown(false);
                   }}
-                  className="w-full text-left px-4 py-2 text-sm text-white hover:bg-slate-700 first:rounded-t-lg last:rounded-b-lg"
+                  className={`w-full text-left px-4 py-2 text-sm ${theme.text.primary} ${theme.bg.hover} first:rounded-t-lg last:rounded-b-lg`}
                 >
                   {option}
                 </button>
@@ -165,13 +167,13 @@ const ProblemList = ({ filters, searchQuery }) => {
           filteredProblems.map((problem) => (
             <div
               key={problem._id}
-              className="bg-slate-800 hover:bg-slate-750 border border-slate-700 rounded-lg p-4 cursor-pointer transition-all duration-200 group"
+              className={`${theme.bg.card} ${theme.card.hover} border ${theme.border.primary} rounded-lg p-4 cursor-pointer transition-all duration-200 group`}
               onClick={() => handleProblemClick(problem._id)}
             >
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center space-x-3 mb-2">
-                    <h3 className="text-lg font-medium text-white group-hover:text-blue-400 transition-colors">
+                    <h3 className={`text-lg font-medium ${theme.text.primary} group-hover:${theme.text.accent.replace('text-', '')} transition-colors`}>
                       {problem.title}
                     </h3>
                     <div className="flex items-center space-x-2">

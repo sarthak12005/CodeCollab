@@ -2,21 +2,24 @@ import React from "react";
 import { FaUsers } from "react-icons/fa";
 import { IoPlay } from "react-icons/io5";
 import { FaShareAlt } from "react-icons/fa";
+import { useTheme } from "../../context/ThemeContext";
 
 const Playground = () => {
+  const { theme } = useTheme();
+
   return (
-    <section className="py-16 bg-[#131320]">
+    <section className={`py-16 ${theme.bg.tertiary}`}>
       <div className="flex flex-col gap-8 w-full min-h-[700px] justify-center items-center">
         {/* Header */}
         <div className="header-text flex justify-center gap-1 items-center">
-          <h1 className="text-[30px] text-white font-bold">Try It </h1>
-          <h1 className="text-[30px] font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#6e44ff] to-[#1cb8ff]">
+          <h1 className={`text-[30px] ${theme.text.primary} font-bold`}>Try It </h1>
+          <h1 className={`text-[30px] font-bold bg-clip-text text-transparent ${theme.gradient.primary}`}>
             Live
           </h1>
         </div>
 
         {/* Description */}
-        <p className="text-gray-300 text-center max-w-xl">
+        <p className={`${theme.text.secondary} text-center max-w-xl`}>
           Experience real-time collaboration with our interactive playground.
           Type, share, and execute code together.
         </p>

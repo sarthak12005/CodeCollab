@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useAuth } from "../context/userContext";
+import { useTheme } from "../context/ThemeContext";
 import Header from "../components/Header";
 import {
   Code,
@@ -11,6 +12,16 @@ import {
   EyeOff,
   User,
   Settings,
+  Camera,
+  Edit3,
+  Save,
+  X,
+  LogOut,
+  Mail,
+  Calendar,
+  Award,
+  Target,
+  Activity
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -18,24 +29,41 @@ const API_URL = import.meta.env.VITE_API_ENDPOINT;
 
 const Profile = () => {
   const { logout, user } = useAuth();
-  const [activeTab, setActiveTab] = useState("profile");
+  const { theme } = useTheme();
+  const navigate = useNavigate();
+
+  const [activeTab, setActiveTab] = useState("overview");
+  const [isEditing, setIsEditing] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [userInfo, setUserInfo] = useState({
     name: user?.name || "",
     username: user?.username || "",
     email: user?.email || "",
+    bio: user?.bio || "Passionate developer and problem solver",
+    location: user?.location || "",
+    website: user?.website || "",
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
-
   });
-
 
   const [profileImage, setProfileImage] = useState(
     user?.userImage ||
     "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
   );
   const fileInputRef = useRef(null);
+
+  // Mock stats data - replace with real data from API
+  const stats = {
+    problemsSolved: 127,
+    totalSubmissions: 342,
+    acceptanceRate: 78,
+    currentStreak: 15,
+    maxStreak: 23,
+    ranking: 1247,
+    contestsParticipated: 8,
+    badges: 12
+  };
 
   const handleImageClick = () => {
     fileInputRef.current.click();
@@ -78,8 +106,6 @@ const Profile = () => {
     // Here you would typically call your backend to remove the image
     // removeProfileImage();
   };
-
-  const navigate = useNavigate();
 
   const [recentProblemSolve, setRecentProblemSolve] = useState([]);
 

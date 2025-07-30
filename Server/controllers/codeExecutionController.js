@@ -1,25 +1,121 @@
-const { exec } = require('child_process');
-const fs = require('fs');
-const path = require('path');
-const { v4: uuidv4 } = require('uuid');
+const axios = require('axios');
 require('dotenv').config();
 
+// Judge0 API Configuration
+const JUDGE0_API_URL = process.env.JUDGE0_API_URL || 'https://judge0-ce.p.rapidapi.com';
+const JUDGE0_API_KEY = process.env.JUDGE0_API_KEY;
+
+// Language ID mapping for Judge0 API
+const LANGUAGE_IDS = {
+    'javascript': 63, // Node.js
+    'python': 71,     // Python 3
+    'java': 62,       // Java
+    'cpp': 54,        // C++ (GCC 9.2.0)
+    'c': 50,          // C (GCC 9.2.0)
+    'csharp': 51,     // C# (Mono 6.6.0.161)
+    'go': 60,         // Go (1.13.5)
+    'rust': 73,       // Rust (1.40.0)
+    'php': 68,        // PHP (7.4.1)
+    'ruby': 72        // Ruby (2.7.0)
+};
+
 // Supported languages
-const SUPPORTED_LANGUAGES = ['python', 'javascript', 'java'];
+const SUPPORTED_LANGUAGES = Object.keys(LANGUAGE_IDS);
 
-// Create temp directory if it doesn't exist
-const tempDir = path.join(__dirname, '../temp');
-if (!fs.existsSync(tempDir)) {
-    fs.mkdirSync(tempDir, { recursive: true });
+
+
+// Helper function to execute code using Judge0 API
+async function executeWithJudge0(code, languageId, input = '') {
+    try {
+        // Check if using RapidAPI or direct API
+        const isRapidAPI = JUDGE0_API_URL.includes('rapidapi.com');
+
+        // Prepare headers
+        const headers = {
+            'Content-Type': 'application/json'
+        };
+
+        // Add RapidAPI headers if using RapidAPI
+        if (isRapidAPI) {
+            headers['X-RapidAPI-Host'] = 'judge0-ce.p.rapidapi.com';
+            headers['X-RapidAPI-Key'] = JUDGE0_API_KEY;
+        }
+
+        // Step 1: Submit code for execution
+        const submissionData = {
+            source_code: code, // Try without base64 encoding first
+            language_id: languageId
+        };
+
+        // Only add stdin if input is provided
+        if (input && input.trim()) {
+            submissionData.stdin = input; // Try without base64 encoding first
+        }
+
+        const submissionResponse = await axios.post(`${JUDGE0_API_URL}/submissions`, submissionData, { headers });
+
+        const token = submissionResponse.data.token;
+
+        // Step 2: Poll for results
+        let result;
+        let attempts = 0;
+        const maxAttempts = 10;
+
+        do {
+            await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second
+
+            const getHeaders = {};
+            if (isRapidAPI) {
+                getHeaders['X-RapidAPI-Host'] = 'judge0-ce.p.rapidapi.com';
+                getHeaders['X-RapidAPI-Key'] = JUDGE0_API_KEY;
+            }
+
+            const resultResponse = await axios.get(`${JUDGE0_API_URL}/submissions/${token}`, {
+                headers: getHeaders
+            });
+
+            result = resultResponse.data;
+            attempts++;
+        } while (result.status.id <= 2 && attempts < maxAttempts); // Status 1-2 means processing
+
+        // Get outputs (try both base64 and plain text)
+        const stdout = result.stdout ?
+            (typeof result.stdout === 'string' && result.stdout.length > 0 ?
+                (result.stdout.match(/^[A-Za-z0-9+/]*={0,2}$/) ?
+                    Buffer.from(result.stdout, 'base64').toString() : result.stdout) : '') : '';
+        const stderr = result.stderr ?
+            (typeof result.stderr === 'string' && result.stderr.length > 0 ?
+                (result.stderr.match(/^[A-Za-z0-9+/]*={0,2}$/) ?
+                    Buffer.from(result.stderr, 'base64').toString() : result.stderr) : '') : '';
+        const compile_output = result.compile_output ?
+            (typeof result.compile_output === 'string' && result.compile_output.length > 0 ?
+                (result.compile_output.match(/^[A-Za-z0-9+/]*={0,2}$/) ?
+                    Buffer.from(result.compile_output, 'base64').toString() : result.compile_output) : '') : '';
+
+        return {
+            success: result.status.id === 3, // Status 3 means accepted
+            output: stdout || stderr || compile_output || 'No output',
+            error: result.status.id !== 3 ? (stderr || compile_output || result.status.description) : null,
+            executionTime: parseFloat(result.time) * 1000 || 0, // Convert to milliseconds
+            memory: parseFloat(result.memory) || 0,
+            status: result.status
+        };
+
+    } catch (error) {
+        console.error('Judge0 API Error:', error.response?.data || error.message);
+        return {
+            success: false,
+            output: '',
+            error: error.response?.data?.message || error.message || 'Execution failed',
+            executionTime: 0,
+            memory: 0
+        };
+    }
 }
-
-
 
 exports.executeCode = async (req, res) => {
     try {
         const { code, language, input = '', testCase } = req.body;
-
-
 
         if (!code || !language) {
             return res.status(400).json({
@@ -28,62 +124,39 @@ exports.executeCode = async (req, res) => {
             });
         }
 
-        const supportedLanguages = ['python', 'javascript', 'java', 'cpp', 'c'];
-        if (!supportedLanguages.includes(language.toLowerCase())) {
+        if (!SUPPORTED_LANGUAGES.includes(language.toLowerCase())) {
             return res.status(400).json({
                 success: false,
                 message: 'Unsupported language',
-                supportedLanguages: supportedLanguages
+                supportedLanguages: SUPPORTED_LANGUAGES
             });
         }
 
-        const startTime = Date.now();
+        if (!JUDGE0_API_KEY) {
+            return res.status(500).json({
+                success: false,
+                message: 'Judge0 API key not configured'
+            });
+        }
 
-        // Use the code directly since templates now include driver code
-        let finalCode = code;
-        let testInput = '';
+        const languageId = LANGUAGE_IDS[language.toLowerCase()];
+        let testInput = input;
 
         // If test case is provided, use its input
         if (testCase && testCase.input) {
             testInput = testCase.input;
         }
 
-        // Execute code based on language
-        let result;
-        switch (language.toLowerCase()) {
-            case 'python':
-                result = await executePython(finalCode, testInput || input);
-                break;
-            case 'javascript':
-                result = await executeJavaScript(finalCode, testInput || input);
-                break;
-            case 'java':
-                result = await executeJava(finalCode, testInput || input);
-                break;
-            case 'cpp':
-                result = await executeCpp(finalCode, testInput || input);
-                break;
-            case 'c':
-                result = await executeC(finalCode, testInput || input);
-                break;
-            default:
-                throw new Error('Unsupported language');
-        }
-
-        const executionTime = Date.now() - startTime;
-
-        // Generate realistic memory usage (simulated)
-        const memoryUsage = Math.floor(Math.random() * 50) + 10; // 10-60 KB
-
-
+        // Execute code using Judge0 API
+        const result = await executeWithJudge0(code, languageId, testInput);
 
         res.json({
             success: result.success,
             status: result.success ? 'success' : 'error',
             message: result.success ? 'Code executed successfully' : result.error,
             output: result.output || (result.success ? 'Code executed successfully (no output)' : ''),
-            executionTime: executionTime,
-            memory: memoryUsage
+            executionTime: result.executionTime,
+            memory: result.memory
         });
 
     } catch (error) {
@@ -97,188 +170,8 @@ exports.executeCode = async (req, res) => {
     }
 };
 
-// Execute Python code
-async function executePython(code, input) {
-    return new Promise((resolve) => {
-        const fileName = `temp_${Date.now()}.py`;
-        const filePath = path.join(tempDir, fileName);
 
-        try {
-            fs.writeFileSync(filePath, code);
 
-            const command = `python "${filePath}"`;
-            const child = exec(command, { timeout: 5000 }, (error, stdout, stderr) => {
-                // Clean up file
-                try {
-                    fs.unlinkSync(filePath);
-                } catch (e) {
-                    // Ignore cleanup errors
-                }
-
-                if (error) {
-                    resolve({
-                        success: false,
-                        output: stderr || error.message || 'Execution failed',
-                        error: stderr || error.message
-                    });
-                } else {
-                    // Clean and format output
-                    const cleanOutput = stdout ? stdout.trim() : '';
-                    resolve({
-                        success: true,
-                        output: cleanOutput || 'Code executed successfully (no output)',
-                        error: null
-                    });
-                }
-            });
-
-            // Send input if provided
-            if (input && input.trim()) {
-                child.stdin.write(input + '\n');
-                child.stdin.end();
-            } else {
-                child.stdin.end();
-            }
-        } catch (err) {
-            resolve({
-                success: false,
-                output: err.message,
-                error: err.message
-            });
-        }
-    });
-}
-
-// Execute JavaScript code
-async function executeJavaScript(code, input) {
-    return new Promise((resolve) => {
-        const fileName = `temp_${Date.now()}.js`;
-        const filePath = path.join(tempDir, fileName);
-
-        try {
-            fs.writeFileSync(filePath, code);
-
-            const command = `node "${filePath}"`;
-            const child = exec(command, { timeout: 5000 }, (error, stdout, stderr) => {
-                // Clean up file
-                try {
-                    fs.unlinkSync(filePath);
-                } catch (e) {
-                    // Ignore cleanup errors
-                }
-
-                if (error) {
-                    resolve({
-                        success: false,
-                        output: stderr || error.message || 'Execution failed',
-                        error: stderr || error.message
-                    });
-                } else {
-                    // Clean and format output
-                    const cleanOutput = stdout ? stdout.trim() : '';
-                    resolve({
-                        success: true,
-                        output: cleanOutput || 'Code executed successfully (no output)',
-                        error: null
-                    });
-                }
-            });
-
-            // Send input if provided
-            if (input && input.trim()) {
-                child.stdin.write(input + '\n');
-                child.stdin.end();
-            } else {
-                child.stdin.end();
-            }
-        } catch (err) {
-            resolve({
-                success: false,
-                output: err.message,
-                error: err.message
-            });
-        }
-    });
-}
-
-// Execute Java code (simplified - requires Java to be installed)
-async function executeJava(code, input) {
-    return new Promise((resolve) => {
-        // For Java, we need to extract the class name
-        const classNameMatch = code.match(/public\s+class\s+(\w+)/);
-        if (!classNameMatch) {
-            resolve({
-                success: false,
-                output: 'Error: Could not find public class declaration',
-                error: 'Could not find public class declaration'
-            });
-            return;
-        }
-
-        const className = classNameMatch[1];
-        const fileName = `${className}.java`;
-        const filePath = path.join(tempDir, fileName);
-
-        try {
-            fs.writeFileSync(filePath, code);
-
-            // Compile first
-            exec(`javac "${filePath}"`, (compileError, compileStdout, compileStderr) => {
-                if (compileError) {
-                    // Clean up
-                    try {
-                        fs.unlinkSync(filePath);
-                    } catch (e) {}
-
-                    resolve({
-                        success: false,
-                        output: compileStderr || compileError.message,
-                        error: compileStderr || compileError.message
-                    });
-                    return;
-                }
-
-                // Run the compiled class
-                const runCommand = `java -cp "${tempDir}" ${className}`;
-                const child = exec(runCommand, { timeout: 5000 }, (error, stdout, stderr) => {
-                    // Clean up files
-                    try {
-                        fs.unlinkSync(filePath);
-                        fs.unlinkSync(path.join(tempDir, `${className}.class`));
-                    } catch (e) {
-                        // Ignore cleanup errors
-                    }
-
-                    if (error) {
-                        resolve({
-                            success: false,
-                            output: stderr || error.message,
-                            error: stderr || error.message
-                        });
-                    } else {
-                        resolve({
-                            success: true,
-                            output: stdout,
-                            error: null
-                        });
-                    }
-                });
-
-                // Send input if provided
-                if (input) {
-                    child.stdin.write(input);
-                    child.stdin.end();
-                }
-            });
-        } catch (err) {
-            resolve({
-                success: false,
-                output: err.message,
-                error: err.message
-            });
-        }
-    });
-}
 
 // Test code execution with sample inputs
 exports.testCode = async (req, res) => {
@@ -292,6 +185,22 @@ exports.testCode = async (req, res) => {
             });
         }
 
+        if (!SUPPORTED_LANGUAGES.includes(language.toLowerCase())) {
+            return res.status(400).json({
+                success: false,
+                message: 'Unsupported language',
+                supportedLanguages: SUPPORTED_LANGUAGES
+            });
+        }
+
+        if (!JUDGE0_API_KEY) {
+            return res.status(500).json({
+                success: false,
+                message: 'Judge0 API key not configured'
+            });
+        }
+
+        const languageId = LANGUAGE_IDS[language.toLowerCase()];
         const results = [];
 
         for (let i = 0; i < testCases.length; i++) {
@@ -299,8 +208,8 @@ exports.testCode = async (req, res) => {
             const testInput = testCase.input || '';
             const expectedOutput = testCase.output || testCase.expectedOutput || '';
 
-            // Execute the code with test input (templates now include driver code)
-            const executionResult = await executeCodeWithInput(code, language, testInput);
+            // Execute the code with test input using Judge0 API
+            const executionResult = await executeWithJudge0(code, languageId, testInput);
 
             // Parse the actual output
             let actualOutput = '';
@@ -361,176 +270,6 @@ exports.testCode = async (req, res) => {
     }
 };
 
-// Helper function to execute code with input
-async function executeCodeWithInput(code, language, input) {
-    const startTime = Date.now();
 
-    let result;
-    switch (language.toLowerCase()) {
-        case 'python':
-            result = await executePython(code, input);
-            break;
-        case 'javascript':
-            result = await executeJavaScript(code, input);
-            break;
-        case 'java':
-            result = await executeJava(code, input);
-            break;
-        case 'cpp':
-            result = await executeCpp(code, input);
-            break;
-        case 'c':
-            result = await executeC(code, input);
-            break;
-        default:
-            return {
-                success: false,
-                output: '',
-                error: 'Unsupported language',
-                executionTime: 0
-            };
-    }
 
-    const executionTime = Date.now() - startTime;
 
-    return {
-        success: result.success,
-        output: result.output,
-        error: result.error,
-        executionTime: executionTime
-    };
-}
-
-// Execute C++ code
-async function executeCpp(code, input) {
-    return new Promise((resolve) => {
-        const fileName = `temp_${Date.now()}.cpp`;
-        const filePath = path.join(tempDir, fileName);
-        const exePath = path.join(tempDir, `temp_${Date.now()}.exe`);
-
-        try {
-            fs.writeFileSync(filePath, code);
-
-            // Compile first
-            exec(`g++ "${filePath}" -o "${exePath}"`, (compileError, compileStdout, compileStderr) => {
-                if (compileError) {
-                    // Clean up
-                    try {
-                        fs.unlinkSync(filePath);
-                    } catch (e) {}
-
-                    resolve({
-                        success: false,
-                        output: compileStderr || compileError.message,
-                        error: compileStderr || compileError.message
-                    });
-                    return;
-                }
-
-                // Run the compiled executable
-                const child = exec(`"${exePath}"`, { timeout: 5000 }, (error, stdout, stderr) => {
-                    // Clean up files
-                    try {
-                        fs.unlinkSync(filePath);
-                        fs.unlinkSync(exePath);
-                    } catch (e) {
-                        // Ignore cleanup errors
-                    }
-
-                    if (error) {
-                        resolve({
-                            success: false,
-                            output: stderr || error.message,
-                            error: stderr || error.message
-                        });
-                    } else {
-                        resolve({
-                            success: true,
-                            output: stdout,
-                            error: null
-                        });
-                    }
-                });
-
-                // Send input if provided
-                if (input) {
-                    child.stdin.write(input);
-                    child.stdin.end();
-                }
-            });
-        } catch (err) {
-            resolve({
-                success: false,
-                output: err.message,
-                error: err.message
-            });
-        }
-    });
-}
-
-// Execute C code
-async function executeC(code, input) {
-    return new Promise((resolve) => {
-        const fileName = `temp_${Date.now()}.c`;
-        const filePath = path.join(tempDir, fileName);
-        const exePath = path.join(tempDir, `temp_${Date.now()}.exe`);
-
-        try {
-            fs.writeFileSync(filePath, code);
-
-            // Compile first
-            exec(`gcc "${filePath}" -o "${exePath}"`, (compileError, compileStdout, compileStderr) => {
-                if (compileError) {
-                    // Clean up
-                    try {
-                        fs.unlinkSync(filePath);
-                    } catch (e) {}
-
-                    resolve({
-                        success: false,
-                        output: compileStderr || compileError.message,
-                        error: compileStderr || compileError.message
-                    });
-                    return;
-                }
-
-                // Run the compiled executable
-                const child = exec(`"${exePath}"`, { timeout: 5000 }, (error, stdout, stderr) => {
-                    // Clean up files
-                    try {
-                        fs.unlinkSync(filePath);
-                        fs.unlinkSync(exePath);
-                    } catch (e) {
-                        // Ignore cleanup errors
-                    }
-
-                    if (error) {
-                        resolve({
-                            success: false,
-                            output: stderr || error.message,
-                            error: stderr || error.message
-                        });
-                    } else {
-                        resolve({
-                            success: true,
-                            output: stdout,
-                            error: null
-                        });
-                    }
-                });
-
-                // Send input if provided
-                if (input) {
-                    child.stdin.write(input);
-                    child.stdin.end();
-                }
-            });
-        } catch (err) {
-            resolve({
-                success: false,
-                output: err.message,
-                error: err.message
-            });
-        }
-    });
-}

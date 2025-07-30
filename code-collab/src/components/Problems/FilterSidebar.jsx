@@ -1,8 +1,10 @@
 // src/components/FilterSidebar.js
 import React, { useState, useEffect } from 'react';
 import { ChevronDown, ChevronRight, X } from 'lucide-react';
+import { useTheme } from '../../context/ThemeContext';
 
 const FilterSidebar = ({ onFilterChange }) => {
+    const { theme } = useTheme();
     const [expandedSections, setExpandedSections] = useState({
         difficulty: true,
         tags: true,
@@ -97,11 +99,11 @@ const FilterSidebar = ({ onFilterChange }) => {
     );
 
     return (
-        <div className="w-80 bg-slate-800 text-white p-4 h-screen overflow-y-auto border-r border-slate-700">
+        <div className={`w-80 ${theme.bg.secondary} ${theme.text.primary} p-4 border-r ${theme.border.primary}`}>
             {/* Difficulty Section */}
             <div className="mb-6">
                 <div className="flex items-center justify-between cursor-pointer mb-3" onClick={() => toggleSection('difficulty')}>
-                    <h3 className="text-sm font-medium text-gray-300 uppercase tracking-wide">DIFFICULTY</h3>
+                    <h3 className={`text-sm font-medium ${theme.text.secondary} uppercase tracking-wide`}>DIFFICULTY</h3>
                     {expandedSections.difficulty ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                 </div>
                 {expandedSections.difficulty && (

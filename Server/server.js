@@ -42,6 +42,7 @@ const startAPI = process.env.API_START;
 const authRoutes = require('./routes/authRoute');
 const problemRoutes = require('./routes/problemRoute');
 const codeExecutionRoutes = require('./routes/codeExecutionRoute');
+const preparationRoutes = require('./routes/preparationRoute');
 
 
 
@@ -61,6 +62,7 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(`${startAPI}`, authRoutes);
 app.use(`${startAPI}/problem`, problemRoutes);
 app.use(`${startAPI}/code`, codeExecutionRoutes);
+app.use(`${startAPI}/preparation`, preparationRoutes);
 
 // Collaboration routes
 app.get(`${startAPI}/collaboration/room/:roomId`, collaborationController.getRoomInfo.bind(collaborationController));

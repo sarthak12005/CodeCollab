@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../context/userContext";
+import { useTheme } from "../../context/ThemeContext";
 import { IoPlay } from "react-icons/io5";
 import { FaShareAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 const Confirmation = () => {
-
   const navigate = useNavigate();
   const {user} = useAuth();
+  const { theme } = useTheme();
 
   const handleClick = () => {
      if (!user) {
@@ -17,16 +18,16 @@ const Confirmation = () => {
      }
   }
   return (
-    <section className="bg-[#0a0a12] text-white py-20 px-4 flex flex-col items-center justify-center gap-2.5 border-b border-white">
+    <section className={`${theme.bg.secondary} ${theme.text.primary} py-20 px-4 flex flex-col items-center justify-center gap-2.5 border-b border-white`}>
       <div className="header-text flex justify-center items-center gap-2">
-        <h1 className="text-[64px] text-white font-bold">Ready To</h1>
-        <h1 className="text-[64px] bg-clip-text text-transparent bg-gradient-to-r from-[#6e44ff] to-[#1cb8ff] font-bold">
+        <h1 className={`text-[64px] ${theme.text.primary} font-bold`}>Ready To</h1>
+        <h1 className={`text-[64px] bg-clip-text text-transparent ${theme.gradient.primary} font-bold`}>
           Code Together
         </h1>
-        <h1 className="text-[64px] text-white font-bold">?</h1>
+        <h1 className={`text-[64px] ${theme.text.primary} font-bold`}>?</h1>
       </div>
       <div className="header-text flex flex-col justify-center items-center gap-2">
-        <h1 className="text-[22px] text-white font-bold">
+        <h1 className={`text-[22px] ${theme.text.primary} font-bold`}>
           Join thousands of developers who are building the future, together.
         </h1>
         <h1 className="text-[22px] text-white font-bold">
