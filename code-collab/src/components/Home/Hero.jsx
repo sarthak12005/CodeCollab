@@ -90,7 +90,7 @@ const Hero = () => {
                   }}
                   cursor={true}
                   repeat={false}
-                  className="text-white"
+                  className={`${theme.text.secondary}`}
                 />
               </div>
             </div>
