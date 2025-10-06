@@ -48,15 +48,15 @@ const Footer = () => {
           <h1 className={`text-2xl font-bold ${theme.text.primary} text-start` }>
             Stay Updated
           </h1>
-          <h1 className="text-white">
+          <h1 className={`${theme.text.primary}`}>
             Subscribe to our newsletter for updates and features.
           </h1>
-          <div className="input-tag relative ">
+          <div className={`input-tag relative `}>
             <input
               type="email"
               name="email"
               id="email"
-              className="bg-[#1a1a2e] py-2.5 px-10 rounded-[9px]"
+              className={`${theme.bg.secondary} py-2.5 px-10 rounded-[9px] border-1 `}
             />
             <button className="bg-[#6e44ff] py-2.5 px-3 text-white text-2xl font-bold rounded-r-[9px] absolute right-0">
               <IoIosSend />
