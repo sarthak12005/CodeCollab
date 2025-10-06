@@ -41,10 +41,10 @@ const Problems = () => {
       <Header />
 
       {/* Search Bar Section */}
-      <div className={`${theme.bg.secondary} border-b ${theme.border.primary} sticky top-16 z-40`}>
+      {/* <div className={`${theme.bg.secondary} border-b ${theme.border.primary} sticky top-16 z-40`}>
         <div className="max-w-7xl mx-auto mobile-padding sm:px-6 lg:px-8 py-4">
           <div className="flex items-center gap-3">
-            {/* Mobile Filter Button */}
+            
             <button
               onClick={toggleFilter}
               className={`lg:hidden p-2 rounded-lg ${theme.bg.tertiary} ${theme.text.secondary} hover:${theme.text.accent.replace('text-', '')} transition-colors`}
@@ -53,7 +53,7 @@ const Problems = () => {
               <Filter size={20} />
             </button>
 
-            {/* Search Input */}
+           
             <div className="flex-1 max-w-lg mx-auto lg:mx-0">
               <div className="relative">
                 <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${theme.text.tertiary} w-5 h-5`} />
@@ -68,7 +68,7 @@ const Problems = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Mobile Filter Overlay */}
       {isFilterOpen && deviceInfo.isMobile && (
@@ -96,7 +96,7 @@ const Problems = () => {
       {/* Main Content */}
       <div className="flex">
         {/* Desktop Filter Sidebar */}
-        <div className="hidden lg:block w-80 flex-shrink-0 sticky top-32 h-[calc(100vh-8rem)] overflow-y-auto">
+        <div className="hidden  lg:block w-75 flex-shrink-0 sticky top-22 h-[calc(100vh-8rem)] overflow-y-auto">
           <FilterSidebar onFilterChange={handleFilterChange} theme={theme} />
         </div>
 
@@ -106,7 +106,7 @@ const Problems = () => {
         </div>
 
         {/* Activity Sidebar - Desktop Only */}
-        <div className="w-80 flex-shrink-0 hidden xl:block sticky top-32 h-[calc(100vh-8rem)] overflow-y-auto">
+        <div className="w-80 flex-shrink-0 hidden xl:block sticky top-22 h-[calc(100vh-4rem)] overflow-y-auto">
           <ActivitySidebar theme={theme} />
         </div>
       </div>

@@ -44,7 +44,7 @@ const Header = () => {
     <>
       <header className={`${theme.bg.header} sticky top-0 z-50 shadow-lg transition-colors duration-300 `}>
         <div className="container mx-auto mobile-padding sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 md:h-20">
+          <div className="flex items-center justify-between h-14 md:h-20">
             {/* Logo */}
             <div className="flex-shrink-0 flex items-center">
               <h1
@@ -85,7 +85,7 @@ const Header = () => {
               {/* Theme Toggle - Desktop */}
               <button
                 onClick={toggleTheme}
-                className={`p-2 rounded-lg ${theme.bg.tertiary} ${theme.text.secondary} hover:${theme.text.accent.replace('text-', '')} transition-all duration-200 hover-desktop`}
+                className={`p-1 rounded-lg ${theme.bg.tertiary} ${theme.text.secondary} hover:${theme.text.accent.replace('text-', '')} transition-all duration-200 hover-desktop flex justify-center items-center`}
                 title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
               >
                 {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
@@ -107,7 +107,7 @@ const Header = () => {
                     />
                   </div>
                   <span className={`${theme.text.secondary} font-medium hidden xl:block`}>
-                    {user?.name || 'Profile'}
+                    {user?.username || 'Profile'}
                   </span>
                 </div>
               ) : (
@@ -129,11 +129,11 @@ const Header = () => {
             </div>
 
             {/* Mobile menu button and theme toggle */}
-            <div className="lg:hidden flex items-center space-x-3">
+            <div className="lg:hidden flex justify-center items-center space-x-3">
               {/* Mobile Theme Toggle */}
               <button
                 onClick={toggleTheme}
-                className={`p-2 rounded-lg ${theme.bg.tertiary} ${theme.text.secondary} hover:${theme.text.accent.replace('text-', '')} transition-all duration-200`}
+                className={`p-2 rounded-lg ${theme.bg.tertiary} ${theme.text.secondary} hover:${theme.text.accent.replace('text-', '')} transition-all duration-200 flex justify-center items-center`}
                 title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
               >
                 {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
@@ -202,7 +202,7 @@ const Header = () => {
                     />
                   </div>
                   <div>
-                    <p className={`${theme.text.primary} font-medium`}>{user?.name || 'Profile'}</p>
+                    <p className={`${theme.text.primary} font-medium`}>{user?.username || 'Profile'}</p>
                     <p className={`${theme.text.tertiary} text-sm`}>View Profile</p>
                   </div>
                 </div>

@@ -294,7 +294,6 @@ const SingleProblem = () => {
     if (loading) {
         return (
             <div className={`min-h-screen ${theme.bg.primary} ${theme.text.primary} flex flex-col`}>
-                <Header />
                 <div className="flex-1 flex items-center justify-center">
                     <div className="text-center space-y-6">
                         <div className="relative">
@@ -358,7 +357,7 @@ const SingleProblem = () => {
 
     return (
         <div className={`min-h-screen ${theme.bg.primary} ${theme.text.primary} flex flex-col`}>
-            <Header />
+            {/* <Header /> */}
 
             {/* Problem Header - Enhanced */}
             <div className={`${theme.bg.secondary} border-b ${theme.border.primary} px-6 py-4 shadow-sm`}>

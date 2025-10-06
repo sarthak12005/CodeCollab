@@ -4,32 +4,37 @@ const path = require('path');
 const app = express();
 const { createServer } = require('http');
 const socketIo = require('socket.io');
+//db connection 
+const db = require('./config/db')
+require('dotenv').config();
 const CollaborationController = require('./controllers/collaborationController');
 
 const server = createServer(app);
 
+const origin_enpoint1 = process.env.ORIGIN_ADDRESS1;
+const origin_enpoint2 = process.env.ORIGIN_ADDRESS2;
+const origin_enpoint3 = process.env.ORIGIN_ADDRESS3;
+const origin_enpoint4 = process.env.ORIGIN_ADDRESS4;
+
 // Initialize Socket.io with CORS
 const io = socketIo(server, {
-    cors: {
-        origin: ["http://localhost:5173", "http://localhost:5174", "https://code-collab-sable.vercel.app"],
-        methods: ["GET", "POST"],
-        credentials: true
-    }
+  cors: {
+    origin: [`${origin_enpoint1}`, `${origin_enpoint2}`, `${origin_enpoint3}`, `${origin_enpoint4}`],
+    methods: ["GET", "POST"],
+    credentials: true
+  }
 });
 
 // Initialize collaboration controller
 const collaborationController = new CollaborationController(io);
 
-//db connection 
-const db = require('./config/db')
-require('dotenv').config();
+
 
 const PORT = process.env.PORT || 5000;
 
 
 
-const origin_enpoint1 = process.env.ORIGIN_ADDRESS1;
-const origin_enpoint2 = process.env.ORIGIN_ADDRESS2;
+
 
 
 
@@ -49,7 +54,7 @@ const preparationRoutes = require('./routes/preparationRoute');
 
 
 app.use(cors({
-  origin: [`${origin_enpoint1}`, `http://localhost:5174`, `https://code-collab-sable.vercel.app`], // Your frontend URL
+  origin: [`${origin_enpoint1}`, `${origin_enpoint2}`, `${origin_enpoint3}`, `${origin_enpoint4}`], // Your frontend URL
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
 }));
 
