@@ -23,9 +23,6 @@ module.exports = (server) => {
                 io.to(roomId).emit('receive-message', { message, userId });
             });
 
-
-
-
         })
 
         socket.on('disconnect', () => {

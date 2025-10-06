@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext, useRef, Fragment } from 'react';
 import { X, Users, Video, VideoOff, Mic, MicOff, MessageCircle, Copy, Check, Phone, PhoneOff } from 'lucide-react';
 import { UserContext } from '../../context/userContext';
-import io from 'socket.io-client'
+import io from 'socket.io-client';
 
 const API_URL = import.meta.env.VITE_API_ENDPOINT;
 

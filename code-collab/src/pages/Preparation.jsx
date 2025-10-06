@@ -3,10 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { Brain, Calculator, Code, ArrowRight, Users, Trophy, Clock } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import Header from '../components/Header';
+import useDeviceDetection from '../hooks/useDeviceDetection';
 
 const Preparation = () => {
     const navigate = useNavigate();
     const { theme } = useTheme();
+    const deviceInfo = useDeviceDetection();
 
     const categories = [
         {
@@ -54,12 +56,12 @@ const Preparation = () => {
 
             {/* Header Section */}
             <div className={`${theme.bg.secondary} ${theme.shadow.sm}`}>
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <div className="max-w-7xl mx-auto mobile-padding sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
                     <div className="text-center">
-                        <h1 className={`text-4xl font-bold ${theme.text.primary} mb-4`}>
+                        <h1 className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold ${theme.text.primary} mb-4 selectable-text`}>
                             Interview Preparation Hub
                         </h1>
-                        <p className={`text-xl ${theme.text.secondary} max-w-3xl mx-auto`}>
+                        <p className={`text-base sm:text-lg lg:text-xl ${theme.text.secondary} max-w-3xl mx-auto selectable-text`}>
                             Master your interview skills with our comprehensive collection of questions from top companies.
                             Practice, learn, and succeed in your dream job interviews.
                         </p>
@@ -68,54 +70,54 @@ const Preparation = () => {
             </div>
 
             {/* Stats Section */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                    <div className={`${theme.bg.card} rounded-lg ${theme.shadow.md} p-6 text-center`}>
-                        <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg mx-auto mb-4">
-                            <Users className="w-6 h-6 text-blue-600" />
+            <div className="max-w-7xl mx-auto mobile-padding sm:px-6 lg:px-8 py-6 sm:py-8">
+                <div className="responsive-grid gap-4 sm:gap-6 mb-8 sm:mb-12">
+                    <div className={`${theme.bg.card} rounded-lg ${theme.shadow.md} p-4 sm:p-6 text-center`}>
+                        <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-lg mx-auto mb-3 sm:mb-4">
+                            <Users className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
                         </div>
-                        <h3 className={`text-2xl font-bold ${theme.text.primary}`}>50+</h3>
-                        <p className={theme.text.secondary}>Top Companies</p>
+                        <h3 className={`text-xl sm:text-2xl font-bold ${theme.text.primary}`}>50+</h3>
+                        <p className={`${theme.text.secondary} text-sm sm:text-base`}>Top Companies</p>
                     </div>
-                    <div className={`${theme.bg.card} rounded-lg ${theme.shadow.md} p-6 text-center`}>
-                        <div className="flex items-center justify-center w-12 h-12 bg-green-100 rounded-lg mx-auto mb-4">
-                            <Trophy className="w-6 h-6 text-green-600" />
+                    <div className={`${theme.bg.card} rounded-lg ${theme.shadow.md} p-4 sm:p-6 text-center`}>
+                        <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-green-100 rounded-lg mx-auto mb-3 sm:mb-4">
+                            <Trophy className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
                         </div>
-                        <h3 className={`text-2xl font-bold ${theme.text.primary}`}>1600+</h3>
-                        <p className={theme.text.secondary}>Practice Questions</p>
+                        <h3 className={`text-xl sm:text-2xl font-bold ${theme.text.primary}`}>1600+</h3>
+                        <p className={`${theme.text.secondary} text-sm sm:text-base`}>Practice Questions</p>
                     </div>
-                    <div className={`${theme.bg.card} rounded-lg ${theme.shadow.md} p-6 text-center`}>
-                        <div className="flex items-center justify-center w-12 h-12 bg-purple-100 rounded-lg mx-auto mb-4">
-                            <Clock className="w-6 h-6 text-purple-600" />
+                    <div className={`${theme.bg.card} rounded-lg ${theme.shadow.md} p-4 sm:p-6 text-center`}>
+                        <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-purple-100 rounded-lg mx-auto mb-3 sm:mb-4">
+                            <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" />
                         </div>
-                        <h3 className={`text-2xl font-bold ${theme.text.primary}`}>24/7</h3>
-                        <p className={theme.text.secondary}>Available Practice</p>
+                        <h3 className={`text-xl sm:text-2xl font-bold ${theme.text.primary}`}>24/7</h3>
+                        <p className={`${theme.text.secondary} text-sm sm:text-base`}>Available Practice</p>
                     </div>
                 </div>
 
                 {/* Category Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="responsive-grid gap-6 sm:gap-8">
                     {categories.map((category) => {
                         const IconComponent = category.icon;
                         return (
                             <div
                                 key={category.id}
                                 onClick={() => handleCategoryClick(category.route)}
-                                className={`${theme.bg.card} rounded-xl ${theme.shadow.lg} hover:${theme.shadow.lg} transition-all duration-300 cursor-pointer transform hover:-translate-y-2 group`}
+                                className={`${theme.bg.card} rounded-xl ${theme.shadow.lg} hover:${theme.shadow.lg} transition-all duration-300 cursor-pointer transform hover:-translate-y-1 sm:hover:-translate-y-2 group`}
                             >
                                 {/* Card Header with Gradient */}
-                                <div className={`bg-gradient-to-r ${category.color} ${category.hoverColor} p-6 rounded-t-xl transition-all duration-300`}>
+                                <div className={`bg-gradient-to-r ${category.color} ${category.hoverColor} p-4 sm:p-6 rounded-t-xl transition-all duration-300`}>
                                     <div className="flex items-center justify-between">
-                                        <div className="flex items-center space-x-3">
-                                            <div className="bg-white bg-opacity-20 p-3 rounded-lg">
-                                                <IconComponent className="w-8 h-8 text-white" />
+                                        <div className="flex items-center space-x-2 sm:space-x-3">
+                                            <div className="bg-white bg-opacity-20 p-2 sm:p-3 rounded-lg">
+                                                <IconComponent className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                                             </div>
                                             <div>
-                                                <h3 className="text-xl font-bold text-white">{category.title}</h3>
-                                                <p className="text-white text-opacity-90 text-sm">{category.stats}</p>
+                                                <h3 className="text-lg sm:text-xl font-bold text-white">{category.title}</h3>
+                                                <p className="text-white text-opacity-90 text-xs sm:text-sm">{category.stats}</p>
                                             </div>
                                         </div>
-                                        <ArrowRight className="w-6 h-6 text-white group-hover:translate-x-1 transition-transform duration-300" />
+                                        <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 text-white group-hover:translate-x-1 transition-transform duration-300" />
                                     </div>
                                 </div>
 

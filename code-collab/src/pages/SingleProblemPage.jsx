@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios'
+import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Users, Copy, Mic, MicOff, Video, VideoOff, X, Plus, LogIn, Code } from 'lucide-react';
+import { Users, Copy, Mic, MicOff, Video, VideoOff, X, Code } from 'lucide-react';
 import ProblemDescription from '../components/SingleProblem/ProblemDescription';
 import SimpleCodeEditor from '../components/SingleProblem/SimpleCodeEditor';
 import '../styles/SingleProblem.css';
@@ -10,6 +10,8 @@ import LanguageSelector from '../components/SingleProblem/LanguageSelector';
 import CollaborationModal from '../components/Collaboration/CollaborationModal';
 import Header from '../components/Header';
 import { useTheme } from '../context/ThemeContext';
+import useDeviceDetection from '../hooks/useDeviceDetection';
+import MobileRestrictionPage from '../components/MobileRestriction/MobileRestrictionPage';
 
 const API_URL = import.meta.env.VITE_API_ENDPOINT;
 
@@ -17,6 +19,12 @@ const SingleProblem = () => {
     const { problemId } = useParams();
     const navigate = useNavigate();
     const { theme } = useTheme();
+    const deviceInfo = useDeviceDetection();
+
+    // Check if user is on mobile device and restrict access
+    if (deviceInfo.isMobile || deviceInfo.isTablet) {
+        return <MobileRestrictionPage />;
+    }
 
     if (!problemId) {
         alert("problemId is required");
@@ -260,7 +268,7 @@ const SingleProblem = () => {
     };
 
     const createRoom = () => {
-        const newRoomId = Math.random().toString(36).substr(2, 9);
+        const newRoomId = Math.random().toString(36).substring(2, 11);
         setRoomId(newRoomId);
         setIsCollaborating(true);
         setShowCollabModal(false);
@@ -285,10 +293,26 @@ const SingleProblem = () => {
     // Show loading state while fetching problem
     if (loading) {
         return (
-            <div className="min-h-screen bg-slate-900 text-white flex items-center justify-center">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600 mx-auto"></div>
-                    <p className="mt-4 text-gray-300">Loading problem...</p>
+            <div className={`min-h-screen ${theme.bg.primary} ${theme.text.primary} flex flex-col`}>
+                <Header />
+                <div className="flex-1 flex items-center justify-center">
+                    <div className="text-center space-y-6">
+                        <div className="relative">
+                            <div className="animate-spin rounded-full h-20 w-20 border-4 border-indigo-200 border-t-indigo-600 mx-auto"></div>
+                            <div className="absolute inset-0 flex items-center justify-center">
+                                <div className="w-8 h-8 bg-indigo-600 rounded-full animate-pulse"></div>
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            <h3 className={`text-xl font-semibold ${theme.text.primary}`}>Loading Problem</h3>
+                            <p className={`${theme.text.secondary} text-sm`}>Fetching problem details and templates...</p>
+                        </div>
+                        <div className="flex justify-center space-x-1">
+                            <div className="w-2 h-2 bg-indigo-600 rounded-full animate-bounce"></div>
+                            <div className="w-2 h-2 bg-indigo-600 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                            <div className="w-2 h-2 bg-indigo-600 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         );
@@ -297,15 +321,36 @@ const SingleProblem = () => {
     // Show error state if problem failed to load
     if (!problem) {
         return (
-            <div className="min-h-screen bg-slate-900 text-white flex items-center justify-center">
-                <div className="text-center">
-                    <p className="text-red-400 text-lg mb-4">Failed to load problem</p>
-                    <button
-                        onClick={() => navigate('/problem')}
-                        className="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg"
-                    >
-                        Go back to problems
-                    </button>
+            <div className={`min-h-screen ${theme.bg.primary} ${theme.text.primary} flex flex-col`}>
+                <Header />
+                <div className="flex-1 flex items-center justify-center">
+                    <div className="text-center space-y-6 max-w-md mx-auto px-6">
+                        <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto">
+                            <svg className="w-10 h-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                            </svg>
+                        </div>
+                        <div className="space-y-2">
+                            <h3 className="text-xl font-semibold text-red-400">Problem Not Found</h3>
+                            <p className={`${theme.text.secondary} text-sm`}>
+                                We couldn't load the problem details. This might be due to a network issue or the problem may not exist.
+                            </p>
+                        </div>
+                        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                            <button
+                                onClick={() => window.location.reload()}
+                                className="bg-indigo-600 hover:bg-indigo-700 px-6 py-2 rounded-lg text-white font-medium transition-colors"
+                            >
+                                Try Again
+                            </button>
+                            <button
+                                onClick={() => navigate('/problem')}
+                                className={`${theme.bg.secondary} hover:${theme.bg.tertiary} px-6 py-2 rounded-lg ${theme.text.primary} font-medium transition-colors border ${theme.border.primary}`}
+                            >
+                                Back to Problems
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         );
@@ -315,82 +360,133 @@ const SingleProblem = () => {
         <div className={`min-h-screen ${theme.bg.primary} ${theme.text.primary} flex flex-col`}>
             <Header />
 
-            {/* Problem Header */}
-            <div className={`${theme.bg.secondary} border-b ${theme.border.primary} px-6 py-3 flex items-center justify-between`}>
-                <div className="flex items-center gap-3">
-                    <span className={`text-sm ${theme.bg.tertiary} px-2 py-1 rounded font-medium`}>{problem?.title || 'Loading...'}</span>
-                    <span className={`text-xs bg-green-500 px-2 py-1 rounded font-medium text-white`}>{problem?.difficulty || 'Easy'}</span>
-                </div>
-                <div className="flex items-center gap-3">
-                    <button
-                        onClick={() => navigate(`/problems/${problemId}/submissions`)}
-                        className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-medium transition-colors"
-                    >
-                        <Code size={16} />
-                        View Submissions
-                    </button>
-                    <button
-                        onClick={() => setShowCollabModal(true)}
-                        className="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-medium transition-colors"
-                    >
-                        <Users size={16} />
-                        Collaborate
-                    </button>
+            {/* Problem Header - Enhanced */}
+            <div className={`${theme.bg.secondary} border-b ${theme.border.primary} px-6 py-4 shadow-sm`}>
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-3">
+                            <h1 className={`text-lg font-bold ${theme.text.primary} truncate max-w-md`}>
+                                {problem?.title || 'Loading...'}
+                            </h1>
+                            <span className={`text-xs px-3 py-1 rounded-full font-semibold text-white ${
+                                problem?.difficulty === 'Easy' ? 'bg-green-500' :
+                                problem?.difficulty === 'Medium' ? 'bg-yellow-500' :
+                                'bg-red-500'
+                            }`}>
+                                {problem?.difficulty || 'Easy'}
+                            </span>
+                        </div>
+                        {problem?.tags && problem.tags.length > 0 && (
+                            <div className="hidden md:flex items-center gap-2">
+                                {problem.tags.slice(0, 3).map((tag, index) => (
+                                    <span key={index} className={`text-xs px-2 py-1 rounded ${theme.bg.tertiary} ${theme.text.secondary}`}>
+                                        {tag}
+                                    </span>
+                                ))}
+                                {problem.tags.length > 3 && (
+                                    <span className={`text-xs ${theme.text.secondary}`}>+{problem.tags.length - 3} more</span>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={() => navigate(`/problems/${problemId}/submissions`)}
+                            className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-medium transition-all duration-200 hover:shadow-lg"
+                        >
+                            <Code size={16} />
+                            <span className="hidden sm:inline">View Submissions</span>
+                        </button>
+                        <button
+                            onClick={() => setShowCollabModal(true)}
+                            className="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-medium transition-all duration-200 hover:shadow-lg"
+                        >
+                            <Users size={16} />
+                            <span className="hidden sm:inline">Collaborate</span>
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            {/* Main Content */}
-            <div className="flex flex-1 pt-16 overflow-hidden" style={{ height: 'calc(100vh - 4rem)' }}>
+            {/* Main Content - Enhanced Layout */}
+            <div className="flex flex-1 overflow-hidden" style={{ height: 'calc(100vh - 140px)' }}>
                 {/* Left Sidebar - Problem Description */}
-                <div className="w-2/5 min-w-[350px] max-w-[450px] bg-slate-800 border-r border-slate-700 flex flex-col">
-                    <ProblemDescription problem={problem} />
+                <div className={`w-2/5 min-w-[380px] max-w-[480px] ${theme.bg.secondary} border-r ${theme.border.primary} flex flex-col shadow-lg`}>
+                    <div className={`${theme.bg.tertiary} px-4 py-3 border-b ${theme.border.primary}`}>
+                        <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                            <h2 className={`font-semibold ${theme.text.primary}`}>Problem Description</h2>
+                        </div>
+                    </div>
+                    <div className="flex-1 overflow-hidden hide-scrollbar">
+                        <ProblemDescription problem={problem} />
+                    </div>
                 </div>
 
                 {/* Center - Code Editor and Output */}
                 <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-                    {/* Editor Header */}
-                    <div className="bg-slate-800 border-b border-slate-700 px-4 py-3 flex items-center justify-between flex-shrink-0 h-14">
-                        <div className="flex items-center gap-3">
-                            <span className="text-sm text-gray-300">{problem?.title || 'Loading...'}</span>
+                    {/* Editor Header - Enhanced */}
+                    <div className={`${theme.bg.tertiary} px-4 py-3 border-b ${theme.border.primary} flex items-center justify-between shadow-sm flex-shrink-0`}>
+                        <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-2">
+                                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                                <span className={`font-medium ${theme.text.primary}`}>Code Editor</span>
+                            </div>
                             <LanguageSelector language={language} setLanguage={setLanguage} />
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-3">
                             <button
                                 onClick={runCode}
                                 disabled={isRunning}
-                                className="bg-green-600 hover:bg-green-700 disabled:bg-green-800 px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-medium transition-colors"
+                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
+                                    isRunning
+                                        ? 'bg-gray-600 cursor-not-allowed opacity-70'
+                                        : 'bg-green-600 hover:bg-green-700 hover:shadow-lg transform hover:scale-105'
+                                }`}
                             >
-                                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
-                                </svg>
-                                {isRunning ? 'Running...' : 'Run Code'}
+                                {isRunning ? (
+                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                ) : (
+                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+                                    </svg>
+                                )}
+                                <span className="hidden sm:inline">{isRunning ? 'Running...' : 'Run Code'}</span>
                             </button>
                             <button
                                 onClick={handleSubmit}
                                 disabled={!lastExecutionSuccess}
-                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                                     lastExecutionSuccess
-                                        ? 'bg-purple-600 hover:bg-purple-700'
-                                        : 'bg-gray-600 cursor-not-allowed'
+                                        ? 'bg-purple-600 hover:bg-purple-700 hover:shadow-lg transform hover:scale-105'
+                                        : 'bg-gray-600 cursor-not-allowed opacity-70'
                                 }`}
+                                title={!lastExecutionSuccess ? 'Run your code successfully first' : 'Submit your solution'}
                             >
-                                Submit
+                                <span className="hidden sm:inline">Submit</span>
+                                <span className="sm:hidden">Submit</span>
                             </button>
                         </div>
                     </div>
 
-                    {/* Code Editor - Fixed Height */}
-                    <div className="bg-slate-900 overflow-y-auto" style={{ height: '60%' }}>
-                        <SimpleCodeEditor
-                            code={code}
-                            setCode={setCode}
-                            language={language}
-                        />
+                    {/* Code Editor - Enhanced */}
+                    <div className={`${theme.bg.primary} overflow-hidden relative`} style={{ height: '60%' }}>
+                        <div className="absolute inset-0 overflow-y-auto hide-scrollbar" >
+                            <SimpleCodeEditor
+                                code={code}
+                                setCode={setCode}
+                                language={language}
+                            />
+                        </div>
                     </div>
 
-                    {/* Output Console - Fixed Height */}
-                    <div className="bg-slate-800 border-t-2 border-slate-600 overflow-hidden" style={{ height: '40%' }}>
-                        <OutputConsole output={output} />
+                    {/* Output Console - Enhanced */}
+                    <div className={`${theme.bg.secondary} border-t ${theme.border.primary} relative`} style={{ height: '40%' }}>
+                        <OutputConsole
+                            output={output}
+                            isRunning={isRunning}
+                            onClearOutput={() => setOutput('')}
+                        />
                     </div>
                 </div>
 

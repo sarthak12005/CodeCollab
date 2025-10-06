@@ -3,6 +3,8 @@ import { Eye, EyeOff, Github } from "lucide-react";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../context/userContext';
+import { useTheme } from '../context/ThemeContext';
+import useDeviceDetection from '../hooks/useDeviceDetection';
 import axios from 'axios';
 const API_URL = import.meta.env.VITE_API_ENDPOINT;
 
@@ -13,6 +15,8 @@ const Login = () => {
 
   const navigate = useNavigate();
   const {user, updateUser, loginWithGoogle, loginWithgithub } = useAuth();
+  const { theme } = useTheme();
+  const deviceInfo = useDeviceDetection();
 
   useEffect(() => {
      if (user) {
@@ -74,45 +78,33 @@ const Login = () => {
   // };
 
   return (
-    <div className="min-h-screen bg-gray-900 flex items-center justify-center relative overflow-hidden">
-      {/* Fullscreen Exit Button */}
-      {/* {isFullscreen && (
-                <div className="absolute top-6 left-1/2 transform -translate-x-1/2 z-20">
-                    <div className="bg-gray-800 bg-opacity-90 px-4 py-2 rounded-lg border border-gray-700 text-gray-300 text-sm">
-                        To exit full screen, press and hold{' '}
-                        <kbd className="bg-gray-700 px-2 py-1 rounded text-xs border border-gray-600 ml-1">
-                            Esc
-                        </kbd>
-                    </div>
-                </div>
-            )} */}
-
+    <div className={`min-h-screen ${theme.bg.primary} flex items-center justify-center relative overflow-hidden mobile-padding`}>
       <div
-        className="absolute top-4 left-4 w-10 h-10 rounded-full cursor-pointer bg-gradient-to-r from-[#6e44ff] to-[#1cb8ff] flex items-center justify-center text-white z-10 "
+        className={`absolute top-4 left-4 w-10 h-10 sm:w-12 sm:h-12 rounded-full cursor-pointer ${theme.button.primary} flex items-center justify-center text-white z-10 safe-area-top safe-area-left`}
         onClick={() => navigate("/")}
       >
-        <FaArrowLeftLong size={20} />
+        <FaArrowLeftLong size={deviceInfo.isMobile ? 18 : 20} />
       </div>
 
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-20 left-20 w-96 h-96 bg-purple-600 bg-opacity-20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-20 w-80 h-80 bg-blue-600 bg-opacity-20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-10 w-64 h-64 bg-cyan-600 bg-opacity-15 rounded-full blur-2xl animate-pulse delay-500"></div>
+        <div className="absolute top-10 sm:top-20 left-10 sm:left-20 w-48 h-48 sm:w-96 sm:h-96 bg-purple-600 bg-opacity-20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-10 sm:bottom-20 right-10 sm:right-20 w-40 h-40 sm:w-80 sm:h-80 bg-blue-600 bg-opacity-20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-5 sm:left-10 w-32 h-32 sm:w-64 sm:h-64 bg-cyan-600 bg-opacity-15 rounded-full blur-2xl animate-pulse delay-500"></div>
       </div>
 
-      <div className="flex w-full max-w-6xl mx-auto px-8 relative z-10">
+      <div className="flex flex-col lg:flex-row w-full max-w-6xl mx-auto px-4 sm:px-8 relative z-10 gap-8 lg:gap-0">
         {/* Left Side - Welcome Section */}
-        <div className="flex-1 flex flex-col justify-center items-start pr-16">
-          {/* Improved Code Animation */}
-          <div className="mb-8 relative">
-            <div className="bg-gray-800 bg-opacity-80 backdrop-blur-sm rounded-xl p-6 border border-gray-700 shadow-2xl">
+        <div className="flex-1 flex flex-col justify-center items-start lg:pr-16 order-2 lg:order-1">
+          {/* Improved Code Animation - Hidden on mobile */}
+          <div className="mb-6 sm:mb-8 relative hidden lg:block">
+            <div className={`${theme.bg.secondary} bg-opacity-80 backdrop-blur-sm rounded-xl p-4 sm:p-6 border ${theme.border.primary} ${theme.shadow.lg}`}>
               <div className="flex space-x-2 mb-4">
-                <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-red-500 rounded-full"></div>
+                <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-yellow-500 rounded-full"></div>
+                <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-green-500 rounded-full"></div>
               </div>
-              <div className="space-y-2 text-sm font-mono">
+              <div className="space-y-2 text-xs sm:text-sm font-mono">
                 <div className="text-blue-400">
                   <span className="text-purple-400">function</span>{" "}
                   <span className="text-yellow-400">collaborate</span>() {"{"}
@@ -128,34 +120,34 @@ const Login = () => {
               </div>
 
               {/* Animated cursor */}
-              <div className="inline-block w-2 h-5 bg-white animate-pulse ml-1"></div>
+              <div className="inline-block w-1.5 h-4 sm:w-2 sm:h-5 bg-white animate-pulse ml-1"></div>
             </div>
 
             {/* Floating particles */}
-            <div className="absolute -top-2 -right-2 w-4 h-4 bg-purple-500 rounded-full animate-bounce"></div>
-            <div className="absolute -bottom-2 -left-2 w-3 h-3 bg-cyan-500 rounded-full animate-bounce delay-300"></div>
-            <div className="absolute top-1/2 -right-4 w-2 h-2 bg-pink-500 rounded-full animate-ping"></div>
+            <div className="absolute -top-2 -right-2 w-3 h-3 sm:w-4 sm:h-4 bg-purple-500 rounded-full animate-bounce"></div>
+            <div className="absolute -bottom-2 -left-2 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-cyan-500 rounded-full animate-bounce delay-300"></div>
+            <div className="absolute top-1/2 -right-4 w-1.5 h-1.5 sm:w-2 sm:h-2 bg-pink-500 rounded-full animate-ping"></div>
           </div>
 
-          <div className="text-left">
-            <h1 className="text-5xl font-bold mb-4">
+          <div className="text-center lg:text-left">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 selectable-text">
               <span className="text-purple-400">Welcome</span>{" "}
               <span className="text-blue-400">Back to</span>
               <br />
-              <span className="text-white">CodeCollab</span>
+              <span className={theme.text.primary}>CodeCollab</span>
             </h1>
-            <p className="text-gray-400 text-lg">
+            <p className={`${theme.text.secondary} text-base sm:text-lg selectable-text`}>
               Continue your coding journey with collaborators
-              <br />
-              worldwide
+              <br className="hidden sm:block" />
+              <span className="sm:hidden"> </span>worldwide
             </p>
           </div>
         </div>
 
         {/* Right Side - Login Form */}
-        <div className="w-96">
-          <div className="bg-gray-800 bg-opacity-90 backdrop-blur-sm rounded-xl p-8 border border-gray-700 shadow-2xl">
-            <h2 className="text-2xl font-bold text-white mb-8 text-center">
+        <div className="w-full max-w-md mx-auto lg:w-96 lg:mx-0 order-1 lg:order-2">
+          <div className={`${theme.bg.secondary} bg-opacity-90 backdrop-blur-sm rounded-xl p-6 sm:p-8 border ${theme.border.primary} ${theme.shadow.lg}`}>
+            <h2 className={`text-xl sm:text-2xl font-bold ${theme.text.primary} mb-6 sm:mb-8 text-center`}>
               Login to Your Account
             </h2>
 

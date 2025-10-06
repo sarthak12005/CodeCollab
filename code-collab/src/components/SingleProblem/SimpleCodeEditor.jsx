@@ -60,7 +60,7 @@ const SimpleCodeEditor = ({ code, setCode, language }) => {
     }, [code]);
 
     return (
-        <div className="h-full bg-slate-900 flex flex-col overflow-hidden">
+        <div className="h-full bg-slate-900 flex flex-col overflow-hidden hide-scrollbar">
             {/* Editor Header */}
             <div className="bg-slate-800 border-b border-slate-700 px-4 py-2 flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -80,7 +80,7 @@ const SimpleCodeEditor = ({ code, setCode, language }) => {
             </div>
             
             {/* Code Editor */}
-            <div className="flex-1 relative overflow-y-scroll">
+            <div className="flex-1 relative overflow-y-scroll hide-scrollbar">
                 <textarea
                     ref={textareaRef}
                     value={code}

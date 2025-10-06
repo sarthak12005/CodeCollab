@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useTheme } from '../../context/ThemeContext';
+import { Trash2, Play, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 
-const OutputConsole = ({ output }) => {
+const OutputConsole = ({ output, isRunning, onClearOutput }) => {
+  const { theme } = useTheme();
   const [activeTab, setActiveTab] = useState('Output');
 
   const tabs = ['Output', 'Test Cases', 'Debug'];
@@ -42,11 +45,30 @@ const OutputConsole = ({ output }) => {
   }, [output]);
 
   return (
-    <div className="h-full bg-slate-800 flex flex-col">
-      {/* Console Header */}
-      <div className="bg-slate-700 px-4 py-2 border-b border-slate-600 flex items-center gap-2">
-        <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-        <span className="text-sm font-medium text-gray-200">Output Console</span>
+    <div className={`h-full ${theme.bg.secondary} flex flex-col`}>
+      {/* Console Header - Enhanced */}
+      <div className={`${theme.bg.tertiary} px-4 py-3 border-b ${theme.border.primary} flex items-center justify-between shadow-sm`}>
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
+          <span className={`text-sm font-semibold ${theme.text.primary}`}>Output Console</span>
+          {isRunning && (
+            <div className="flex items-center gap-2 ml-3">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <span className={`text-xs ${theme.text.secondary}`}>Running...</span>
+            </div>
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          {output && (
+            <button
+              onClick={onClearOutput}
+              className={`p-1.5 rounded hover:${theme.bg.primary} ${theme.text.secondary} hover:${theme.text.primary} transition-colors`}
+              title="Clear output"
+            >
+              <Trash2 size={14} />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Tab Headers */}
