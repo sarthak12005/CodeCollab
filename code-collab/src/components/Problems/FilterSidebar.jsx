@@ -99,9 +99,9 @@ const FilterSidebar = ({ onFilterChange }) => {
     );
 
     return (
-        <div className={`w-80 ${theme.bg.secondary} ${theme.text.primary} p-4 border-r ${theme.border.primary}`}>
+        <div className={`w-75 ${theme.bg.secondary} ${theme.text.primary} p-4 border-r ${theme.border.primary}`}>
             {/* Difficulty Section */}
-            <div className="mb-6">
+            <div className="mb-4">
                 <div className="flex items-center justify-between cursor-pointer mb-3" onClick={() => toggleSection('difficulty')}>
                     <h3 className={`text-sm font-medium ${theme.text.secondary} uppercase tracking-wide`}>DIFFICULTY</h3>
                     {expandedSections.difficulty ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
@@ -126,7 +126,7 @@ const FilterSidebar = ({ onFilterChange }) => {
             </div>
 
             {/* Tags Section */}
-            <div className="mb-6">
+            <div className="mb-4">
                 <div className="flex items-center justify-between cursor-pointer mb-3" onClick={() => toggleSection('tags')}>
                     <h3 className="text-sm font-medium text-gray-300 uppercase tracking-wide">TAGS</h3>
                     {expandedSections.tags ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
@@ -164,7 +164,7 @@ const FilterSidebar = ({ onFilterChange }) => {
             </div>
 
             {/* Status Section */}
-            <div className="mb-6">
+            <div className="mb-4">
                 <div className="flex items-center justify-between cursor-pointer mb-3" onClick={() => toggleSection('status')}>
                     <h3 className="text-sm font-medium text-gray-300 uppercase tracking-wide">STATUS</h3>
                     {expandedSections.status ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
@@ -188,7 +188,7 @@ const FilterSidebar = ({ onFilterChange }) => {
             </div>
 
             {/* Companies Section */}
-            <div className="mb-6">
+            <div className="mb-2">
                 <div className="flex items-center justify-between cursor-pointer mb-3" onClick={() => toggleSection('companies')}>
                     <h3 className="text-sm font-medium text-gray-300 uppercase tracking-wide">COMPANIES</h3>
                     {expandedSections.companies ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
@@ -213,7 +213,7 @@ const FilterSidebar = ({ onFilterChange }) => {
 
             {/* Reset Filters */}
             <button
-                className="w-full bg-slate-700 hover:bg-slate-600 text-gray-300 px-4 py-2 rounded text-sm font-medium"
+                className="w-full bg-slate-700 hover:bg-slate-600 text-gray-300 px-3 py-1 rounded text-sm font-medium"
                 onClick={() => {
                     setSelectedFilters({
                         difficulty: { Easy: true, Medium: true, Hard: true },

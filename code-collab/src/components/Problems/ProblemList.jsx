@@ -184,21 +184,27 @@ const ProblemList = ({ filters, searchQuery }) => {
                         </div>
                       )}
                     </div>
+                    <div className='flex gap-2'>
+                      <span
+                        className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${problem.difficulty === 'Easy'
+                          ? 'bg-green-500'
+                          : problem.difficulty === 'Medium'
+                            ? 'bg-yellow-500'
+                            : 'bg-red-500'
+                          } text-white`}
+                      >
+                        {problem.difficulty}
+                      </span>
+                      <span className="text-sm text-gray-400">
+                        {problem.acceptanceRate}%
+                      </span>
+                    </div>
                   </div>
 
                   <div className="flex items-center space-x-4 mb-3">
-                    <span
-                      className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${problem.difficulty === 'Easy'
-                        ? 'bg-green-500'
-                        : problem.difficulty === 'Medium'
-                          ? 'bg-yellow-500'
-                          : 'bg-red-500'
-                        } text-white`}
-                    >
-                      {problem.difficulty}
-                    </span>
 
-                    <div className="flex items-center space-x-2">
+
+                    {/* <div className="flex items-center space-x-2">
                       {problem.tags.map((tag, index) => (
                         <span
                           key={index}
@@ -207,16 +213,14 @@ const ProblemList = ({ filters, searchQuery }) => {
                           {tag}
                         </span>
                       ))}
-                    </div>
+                    </div> */}
 
-                    <span className="text-sm text-gray-400">
-                      {problem.acceptanceRate}
-                    </span>
+
                   </div>
 
-                  <p className="text-sm text-gray-300 leading-relaxed">
+                  {/* <p className="text-sm text-gray-300 leading-relaxed">
                     {problem.description}
-                  </p>
+                  </p> */}
                 </div>
 
                 <div className="ml-4 flex items-start space-x-2">
