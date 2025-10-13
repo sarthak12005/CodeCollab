@@ -14,10 +14,12 @@ import Preparation from "./pages/Preparation";
 import Interview from "./pages/preparation/Interview";
 import Aptitude from "./pages/preparation/Aptitude";
 import Coding from "./pages/preparation/Coding";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
-    <Routes>
+    <div>
+      <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/problems" element={<Problems />} />
       <Route path="/problems/singleProblem/:problemId" element={<SingleProblemPage />} />
@@ -32,6 +34,8 @@ function App() {
       <Route path="/preparation/coding" element={<Coding />} />
       <Route path="/*" element={<NotFoundPage />} />
     </Routes>
+    <Toaster position="top-right" reverseOrder={false}/>
+    </div>
   );
 }
 

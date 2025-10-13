@@ -357,8 +357,6 @@ const SingleProblem = () => {
 
     return (
         <div className={`min-h-screen ${theme.bg.primary} ${theme.text.primary} flex flex-col`}>
-            {/* <Header /> */}
-
             {/* Problem Header - Enhanced */}
             <div className={`${theme.bg.secondary} border-b ${theme.border.primary} px-6 py-4 shadow-sm`}>
                 <div className="flex items-center justify-between">

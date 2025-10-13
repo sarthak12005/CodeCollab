@@ -23,6 +23,10 @@ const ProblemSchema = new mongoose.Schema({
     type: [String],
     default: []
   },
+  points: {
+    type: Number,
+    default: 0
+  },
   acceptanceRate: {
     type: Number,
     default: 0

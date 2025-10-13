@@ -6,12 +6,14 @@ import { useAuth } from '../context/userContext';
 import { useTheme } from '../context/ThemeContext';
 import useDeviceDetection from '../hooks/useDeviceDetection';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 const API_URL = import.meta.env.VITE_API_ENDPOINT;
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [loginLoading, setLoginLoading] = useState(false);
 
   const navigate = useNavigate();
   const {user, updateUser, loginWithGoogle, loginWithgithub } = useAuth();
@@ -29,11 +31,11 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     if (!username || !password) {
-      return alert('Credentials required');
+      return toast.error("Credentials Required!");
     }
-    // Add your login logic here
 
     try {
+      setLoginLoading(true);
       const response = await axios.post(`${API_URL}/login`, {
         username,
         password
@@ -43,11 +45,12 @@ const Login = () => {
       
 
       updateUser(data.user, data.token);
-      // localStorage.setItem("token", data.token);
       navigate('/');
 
     } catch (err) {
       console.error('error in login ', err);
+    } finally {
+       setLoginLoading(false)
     }
 
   };
@@ -73,14 +76,10 @@ const Login = () => {
 
   };
 
-  // const exitFullscreen = () => {
-  //     setIsFullscreen(false);
-  // };
-
   return (
     <div className={`min-h-screen ${theme.bg.primary} flex items-center justify-center relative overflow-hidden mobile-padding`}>
       <div
-        className={`absolute top-4 left-4 w-10 h-10 sm:w-12 sm:h-12 rounded-full cursor-pointer ${theme.button.primary} flex items-center justify-center text-white z-10 safe-area-top safe-area-left`}
+        className={`absolute top-4 left-4 w-10 h-10 sm:w-12 sm:h-12 rounded-full cursor-pointer ${theme.button.primary} flex items-center justify-center text-white z-10 `}
         onClick={() => navigate("/")}
       >
         <FaArrowLeftLong size={deviceInfo.isMobile ? 18 : 20} />

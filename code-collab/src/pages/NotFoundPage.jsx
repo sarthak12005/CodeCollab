@@ -12,8 +12,6 @@ export default function NotFoundPage() {
 
           <span className=" font-bold text-2xl text-transparent bg-clip-text bg-gradient-to-r from-[#6e44ff] to-[#1cb8ff] ">CodeCollab</span>
         </div>
-
-
       </header>
 
       {/* Main Content */}

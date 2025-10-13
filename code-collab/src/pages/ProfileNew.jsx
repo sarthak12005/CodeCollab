@@ -164,7 +164,7 @@ const ProfileNew = () => {
             <Code className="w-8 h-8 text-blue-500" />
           </div>
         </div>
-        
+
         <div className={`${theme.bg.card} p-6 rounded-xl ${theme.shadow.md}`}>
           <div className="flex items-center justify-between">
             <div>
@@ -174,7 +174,7 @@ const ProfileNew = () => {
             <TrendingUp className="w-8 h-8 text-green-500" />
           </div>
         </div>
-        
+
         <div className={`${theme.bg.card} p-6 rounded-xl ${theme.shadow.md}`}>
           <div className="flex items-center justify-between">
             <div>
@@ -184,7 +184,7 @@ const ProfileNew = () => {
             <Target className="w-8 h-8 text-orange-500" />
           </div>
         </div>
-        
+
         <div className={`${theme.bg.card} p-6 rounded-xl ${theme.shadow.md}`}>
           <div className="flex items-center justify-between">
             <div>
@@ -232,9 +232,8 @@ const ProfileNew = () => {
                 <p className={`text-sm ${theme.text.secondary}`}>{activity.time}</p>
               </div>
             </div>
-            <div className={`px-3 py-1 rounded-full text-xs font-medium ${
-              activity.status === 'Solved' ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'
-            }`}>
+            <div className={`px-3 py-1 rounded-full text-xs font-medium ${activity.status === 'Solved' ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'
+              }`}>
               {activity.status}
             </div>
           </div>
@@ -253,7 +252,7 @@ const ProfileNew = () => {
             <input
               type="text"
               value={userInfo.name}
-              onChange={(e) => setUserInfo({...userInfo, name: e.target.value})}
+              onChange={(e) => setUserInfo({ ...userInfo, name: e.target.value })}
               disabled={!isEditing}
               className={`w-full px-3 py-2 rounded-lg ${theme.input.base} ${!isEditing ? 'opacity-60' : ''}`}
             />
@@ -263,7 +262,7 @@ const ProfileNew = () => {
             <input
               type="email"
               value={userInfo.email}
-              onChange={(e) => setUserInfo({...userInfo, email: e.target.value})}
+              onChange={(e) => setUserInfo({ ...userInfo, email: e.target.value })}
               disabled={!isEditing}
               className={`w-full px-3 py-2 rounded-lg ${theme.input.base} ${!isEditing ? 'opacity-60' : ''}`}
             />
@@ -272,14 +271,14 @@ const ProfileNew = () => {
             <label className={`block text-sm font-medium ${theme.text.secondary} mb-2`}>Bio</label>
             <textarea
               value={userInfo.bio}
-              onChange={(e) => setUserInfo({...userInfo, bio: e.target.value})}
+              onChange={(e) => setUserInfo({ ...userInfo, bio: e.target.value })}
               disabled={!isEditing}
               rows={3}
               className={`w-full px-3 py-2 rounded-lg ${theme.input.base} ${!isEditing ? 'opacity-60' : ''}`}
             />
           </div>
         </div>
-        
+
         <div className="flex justify-end space-x-3 mt-6">
           {isEditing ? (
             <>
@@ -314,20 +313,60 @@ const ProfileNew = () => {
 
   if (loading) {
     return (
-      <div className={`min-h-screen ${theme.bg.primary} flex items-center justify-center`}>
+      <>
         <Header />
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className={theme.text.secondary}>Loading profile...</p>
+        <div className="min-h-screen bg-[#0b0d1a] text-white  space-y-6 animate-pulse">
+
+          {/* Profile Header */}
+          <div className="bg-[#121527] rounded-2xl p-6 flex items-center justify-between shadow-lg">
+            <div className="flex items-center gap-4">
+              <div className="w-20 h-20 bg-gray-700 rounded-full"></div>
+              <div>
+                <div className="w-40 h-4 bg-gray-700 rounded mb-2"></div>
+                <div className="w-60 h-3 bg-gray-700 rounded"></div>
+              </div>
+            </div>
+            <div className="w-24 h-10 bg-gray-700 rounded-lg"></div>
+          </div>
+
+          {/* Tabs Section */}
+          <div className="bg-[#121527] rounded-2xl p-3 flex items-center gap-6">
+            {[1, 2, 3, 4].map((_, i) => (
+              <div key={i} className="w-20 h-4 bg-gray-700 rounded"></div>
+            ))}
+          </div>
+
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[1, 2, 3, 4].map((_, i) => (
+              <div
+                key={i}
+                className="bg-[#121527] rounded-2xl p-5 flex flex-col gap-3 shadow-md"
+              >
+                <div className="w-32 h-3 bg-gray-700 rounded"></div>
+                <div className="w-20 h-8 bg-gray-700 rounded"></div>
+              </div>
+            ))}
+          </div>
+
+          {/* Problem Distribution */}
+          <div className="bg-[#121527] rounded-2xl p-6 space-y-4 shadow-md">
+            <div className="w-56 h-4 bg-gray-700 rounded"></div>
+            <div className="flex items-center gap-10">
+              {[1, 2, 3].map((_, i) => (
+                <div key={i} className="w-16 h-6 bg-gray-700 rounded"></div>
+              ))}
+            </div>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   return (
     <div className={`min-h-screen ${theme.bg.primary}`}>
       <Header />
-      
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Profile Header */}
         <div className={`${theme.bg.card} rounded-xl ${theme.shadow.lg} p-8 mb-8`}>
@@ -342,7 +381,7 @@ const ProfileNew = () => {
               />
               <button
                 onClick={handleImageClick}
-                className="absolute bottom-2 right-2 bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 transition-colors"
+                className="absolute bottom-2 right-1 bg-blue-600 text-white p-1 rounded-full hover:bg-blue-700 transition-colors flex justify-center items-center"
               >
                 <Camera className="w-4 h-4" />
               </button>
@@ -395,11 +434,10 @@ const ProfileNew = () => {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center space-x-2 px-6 py-4 font-medium transition-colors ${
-                    activeTab === tab.id
-                      ? `${theme.text.accent} border-b-2 border-blue-500`
-                      : `${theme.text.secondary} hover:${theme.text.primary.replace('text-', '')}`
-                  }`}
+                  className={`flex items-center space-x-2 px-6 py-4 font-medium transition-colors ${activeTab === tab.id
+                    ? `${theme.text.accent} border-b-2 border-blue-500`
+                    : `${theme.text.secondary} hover:${theme.text.primary.replace('text-', '')}`
+                    }`}
                 >
                   <Icon className="w-5 h-5" />
                   <span>{tab.label}</span>

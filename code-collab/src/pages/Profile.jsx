@@ -12,16 +12,6 @@ import {
   EyeOff,
   User,
   Settings,
-  Camera,
-  Edit3,
-  Save,
-  X,
-  LogOut,
-  Mail,
-  Calendar,
-  Award,
-  Target,
-  Activity
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
