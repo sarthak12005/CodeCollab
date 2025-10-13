@@ -16,15 +16,15 @@ const Login = () => {
   const [loginLoading, setLoginLoading] = useState(false);
 
   const navigate = useNavigate();
-  const {user, updateUser, loginWithGoogle, loginWithgithub } = useAuth();
+  const { user, updateUser, loginWithGoogle, loginWithgithub } = useAuth();
   const { theme } = useTheme();
   const deviceInfo = useDeviceDetection();
 
   useEffect(() => {
-     if (user) {
-       navigate(-1);
-     }
-  },[user, navigate])
+    if (user) {
+      navigate(-1);
+    }
+  }, [user, navigate])
 
 
 
@@ -42,15 +42,17 @@ const Login = () => {
       });
 
       const data = response.data
-      
+
 
       updateUser(data.user, data.token);
       navigate('/');
+      toast.success("Login Successfully! Welcome Back");
 
     } catch (err) {
       console.error('error in login ', err);
+      toast.error("Login error! please try again");
     } finally {
-       setLoginLoading(false)
+      setLoginLoading(false)
     }
 
   };
@@ -186,7 +188,7 @@ const Login = () => {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-3 text-gray-400 hover:text-white transition-colors"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
                   >
                     {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                   </button>
@@ -213,7 +215,16 @@ const Login = () => {
                 )
                   } text-white font-medium py-3 px-4 rounded-lg   shadow-lg`}
               >
-                Login →
+                {loginLoading ? (
+                  <>
+                    <div className="flex justify-center items-center">
+                      <div className="w-5 h-5 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
+                    </div>
+                  </>
+                ) : (
+                  "Login →"
+                )}
+
               </button>
             </div>
 
@@ -253,13 +264,6 @@ const Login = () => {
           </div>
         </div>
       </div>
-
-      {/* Help Button */}
-      {/* <div className="fixed bottom-6 right-6 z-20">
-                <button className="bg-blue-600 hover:bg-blue-700 text-white rounded-full p-3 shadow-lg transition-colors">
-                    <span className="text-sm font-medium">? Help</span>
-                </button>
-            </div> */}
     </div>
   );
 };
