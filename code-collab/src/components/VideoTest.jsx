@@ -12,7 +12,7 @@ const VideoTest = () => {
     const addLog = (message) => {
         const timestamp = new Date().toLocaleTimeString();
         setLogs(prev => [...prev, `[${timestamp}] ${message}`]);
-        console.log(message);
+
     };
 
     useEffect(() => {

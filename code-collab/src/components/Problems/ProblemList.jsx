@@ -100,7 +100,6 @@ const ProblemList = ({ filters, searchQuery }) => {
   };
 
   const handleToogleFavorite = async (problemId) => {
-    console.log("setting Favorites: ", problemId);
     try {
       setLoading(true);
       const res = await axios.post(

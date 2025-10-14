@@ -78,7 +78,10 @@ exports.getUser = async (req, res) => {
             return res.status(400).json({ message: "User id is required." });
         }
 
-        const user = await User.findById(userId).select('-password');
+        const user = await User.findById(userId)
+            .select('-password')
+            .populate('solveProblems');
+    
 
         if (!user) {
             return res.status(404).json({ message: "User not found." });

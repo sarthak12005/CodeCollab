@@ -7,9 +7,8 @@ const authMiddelware = (req, res, next) => {
     if (!token) return res.status(400).json({message: "Authrization failed"});
 
     try {
-        // console.log("token recieved", token);
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        // console.log("The decoded data from the verify is ",decoded);
+
 
         if (!decoded.id) {
              console.log("the userId is not provided ");
@@ -26,7 +25,6 @@ const authMiddelware = (req, res, next) => {
         next();
 
     } catch (err) {
-        console.log("the error in jwt verify is : ", err);
         res.status(500).json({message: "Internal server in verifying jwt token", err});
     }
 

@@ -23,6 +23,9 @@ import {
   Code,
   TrendingUp
 } from "lucide-react";
+import toast from 'react-hot-toast'
+
+const API_URL = import.meta.env.VITE_API_ENDPOINT;
 
 const ProfileNew = () => {
   const { logout, user } = useAuth();
@@ -104,12 +107,12 @@ const ProfileNew = () => {
   };
 
   // Get recent activity from API stats or user data
-  const recentActivity = apiStats?.recentActivity || (user?.solveProblems || [])
+  const recentActivity = (user?.solveProblems || [])
     .slice(-4)
     .reverse()
     .map((problem, index) => ({
       id: problem._id || index,
-      problem: problem.title || problem.name || `Problem ${index + 1}`,
+      problem: problem.title || `Problem ${index + 1}`,
       difficulty: problem.difficulty || 'Easy',
       status: 'Solved',
       time: problem.solvedAt ? new Date(problem.solvedAt).toLocaleDateString() : 'Recently'
@@ -121,16 +124,6 @@ const ProfileNew = () => {
     fileInputRef.current.click();
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setProfileImage(e.target.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
 
   const handleLogout = () => {
     logout();
@@ -141,6 +134,45 @@ const ProfileNew = () => {
     setIsEditing(false);
     // Add API call to save profile
   };
+
+  const handleFileChange = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      const base64Image = event.target.result;
+      setProfileImage(base64Image);
+      await updateProfilePicture(base64Image);
+    };
+    reader.readAsDataURL(file);
+  }
+};
+
+const updateProfilePicture = async (base64Image) => {
+  try {
+    if (!base64Image) {
+      console.log("image is not provided");
+      return;
+    }
+
+    // setIMageLoading(true)
+    const res = await axios.put(
+      `${API_URL}/change-picture/${user._id}`,
+      { image: base64Image }, // ✅ send as object with key "image"
+      {
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+
+    toast.success(res.data.message);
+    console.log("Upload successful:", res.data.url);
+    setProfileImage(res.data?.url);
+  } catch (err) {
+    console.error("the error in the uploading image is", err);
+    toast.error("Error in uploading image");
+  }
+};
+
 
   const getDifficultyColor = (difficulty) => {
     switch (difficulty) {
@@ -226,6 +258,7 @@ const ProfileNew = () => {
             <div className="flex items-center space-x-4">
               <div className={`px-3 py-1 rounded-full text-xs font-medium ${getDifficultyColor(activity.difficulty)}`}>
                 {activity.difficulty}
+                {activity.name}
               </div>
               <div>
                 <p className={`font-medium ${theme.text.primary}`}>{activity.problem}</p>
@@ -376,7 +409,7 @@ const ProfileNew = () => {
               <img
                 src={profileImage}
                 alt="Profile"
-                className="w-32 h-32 rounded-full object-cover border-4 border-blue-500 cursor-pointer"
+                className="w-32 h-32 rounded-full object-cover border-1 border-blue-500 cursor-pointer"
                 onClick={handleImageClick}
               />
               <button

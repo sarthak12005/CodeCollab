@@ -6,7 +6,7 @@ import Login from "./pages/login";
 import Signup from "./pages/SignUp";
 import Profile from "./pages/ProfileNew";
 import NotFoundPage from "./pages/NotFoundPage";
-import CodeCollaborationHub from "./pages/CodeCollaborationHub";
+// import CodeCollaborationHub from "./pages/CodeCollaborationHub";
 import About from "./pages/About";
 import SingleProblemPage from "./pages/SingleProblemPage";
 import SubmissionResults from "./pages/SubmissionResults";

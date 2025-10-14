@@ -22,6 +22,8 @@ const Profile = () => {
   const { theme } = useTheme();
   const navigate = useNavigate();
 
+  console.log(user);
+
   const [activeTab, setActiveTab] = useState("overview");
   const [isEditing, setIsEditing] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -35,6 +37,7 @@ const Profile = () => {
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
+    solveProblems: user?.solveProblems
   });
 
   const [profileImage, setProfileImage] = useState(
@@ -44,16 +47,7 @@ const Profile = () => {
   const fileInputRef = useRef(null);
 
   // Mock stats data - replace with real data from API
-  const stats = {
-    problemsSolved: 127,
-    totalSubmissions: 342,
-    acceptanceRate: 78,
-    currentStreak: 15,
-    maxStreak: 23,
-    ranking: 1247,
-    contestsParticipated: 8,
-    badges: 12
-  };
+
 
   const handleImageClick = () => {
     fileInputRef.current.click();
@@ -102,37 +96,14 @@ const Profile = () => {
   useEffect(() => {
     try {
       if (user && user.solveProblems.length !== 0) {
-        const solveProblems = user.solveProblems.slice().reverse().slice(0, 3);
+        const solveProblems = userInfo.solveProblems.slice().reverse().slice(0, 3);
         setRecentProblemSolve(solveProblems);
       }
     } catch (err) {
-      console.log("the error in recentProblemSolve", err);
     }
-  }, [user]); // 👈 this is important
+  }, [user]);
 
-  const recentProblems = [
-    {
-      id: 1,
-      name: "Two Sum",
-      difficulty: "EASY",
-      time: "12m 34s",
-      date: "Oct 15, 2023",
-    },
-    {
-      id: 2,
-      name: "Valid Parentheses",
-      difficulty: "EASY",
-      time: "8m 22s",
-      date: "Oct 14, 2023",
-    },
-    {
-      id: 3,
-      name: "Longest Substring Without Repeating Characters",
-      difficulty: "MEDIUM",
-      time: "24m 15s",
-      date: "Oct 13, 2023",
-    },
-  ];
+
 
   const activityData = [
     { day: "Sun", problems: [1, 1, 1] },
@@ -287,10 +258,10 @@ const Profile = () => {
                     <div
                       key={pIndex}
                       className={`w-4 h-4 rounded ${level === 1
-                          ? "bg-green-400"
-                          : level === 2
-                            ? "bg-green-500"
-                            : "bg-green-600"
+                        ? "bg-green-400"
+                        : level === 2
+                          ? "bg-green-500"
+                          : "bg-green-600"
                         }`}
                     />
                   ))}
@@ -356,18 +327,18 @@ const Profile = () => {
                 {recentProblemSolve.map((problem) => (
                   <tr key={problem.id}>
                     <td className="px-6 py-4 whitespace-nowrap text-gray-400">
-                      {problem.id}
+                      {problem._id}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-white font-medium">
-                      {problem.name}
+                      {problem.title}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
                         className={`px-3 py-1 rounded-full text-xs font-semibold ${problem.difficulty === "EASY"
-                            ? "bg-green-900 text-green-300"
-                            : problem.difficulty === "MEDIUM"
-                              ? "bg-orange-900 text-orange-300"
-                              : "bg-red-900 text-red-300"
+                          ? "bg-green-900 text-green-300"
+                          : problem.difficulty === "MEDIUM"
+                            ? "bg-orange-900 text-orange-300"
+                            : "bg-red-900 text-red-300"
                           }`}
                       >
                         {problem.difficulty}
@@ -562,8 +533,8 @@ const Profile = () => {
                     key={item.id}
                     onClick={() => setActiveTab(item.id)}
                     className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors ${activeTab === item.id
-                        ? "bg-blue-600 text-white"
-                        : "text-gray-300 hover:bg-gray-700 hover:text-white"
+                      ? "bg-blue-600 text-white"
+                      : "text-gray-300 hover:bg-gray-700 hover:text-white"
                       }`}
                   >
                     <Icon className="w-5 h-5" />

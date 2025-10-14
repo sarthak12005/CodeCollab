@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Slack } from 'lucide-react';
 import MicrosoftLogo from '../logo/MicrosoftLogo';
 import { FcGoogle } from "react-icons/fc";
 import AWSLogo from '../logo/AwsLogo';
 import { useTheme } from '../../context/ThemeContext';
+import { FaSpotify } from 'react-icons/fa';
 
 const Testimonial = () => {
   const { theme } = useTheme();
@@ -40,8 +41,8 @@ const Testimonial = () => {
     { name: 'Microsoft', icon: <MicrosoftLogo /> },
     { name: 'AWS', icon: <AWSLogo /> },
     { name: 'GitHub', icon: '⚡' },
-    { name: 'Slack', icon: '#' },
-    { name: 'Spotify', icon: '♪' }
+    { name: 'Slack', icon: <Slack/> },
+    { name: 'Spotify', icon: <FaSpotify/> }
   ];
 
   // Auto-rotate testimonials
@@ -129,12 +130,12 @@ const Testimonial = () => {
           </button>
 
           {/* Dots Indicator */}
-          <div className="flex justify-center mt-8 space-x-2">
+          <div className="flex justify-center mt-8 space-x-1">
             {testimonials.map((_, index) => (
               <button
                 key={index}
                 onClick={() => goToSlide(index)}
-                className={`w-3 h-3 rounded-full transition-colors duration-200 ${index === currentSlide ? 'bg-blue-400' : 'bg-gray-600'
+                className={`w-[5px] h-[5px] rounded-full  transition-colors duration-200 ${index === currentSlide ? 'bg-blue-400' : 'bg-gray-600'
                   }`}
               />
             ))}

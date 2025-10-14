@@ -10,32 +10,30 @@ import { useEffect } from "react";
 import useDeviceDetection from "../../hooks/useDeviceDetection";
 
 const Hero = () => {
-   const [isLogin, setIsLogin] = useState(false);
-   const {user} = useAuth();
-   const { theme } = useTheme();
-   const deviceInfo = useDeviceDetection();
+  const [isLogin, setIsLogin] = useState(false);
+  const { user } = useAuth();
+  const { theme } = useTheme();
+  const deviceInfo = useDeviceDetection();
 
-  //  console.log(user)
+  const Navigate = useNavigate();
 
-   const Navigate = useNavigate();
-
-   useEffect(() => {
-      if (user) {
-         setIsLogin(true)
-      } else {
-         setIsLogin(false)
-      }
-   },[])
+  useEffect(() => {
+    if (user) {
+      setIsLogin(true)
+    } else {
+      setIsLogin(false)
+    }
+  }, [])
 
 
 
 
   const handleButtonLogin = () => {
-      if (user === null) {
-          Navigate('/login');
-      } else {
-         Navigate('/problems')
-      }
+    if (user === null) {
+      Navigate('/login');
+    } else {
+      Navigate('/problems')
+    }
   }
 
 
@@ -81,7 +79,7 @@ const Hero = () => {
                       1500,
                       "npm create colab-room\nConnecting 3 developers...",
                       2000,
-                      "npm create colab-room\nConnecting 3 developers...\nSession ready: colab.io/room/2bx49",
+                      "npm create colab-room\nConnecting 3 developers...\nSession ready: code-collab.io/room/2bx49",
                       3000,
                     ]}
                     wrapper="div"
@@ -94,7 +92,7 @@ const Hero = () => {
                     }}
                     cursor={true}
                     repeat={false}
-                    className="text-white"
+                    className={`${theme.text.blackWhite}`}
                   />
                 </div>
               </div>
@@ -110,15 +108,15 @@ const Hero = () => {
 
           <div className="hero-bottom flex flex-col sm:flex-row gap-4 sm:gap-0 p-2.5 w-full max-w-4xl">
             <div className={`px-2.5 text-sm sm:text-base ${theme.text.primary} flex items-center justify-center sm:justify-start gap-2 selectable-text`}>
-              <FaUsers size={deviceInfo.isMobile ? 18 : 21} color="#1cb8ff"/>
+              <FaUsers size={deviceInfo.isMobile ? 18 : 21} color="#1cb8ff" />
               <span>10,847+ active users</span>
             </div>
             <div className={`px-2.5 text-sm sm:text-base ${theme.text.primary} sm:border-l-1 sm:border-r-1 ${theme.border.primary} flex items-center justify-center sm:justify-start gap-2 selectable-text`}>
-              <FaShieldAlt size={deviceInfo.isMobile ? 18 : 21} color="#1cb8ff"/>
+              <FaShieldAlt size={deviceInfo.isMobile ? 18 : 21} color="#1cb8ff" />
               <span>End-to-end encrypted</span>
             </div>
             <div className={`px-2.5 text-sm sm:text-base ${theme.text.primary} flex items-center justify-center sm:justify-start gap-2 selectable-text`}>
-              <BsFillLightningChargeFill size={deviceInfo.isMobile ? 18 : 21} color="#1cb8ff"/>
+              <BsFillLightningChargeFill size={deviceInfo.isMobile ? 18 : 21} color="#1cb8ff" />
               <span>Real-time collaboration</span>
             </div>
           </div>

@@ -48,7 +48,6 @@ const CollaborationModal = ({
             });
 
             newSocket.on('connect', () => {
-                console.log('Connected to collaboration server');
                 newSocket.emit('user-connected', user);
             });
 
@@ -272,7 +271,7 @@ const CollaborationModal = ({
     // Simple video setup function
     const setupVideo = async () => {
         try {
-            console.log('🎥 Setting up video...');
+
 
             const constraints = {
                 video: isVideoOn ? {
@@ -283,7 +282,6 @@ const CollaborationModal = ({
             };
 
             const stream = await navigator.mediaDevices.getUserMedia(constraints);
-            console.log('✅ Got stream:', stream);
 
             // Store the stream
             localStreamRef.current = stream;
@@ -300,27 +298,22 @@ const CollaborationModal = ({
     // Effect to handle video element when stream changes
     useEffect(() => {
         if (localStream && localVideoRef.current) {
-            console.log('🔗 Connecting stream to video element...');
             localVideoRef.current.srcObject = localStream;
             localVideoRef.current.muted = true;
 
             localVideoRef.current.play().then(() => {
-                console.log('✅ Video is playing!');
             }).catch(error => {
-                console.log('Video play error (might be normal):', error);
             });
         }
     }, [localStream]);
 
     const startCall = async () => {
         try {
-            console.log('🚀 Starting call...');
 
             // Get the video stream
             const stream = await setupVideo();
 
             setIsCallActive(true);
-            console.log('✅ Call started successfully!');
 
             const peerConnection = initializePeerConnection();
             peerConnectionRef.current = peerConnection;
@@ -410,13 +403,11 @@ const CollaborationModal = ({
     };
 
     const endCall = () => {
-        console.log('🛑 Ending call...');
 
         // Stop all tracks
         if (localStreamRef.current) {
             localStreamRef.current.getTracks().forEach(track => {
                 track.stop();
-                console.log(`Stopped ${track.kind} track`);
             });
             localStreamRef.current = null;
         }
@@ -442,7 +433,6 @@ const CollaborationModal = ({
         setIsVideoOn(false);
         setIsAudioOn(false);
 
-        console.log('✅ Call ended');
     };
 
     // Sync code changes to room with debouncing

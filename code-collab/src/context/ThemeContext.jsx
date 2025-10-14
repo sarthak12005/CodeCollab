@@ -24,7 +24,7 @@ export const ThemeProvider = ({ children }) => {
     // Update localStorage when theme changes
     useEffect(() => {
         localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
-        
+
         // Update document class for global styles
         if (isDarkMode) {
             document.documentElement.classList.add('dark');
@@ -50,9 +50,10 @@ export const ThemeProvider = ({ children }) => {
             header: isDarkMode ? 'bg-[#0f0f23]' : 'bg-white',
             modal: isDarkMode ? 'bg-[#1a1a2e]' : 'bg-white',
             input: isDarkMode ? 'bg-[#16213e]' : 'bg-white',
-            hover: isDarkMode ? 'hover:bg-[#16213e]' : 'hover:bg-gray-50'
+            hover: isDarkMode ? 'hover:bg-[#16213e]' : 'hover:bg-gray-50',
+
         },
-        
+
         // Text colors
         text: {
             primary: isDarkMode ? 'text-[#e0e0e8]' : 'text-gray-900',
@@ -61,9 +62,10 @@ export const ThemeProvider = ({ children }) => {
             accent: isDarkMode ? 'text-[#1cb8ff]' : 'text-blue-600',
             success: isDarkMode ? 'text-green-400' : 'text-green-600',
             error: isDarkMode ? 'text-red-400' : 'text-red-600',
-            warning: isDarkMode ? 'text-yellow-400' : 'text-yellow-600'
+            warning: isDarkMode ? 'text-yellow-400' : 'text-yellow-600',
+            blackWhite: isDarkMode ?  'text-white' : 'text-black' 
         },
-        
+
         // Border colors
         border: {
             primary: isDarkMode ? 'border-[#2a2a3e]' : 'border-gray-200',
@@ -71,10 +73,10 @@ export const ThemeProvider = ({ children }) => {
             accent: isDarkMode ? 'border-[#1cb8ff]' : 'border-blue-500',
             focus: isDarkMode ? 'focus:border-[#1cb8ff]' : 'focus:border-blue-500'
         },
-        
+
         // Button styles
         button: {
-            primary: isDarkMode 
+            primary: isDarkMode
                 ? 'bg-gradient-to-r from-[#6e44ff] to-[#1cb8ff] text-white hover:shadow-[0_0_15px_rgba(110,68,255,0.5)]'
                 : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700',
             secondary: isDarkMode
@@ -87,14 +89,14 @@ export const ThemeProvider = ({ children }) => {
                 ? 'bg-green-600 text-white hover:bg-green-700'
                 : 'bg-green-600 text-white hover:bg-green-700'
         },
-        
+
         // Input styles
         input: {
             base: isDarkMode
                 ? 'bg-[#16213e] border-[#2a2a3e] text-[#e0e0e8] placeholder-[#a0a0a8] focus:border-[#1cb8ff] focus:ring-[#1cb8ff]'
                 : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500'
         },
-        
+
         // Card styles
         card: {
             base: isDarkMode
@@ -104,7 +106,7 @@ export const ThemeProvider = ({ children }) => {
                 ? 'hover:bg-[#1e1e32] hover:border-[#3a3a4e] hover:shadow-xl'
                 : 'hover:bg-gray-50 hover:border-gray-300 hover:shadow-xl'
         },
-        
+
         // Gradient styles
         gradient: {
             primary: isDarkMode
@@ -114,7 +116,7 @@ export const ThemeProvider = ({ children }) => {
                 ? 'bg-gradient-to-r from-[#1a1a2e] to-[#16213e]'
                 : 'bg-gradient-to-r from-gray-100 to-gray-200'
         },
-        
+
         // Shadow styles
         shadow: {
             sm: isDarkMode ? 'shadow-lg shadow-black/20' : 'shadow-sm',

@@ -102,7 +102,6 @@ export const UserProvider = ({ children }) => {
         }
       } catch (error) {
         if (error.response.message === "Internal server in verifying jwt token") {
-           console.log('token is expired');
         }
         console.error("Error fetching user:", error);
         setUser(null);

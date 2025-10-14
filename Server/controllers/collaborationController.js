@@ -12,7 +12,6 @@ class CollaborationController {
 
     setupSocketHandlers() {
         this.io.on('connection', (socket) => {
-            console.log(`User connected: ${socket.id}`);
 
             // Store user socket
             socket.on('user-connected', (userData) => {
@@ -20,7 +19,6 @@ class CollaborationController {
                     ...userData,
                     socketId: socket.id
                 });
-                console.log(`User ${userData.username} connected with socket ${socket.id}`);
             });
 
             // Create room
@@ -48,7 +46,6 @@ class CollaborationController {
                     room: room
                 });
 
-                console.log(`Room ${roomId} created by ${data.user.username}`);
             });
 
             // Join room
@@ -91,8 +88,6 @@ class CollaborationController {
                     user: user,
                     participants: room.participants
                 });
-
-                console.log(`User ${user.username} joined room ${roomId}`);
             });
 
             // Handle code changes with real-time synchronization
@@ -200,7 +195,6 @@ class CollaborationController {
 
             // Handle disconnect
             socket.on('disconnect', () => {
-                console.log(`User disconnected: ${socket.id}`);
                 
                 // Remove user from all rooms
                 for (const [roomId, room] of rooms.entries()) {
