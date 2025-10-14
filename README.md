@@ -4,7 +4,7 @@
 
 A modern, full-stack web application designed for collaborative coding, problem-solving, and tracking progress across challenges. Built with the **MERN stack** (MongoDB, Express.js, React.js, Node.js), CodeCollab provides a dynamic interface to search, solve, and manage coding problems effectively.
 
-🌐 **Live Website**: [code-collab-sable.vercel.app](https://code-collab-sable.vercel.app)
+🌐 **Live Website**: [coderscollab.vercel.app](https://coderscollab.vercel.app)
 
 ---
 
