@@ -440,21 +440,31 @@ const ProfileNew = () => {
                   <p className={`${theme.text.tertiary} mb-4`}>
                     {userInfo.bio}
                   </p>
-                  <div className="flex items-center space-x-4">
+                  <div className="flex  space-x-4 flex-col">
                     {/* Badge Image */}
-                    <img
-                      src="https://cdn-icons-png.flaticon.com/512/11881/11881951.png"
-                      alt="Badge"
-                      className="w-12 h-12 object-center"
-                    />
+                    <div className="flex gap-3 items-center py-1">
+                      <img
+                        src="https://cdn-icons-png.flaticon.com/512/11881/11881951.png"
+                        alt="Badge"
+                        className="w-12 h-12 object-center"
+                      />
+                      <h1 className={`${theme.text.primary}`}>Bronze</h1>
+                    </div>
 
-                    {/* Progress Bar */}
-                    <div className="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
+                   <div className="flex gap-1 items-center">
+                      <div className={`${theme.text.primary} font-semibold`}>60</div>
+
+                       {/* Progress Bar */}
+                    <div className="w-[50%] bg-gray-700 rounded-[3px] h-1 overflow-hidden">
                       <div
                         className="h-full bg-gradient-to-r from-indigo-500 to-pink-500 shadow-[0_0_10px_#9333ea] transition-all duration-500"
-                        style={{ width: "60%" }} // change value dynamically (0% - 100%)
+                        style={{ width: "60%" }} // change value dynamically style={{ width: `${(currentValue / maxValue) * 100}%` }}
                       ></div>
                     </div>
+
+
+                    <div className={`${theme.text.primary} font-semibold`}>100</div>
+                   </div>
                   </div>
 
                 </div>
