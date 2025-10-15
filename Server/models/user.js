@@ -37,6 +37,14 @@ const userSchema = new mongoose.Schema({
         ref: 'Problem',
         default: [],
     },
+    rank :{
+       points: {type: Number, default: 0},
+       badge: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Badge",
+          default: "",
+       }
+    },
     Verified: {
         type: Boolean,
         default: false,
