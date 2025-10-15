@@ -136,42 +136,42 @@ const ProfileNew = () => {
   };
 
   const handleFileChange = (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = async (event) => {
-      const base64Image = event.target.result;
-      setProfileImage(base64Image);
-      await updateProfilePicture(base64Image);
-    };
-    reader.readAsDataURL(file);
-  }
-};
-
-const updateProfilePicture = async (base64Image) => {
-  try {
-    if (!base64Image) {
-      console.log("image is not provided");
-      return;
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        const base64Image = event.target.result;
+        setProfileImage(base64Image);
+        await updateProfilePicture(base64Image);
+      };
+      reader.readAsDataURL(file);
     }
+  };
 
-    // setIMageLoading(true)
-    const res = await axios.put(
-      `${API_URL}/change-picture/${user._id}`,
-      { image: base64Image }, // ✅ send as object with key "image"
-      {
-        headers: { "Content-Type": "application/json" },
+  const updateProfilePicture = async (base64Image) => {
+    try {
+      if (!base64Image) {
+        console.log("image is not provided");
+        return;
       }
-    );
 
-    toast.success(res.data.message);
-    console.log("Upload successful:", res.data.url);
-    setProfileImage(res.data?.url);
-  } catch (err) {
-    console.error("the error in the uploading image is", err);
-    toast.error("Error in uploading image");
-  }
-};
+      // setIMageLoading(true)
+      const res = await axios.put(
+        `${API_URL}/change-picture/${user._id}`,
+        { image: base64Image }, // ✅ send as object with key "image"
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      toast.success(res.data.message);
+      console.log("Upload successful:", res.data.url);
+      setProfileImage(res.data?.url);
+    } catch (err) {
+      console.error("the error in the uploading image is", err);
+      toast.error("Error in uploading image");
+    }
+  };
 
 
   const getDifficultyColor = (difficulty) => {
@@ -435,11 +435,28 @@ const updateProfilePicture = async (base64Image) => {
                     {userInfo.name}
                   </h1>
                   <p className={`${theme.text.secondary} text-lg mb-2`}>
-                    @{user?.username || "username"}
+                    @{user?.username}
                   </p>
                   <p className={`${theme.text.tertiary} mb-4`}>
                     {userInfo.bio}
                   </p>
+                  <div className="flex items-center space-x-4">
+                    {/* Badge Image */}
+                    <img
+                      src="https://cdn-icons-png.flaticon.com/512/11881/11881951.png"
+                      alt="Badge"
+                      className="w-12 h-12 object-center"
+                    />
+
+                    {/* Progress Bar */}
+                    <div className="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
+                      <div
+                        className="h-full bg-gradient-to-r from-indigo-500 to-pink-500 shadow-[0_0_10px_#9333ea] transition-all duration-500"
+                        style={{ width: "60%" }} // change value dynamically (0% - 100%)
+                      ></div>
+                    </div>
+                  </div>
+
                 </div>
                 <button
                   onClick={handleLogout}
