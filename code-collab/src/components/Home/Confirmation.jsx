@@ -39,13 +39,13 @@ const Confirmation = () => {
           <IoPlay />
           Getting Started For Free
         </button>
-        <button className="text-gray-300 flex gap-2 justify-center items-center px-4 py-4 rounded-md text-sm font-medium border border-[#6e44ff] hover:bg-[#6e44ff]/10 transition">
+        <button className={`${theme.text.primary} flex gap-2 justify-center items-center px-4 py-4 rounded-md text-sm font-medium border border-[#6e44ff] hover:bg-[#6e44ff]/10 transition`}>
           <FaShareAlt />
           Watch Demo
         </button>
       </div>
       <div className="header-text flex flex-col justify-center items-center gap-2 mt-8">
-        <h1 className="text-[18px] text-gray-500 font-mono">
+        <h1 className={`text-[18px] ${theme.text.primary} font-mono`}>
           Join thousands of developers who are building the future, together.
         </h1>
       </div>

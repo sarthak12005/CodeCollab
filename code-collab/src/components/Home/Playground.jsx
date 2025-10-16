@@ -8,7 +8,7 @@ const Playground = () => {
   const { theme } = useTheme();
 
   return (
-    <section className={`py-16 ${theme.bg.tertiary}`}>
+    <section className={`py-16 ${theme.bg.secondary}`}>
       <div className="flex flex-col gap-8 w-full min-h-[700px] justify-center items-center">
         {/* Header */}
         <div className="header-text flex justify-center gap-1 items-center">

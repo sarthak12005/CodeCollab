@@ -56,9 +56,9 @@ const Footer = () => {
               type="email"
               name="email"
               id="email"
-              className={`${theme.bg.secondary} py-2.5 px-10 rounded-[9px] border-1 `}
+              className={`${theme.bg.secondary} py-2.5 px-10 rounded-[9px] border-1 border-purple-600 `}
             />
-            <button className="bg-[#6e44ff] py-2.5 px-3 text-white text-2xl font-bold rounded-r-[9px] absolute right-0">
+            <button className="bg-[#6e44ff] py-2 px-3 text-white text-2xl font-bold rounded-r-[9px] absolute right-0">
               <IoIosSend />
             </button>
           </div>

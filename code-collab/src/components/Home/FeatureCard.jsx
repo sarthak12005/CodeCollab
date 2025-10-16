@@ -7,7 +7,7 @@ const FeatureCard = () => {
   const deviceInfo = useDeviceDetection();
 
   return (
-    <section className={`py-8 sm:py-12 lg:py-16 ${theme.bg.tertiary} border-b-1 border-white mobile-padding`}>
+    <section className={`py-8 sm:py-12 lg:py-16 ${theme.bg.secondary} border-b-1 border-white mobile-padding`}>
       <div className="flex flex-col gap-6 sm:gap-8 w-full min-h-[400px] sm:min-h-[600px] lg:min-h-[700px] max-w-7xl mx-auto">
         {/* Title */}
         <div className="flex justify-center items-center py-6 sm:py-8 lg:py-10">
