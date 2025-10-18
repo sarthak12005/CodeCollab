@@ -2,7 +2,7 @@ const axios = require('axios');
 require('dotenv').config();
 
 // Judge0 API Configuration
-const JUDGE0_API_URL = process.env.JUDGE0_API_URL || 'https://judge0-ce.p.rapidapi.com';
+const JUDGE0_API_URL = process.env.JUDGE0_API_URL;
 const JUDGE0_API_KEY = process.env.JUDGE0_API_KEY;
 
 // Language ID mapping for Judge0 API
