@@ -12,6 +12,7 @@ import Header from '../components/Header';
 import { useTheme } from '../context/ThemeContext';
 import useDeviceDetection from '../hooks/useDeviceDetection';
 import MobileRestrictionPage from '../components/MobileRestriction/MobileRestrictionPage';
+import toast from 'react-hot-toast'
 
 const API_URL = import.meta.env.VITE_API_ENDPOINT;
 
@@ -112,8 +113,8 @@ const SingleProblem = () => {
             if (response.data.success) {
                 const output = response.data.output || '';
                 const hasError = output.toLowerCase().includes('error') ||
-                               output.toLowerCase().includes('exception') ||
-                               output.toLowerCase().includes('traceback');
+                    output.toLowerCase().includes('exception') ||
+                    output.toLowerCase().includes('traceback');
 
                 if (hasError) {
                     setOutput(`${output}\n\nExecution Time: ${response.data.executionTime || 'N/A'}ms\nMemory Used: ${response.data.memory || 'N/A'}KB`);
@@ -181,91 +182,176 @@ const SingleProblem = () => {
         setShowSubmitModal(true);
     };
 
+    // const submitSolution = async () => {
+    //     setIsSubmitting(true);
+    //     try {
+    //         // Test the code with multiple test cases first
+    //         const testCases = problem?.testCases || [];
+
+    //         if (testCases.length === 0) {
+    //             alert('No test cases available for this problem.');
+    //             setIsSubmitting(false);
+    //             return;
+    //         }
+
+    //         const testResponse = await axios.post(`${API_URL}/code/test`, {
+    //             code: code,
+    //             language: language,
+    //             testCases: testCases
+    //         }, {
+    //             headers: {
+    //                 Authorization: `Bearer ${localStorage.getItem('token')}`
+    //             }
+    //         });
+
+    //         if (testResponse.data.success) {
+    //             const { allTestsPassed, summary, results } = testResponse.data;
+
+    //             // Submit the solution regardless of test results
+    //             const submitResponse = await axios.post(`${API_URL}/problem/submission/submit`, {
+    //                 problemId: problemId,
+    //                 code: code,
+    //                 language: language,
+    //                 status: allTestsPassed ? 'Accepted' : 'Wrong Answer',
+    //                 testCasesPassed: summary.passed,
+    //                 totalTestCases: summary.total,
+    //                 executionTime: results[0]?.executionTime || 0,
+    //                 runtime: results[0]?.executionTime || 0,
+    //                 memory: 0 // Not available in local execution
+    //             }, {
+    //                 headers: {
+    //                     Authorization: `Bearer ${localStorage.getItem('token')}`
+    //                 }
+    //             });
+
+    //             if (submitResponse.data.success) {
+    //                 // Show detailed results
+    //                 let resultMessage = '';
+    //                 if (allTestsPassed) {
+    //                     resultMessage = `🎉 Congratulations! All ${summary.total} test cases passed!\n\n`;
+    //                     resultMessage += `✅ Your solution is correct and has been submitted successfully.`;
+    //                 } else {
+    //                     resultMessage = `⚠️ ${summary.passed}/${summary.total} test cases passed.\n\n`;
+    //                     resultMessage += `❌ ${summary.failed} test case(s) failed. Please review your solution.`;
+    //                 }
+
+    //                 // Show test case details
+    //                 if (results && results.length > 0) {
+    //                     resultMessage += '\n\nTest Case Results:\n';
+    //                     results.forEach((result, index) => {
+    //                         const status = result.passed ? '✅' : '❌';
+    //                         resultMessage += `${status} Test Case ${index + 1}: ${result.passed ? 'PASSED' : 'FAILED'}\n`;
+    //                         if (!result.passed) {
+    //                             resultMessage += `   Expected: ${result.expected}\n`;
+    //                             resultMessage += `   Your Output: ${result.actual}\n`;
+    //                         }
+    //                     });
+    //                 }
+
+    //                 toast.success(resultMessage);
+    //                 setShowSubmitModal(false);
+
+    //                 // Refresh the problem to show updated solved status
+    //                 if (allTestsPassed) {
+    //                     window.location.reload();
+    //                 }
+    //             } else {
+    //                 alert('Failed to submit solution. Please try again.');
+    //             }
+    //         } else {
+    //             alert('Failed to test solution. Please try again.');
+    //         }
+    //     } catch (error) {
+    //         alert(`Failed to submit solution: ${error.response?.data?.message || error.message}`);
+    //     } finally {
+    //         setIsSubmitting(false);
+    //     }
+    // };
+
+
     const submitSolution = async () => {
         setIsSubmitting(true);
-        try {
-            // Test the code with multiple test cases first
+
+        const promise = (async () => {
             const testCases = problem?.testCases || [];
 
             if (testCases.length === 0) {
-                alert('No test cases available for this problem.');
-                setIsSubmitting(false);
-                return;
+                throw new Error('No test cases available for this problem.');
             }
 
+            // Step 1: Run tests
             const testResponse = await axios.post(`${API_URL}/code/test`, {
-                code: code,
-                language: language,
-                testCases: testCases
+                code,
+                language,
+                testCases
             }, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('token')}`
                 }
             });
 
-            if (testResponse.data.success) {
-                const { allTestsPassed, summary, results } = testResponse.data;
-
-                // Submit the solution regardless of test results
-                const submitResponse = await axios.post(`${API_URL}/problem/submission/submit`, {
-                    problemId: problemId,
-                    code: code,
-                    language: language,
-                    status: allTestsPassed ? 'Accepted' : 'Wrong Answer',
-                    testCasesPassed: summary.passed,
-                    totalTestCases: summary.total,
-                    executionTime: results[0]?.executionTime || 0,
-                    runtime: results[0]?.executionTime || 0,
-                    memory: 0 // Not available in local execution
-                }, {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem('token')}`
-                    }
-                });
-
-                if (submitResponse.data.success) {
-                    // Show detailed results
-                    let resultMessage = '';
-                    if (allTestsPassed) {
-                        resultMessage = `🎉 Congratulations! All ${summary.total} test cases passed!\n\n`;
-                        resultMessage += `✅ Your solution is correct and has been submitted successfully.`;
-                    } else {
-                        resultMessage = `⚠️ ${summary.passed}/${summary.total} test cases passed.\n\n`;
-                        resultMessage += `❌ ${summary.failed} test case(s) failed. Please review your solution.`;
-                    }
-
-                    // Show test case details
-                    if (results && results.length > 0) {
-                        resultMessage += '\n\nTest Case Results:\n';
-                        results.forEach((result, index) => {
-                            const status = result.passed ? '✅' : '❌';
-                            resultMessage += `${status} Test Case ${index + 1}: ${result.passed ? 'PASSED' : 'FAILED'}\n`;
-                            if (!result.passed) {
-                                resultMessage += `   Expected: ${result.expected}\n`;
-                                resultMessage += `   Your Output: ${result.actual}\n`;
-                            }
-                        });
-                    }
-
-                    alert(resultMessage);
-                    setShowSubmitModal(false);
-
-                    // Refresh the problem to show updated solved status
-                    if (allTestsPassed) {
-                        window.location.reload();
-                    }
-                } else {
-                    alert('Failed to submit solution. Please try again.');
-                }
-            } else {
-                alert('Failed to test solution. Please try again.');
+            if (!testResponse.data.success) {
+                throw new Error('Failed to test solution.');
             }
-        } catch (error) {
-            alert(`Failed to submit solution: ${error.response?.data?.message || error.message}`);
+
+            const { allTestsPassed, summary, results } = testResponse.data;
+
+            // Step 2: Submit the solution
+            const submitResponse = await axios.post(`${API_URL}/problem/submission/submit`, {
+                problemId,
+                code,
+                language,
+                status: allTestsPassed ? 'Accepted' : 'Wrong Answer',
+                testCasesPassed: summary.passed,
+                totalTestCases: summary.total,
+                executionTime: results[0]?.executionTime || 0,
+                runtime: results[0]?.executionTime || 0,
+                memory: 0
+            }, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+
+            if (!submitResponse.data.success) {
+                throw new Error('Failed to submit solution.');
+            }
+
+            // Success Message
+            let resultMessage = '';
+            if (allTestsPassed) {
+                resultMessage = `🎉 All ${summary.total} test cases passed!\n✅ Solution accepted.`;
+            } else {
+                resultMessage = `⚠️ ${summary.passed}/${summary.total} test cases passed.\n❌ Some failed, please review your code.`;
+            }
+
+            toast.success(resultMessage);
+            setShowSubmitModal(false);
+
+            if (allTestsPassed) window.location.reload();
+
+            return 'Solution submitted successfully!';
+        })();
+
+        // Step 3: Use toast.promise for visual feedback
+        toast.promise(
+            promise,
+            {
+                loading: 'Submitting your solution...',
+                success: <b>✅ Solution submitted!</b>,
+                error: (err) => <b>❌ {err.message}</b>,
+            }
+        );
+
+        try {
+            await promise;
+        } catch (err) {
+            console.error(err);
         } finally {
             setIsSubmitting(false);
         }
     };
+
 
     const createRoom = () => {
         const newRoomId = Math.random().toString(36).substring(2, 11);
@@ -365,11 +451,10 @@ const SingleProblem = () => {
                             <h1 className={`text-lg font-bold ${theme.text.primary} truncate max-w-md`}>
                                 {problem?.title || 'Loading...'}
                             </h1>
-                            <span className={`text-xs px-3 py-1 rounded-full font-semibold text-white ${
-                                problem?.difficulty === 'Easy' ? 'bg-green-500' :
-                                problem?.difficulty === 'Medium' ? 'bg-yellow-500' :
-                                'bg-red-500'
-                            }`}>
+                            <span className={`text-xs px-3 py-1 rounded-full font-semibold text-white ${problem?.difficulty === 'Easy' ? 'bg-green-500' :
+                                    problem?.difficulty === 'Medium' ? 'bg-yellow-500' :
+                                        'bg-red-500'
+                                }`}>
                                 {problem?.difficulty || 'Easy'}
                             </span>
                         </div>
@@ -435,11 +520,10 @@ const SingleProblem = () => {
                             <button
                                 onClick={runCode}
                                 disabled={isRunning}
-                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
-                                    isRunning
+                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2 ${isRunning
                                         ? 'bg-gray-600 cursor-not-allowed opacity-70'
                                         : 'bg-green-600 hover:bg-green-700 hover:shadow-lg transform hover:scale-105'
-                                }`}
+                                    }`}
                             >
                                 {isRunning ? (
                                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -453,11 +537,10 @@ const SingleProblem = () => {
                             <button
                                 onClick={handleSubmit}
                                 disabled={!lastExecutionSuccess}
-                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                                    lastExecutionSuccess
+                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${lastExecutionSuccess
                                         ? 'bg-purple-600 hover:bg-purple-700 hover:shadow-lg transform hover:scale-105'
                                         : 'bg-gray-600 cursor-not-allowed opacity-70'
-                                }`}
+                                    }`}
                                 title={!lastExecutionSuccess ? 'Run your code successfully first' : 'Submit your solution'}
                             >
                                 <span className="hidden sm:inline">Submit</span>

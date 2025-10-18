@@ -106,9 +106,9 @@ const Problems = () => {
         </div>
 
         {/* Activity Sidebar - Desktop Only */}
-        <div className="w-80 flex-shrink-0 hidden xl:block sticky top-22 h-[calc(100vh-4rem)] overflow-y-auto">
+        {/* <div className="w-80 flex-shrink-0 hidden xl:block sticky top-22 h-[calc(100vh-4rem)] overflow-y-auto">
           <ActivitySidebar theme={theme} />
-        </div>
+        </div> */}
       </div>
     </div>
   );
