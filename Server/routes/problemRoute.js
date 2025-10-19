@@ -9,7 +9,7 @@ router.post('/add-problem', authMiddelware, problemController.addProblem);
 router.get('/delete-problem/:id', authMiddelware, problemController.deleteProblem);
 router.get('/get-problem/:problemId', authMiddelware, problemController.getProblemById);
 
-// Submission routes
+
 router.post('/submission/submit', authMiddelware, submissionController.submitSolution);
 router.get('/submissions/:problemId', authMiddelware, submissionController.getProblemSubmissions);
 
