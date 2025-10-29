@@ -77,7 +77,6 @@ The updated system now supports:
 
 ### Error: "Judge0 API key not configured"
 - Make sure you added `JUDGE0_API_KEY` to your `.env` file
-- Restart your server after adding the key
 
 ### Error: "Authentication failed"
 - Check that your API key is correct
