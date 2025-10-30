@@ -29,16 +29,7 @@ const io = socketIo(server, {
 const collaborationController = new CollaborationController(io);
 
 
-
 const PORT = process.env.PORT || 5000;
-
-
-
-
-
-
-
-
 
 const startAPI = process.env.API_START;
 

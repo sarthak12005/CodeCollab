@@ -6,7 +6,7 @@ exports.submitSolution = async (req, res) => {
     try {
         const userId = req.user.id || req.user.userId; // Get user ID from auth middleware
         const username = req.user.username || 'Unknown'; // Get username from auth middleware
-        const {problemId, code, language, status, runtime, memory, testCasesPassed, totalTestCases, executionTime, errorMessage} = req.body;
+        const { problemId, code, language, status, runtime, memory, testCasesPassed, totalTestCases, executionTime, errorMessage } = req.body;
 
         if (!problemId || !code || !language || !status || testCasesPassed === undefined || totalTestCases === undefined) {
             return res.status(400).json({
@@ -46,9 +46,19 @@ exports.submitSolution = async (req, res) => {
 
         // If submission is successful (all test cases passed), update user's solved problems
         if (status === 'Accepted' && testCasesPassed === totalTestCases) {
+
+            const problem = await Problem.findById(problemId).select('points');
+            if (!problem) {
+                return res.status(404).json({ success: false, message: "Problem not found" });
+            }
+
+
             await User.findByIdAndUpdate(
                 userId,
-                { $addToSet: { solveProblems: problemId } }, // $addToSet prevents duplicates
+                {
+                    $addToSet: { solveProblems: problemId },
+                    $inc: { 'rank.points': problem.points || 0 }
+                },
                 { new: true }
             );
 
@@ -123,13 +133,13 @@ exports.getProblemSubmissions = async (req, res) => {
 exports.getUSerSubmissions = async (req, res) => {
     try {
 
-        const {problemId, userId} = req.query;
+        const { problemId, userId } = req.query;
 
         if (!problemId || !userId) {
             return res.status(400).json({ message: "Problem ID and User ID are required." });
         }
 
-        const submissions = await Submission.find({problemId, userId});
+        const submissions = await Submission.find({ problemId, userId });
 
         if (!submissions || submissions.length === 0) {
             return res.status(404).json({ message: "No submissions found for this problem." });

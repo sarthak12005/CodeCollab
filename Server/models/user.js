@@ -42,7 +42,7 @@ const userSchema = new mongoose.Schema({
        badge: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "Badge",
-          default: "",
+          default: "Bronze",
        }
     },
     Verified: {
