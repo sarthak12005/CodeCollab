@@ -139,12 +139,4 @@ npm run dev
 
 ---
 
-## 📝 License
 
-This project is licensed under the **MIT License**.
-
----
-
-## ⭐ Support
-
-If you find this project helpful, please consider giving it a ⭐ on GitHub to show support and help others discover it.
