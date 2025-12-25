@@ -32,64 +32,9 @@ const Interview = () => {
                 setFilteredQuestions(data.data);
             } else {
                 console.error('Failed to fetch questions:', data.message);
-                // Fallback to sample data for now
-                const sampleQuestions = [
-                    {
-                        _id: 1,
-                        company: 'Google',
-                        question: 'Tell me about yourself and why you want to work at Google.',
-                        category: 'Behavioral',
-                        year: '2024',
-                        tags: ['behavioral', 'introduction'],
-                        difficulty: 'Easy'
-                    },
-                    {
-                        _id: 2,
-                        company: 'Amazon',
-                        question: 'Describe a time when you had to work with a difficult team member.',
-                        category: 'Behavioral',
-                        year: '2024',
-                        tags: ['leadership', 'teamwork'],
-                        difficulty: 'Medium'
-                    },
-                    {
-                        _id: 3,
-                        company: 'Microsoft',
-                        question: 'How would you design a system to handle millions of users?',
-                        category: 'System Design',
-                        year: '2023',
-                        tags: ['system-design', 'scalability'],
-                        difficulty: 'Hard'
-                    }
-                ];
-                setQuestions(sampleQuestions);
-                setFilteredQuestions(sampleQuestions);
             }
         } catch (error) {
             console.error('Error fetching questions:', error);
-            // Fallback to sample data
-            const sampleQuestions = [
-                {
-                    _id: 1,
-                    company: 'Google',
-                    question: 'Tell me about yourself and why you want to work at Google.',
-                    category: 'Behavioral',
-                    year: '2024',
-                    tags: ['behavioral', 'introduction'],
-                    difficulty: 'Easy'
-                },
-                {
-                    _id: 2,
-                    company: 'Amazon',
-                    question: 'Describe a time when you had to work with a difficult team member.',
-                    category: 'Behavioral',
-                    year: '2024',
-                    tags: ['leadership', 'teamwork'],
-                    difficulty: 'Medium'
-                }
-            ];
-            setQuestions(sampleQuestions);
-            setFilteredQuestions(sampleQuestions);
         } finally {
             setLoading(false);
         }
@@ -145,7 +90,6 @@ const Interview = () => {
     if (loading) {
         return (
             <div className={`min-h-screen ${theme.bg.primary} flex items-center justify-center`}>
-                <Header />
                 <div className="text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
                     <p className={theme.text.secondary}>Loading interview questions...</p>

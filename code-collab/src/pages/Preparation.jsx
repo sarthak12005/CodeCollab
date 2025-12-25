@@ -34,9 +34,9 @@ const Preparation = () => {
             route: '/preparation/aptitude'
         },
         {
-            id: 'coding',
-            title: 'Coding Practice',
-            description: 'Solve coding problems from basic to advanced level. Perfect for technical interviews.',
+            id: 'Technical',
+            title: 'Technical Questions',
+            description: 'Solve Technical Question from basic to advanced level. Perfect for technical interviews.',
             icon: Code,
             color: 'from-purple-500 to-purple-600',
             hoverColor: 'hover:from-purple-600 hover:to-purple-700',

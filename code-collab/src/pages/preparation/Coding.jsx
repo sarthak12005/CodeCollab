@@ -148,10 +148,9 @@ const Coding = () => {
     if (loading) {
         return (
             <div className={`min-h-screen ${theme.bg.primary} flex items-center justify-center`}>
-                <Header />
                 <div className="text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                    <p className={theme.text.secondary}>Loading coding problems...</p>
+                    <p className={theme.text.secondary}>Loading Technical Questions...</p>
                 </div>
             </div>
         );

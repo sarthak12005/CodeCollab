@@ -1,6 +1,8 @@
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { RegisterZodSchema } = require('../validations/authValidation.zod');
+const { ZodError } = require('zod');
 
 const generateToken = (userId, username, secret, expiry) => {
     return jwt.sign({ id: userId, username: username }, secret, { expiresIn: expiry });
@@ -41,11 +43,8 @@ exports.loginUser = async (req, res) => {
 
 exports.signUpUser = async (req, res) => {
     try {
-        const { username, email, password } = req.body;
+        const { username, email, password } = RegisterZodSchema.parse(req.body);
 
-        if (!username || !email || !password) {
-            return res.status(400).json({ message: "Username, email, and password are required." });
-        }
 
         const existingUser = await User.findOne({ $or: [{ email }, { username }] });
         if (existingUser) {
@@ -66,6 +65,13 @@ exports.signUpUser = async (req, res) => {
         res.status(201).json({ message: "User registered successfully." });
     } catch (err) {
         console.error("Signup error:", err);
+       if (err instanceof ZodError) {
+            return res.status(400).json({
+                success: false,
+                // We send ONLY err.errors so the frontend can .map() it easily
+                errors: err.errors 
+            });
+        }
         res.status(500).json({ message: "Internal server error", error: err.message });
     }
 };
@@ -81,7 +87,7 @@ exports.getUser = async (req, res) => {
         const user = await User.findById(userId)
             .select('-password')
             .populate('solveProblems');
-    
+
 
         if (!user) {
             return res.status(404).json({ message: "User not found." });

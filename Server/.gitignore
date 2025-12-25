@@ -15,6 +15,11 @@ dist-ssr
 
 .env
 
+testJudge0.js
+seedPreparation.js
+seedProblems.js
+fixJavaTemplates.js
+
 package-lock.json
 
 problem.json
