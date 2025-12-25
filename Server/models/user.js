@@ -40,8 +40,7 @@ const userSchema = new mongoose.Schema({
     rank :{
        points: {type: Number, default: 0},
        badge: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Badge",
+          type: String,
           default: "Bronze",
        }
     },
