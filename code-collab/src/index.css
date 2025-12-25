@@ -1,6 +1,11 @@
 @import "tailwindcss";
 
 /* hide-scrollbar.css or inside App.css */
+
+* {
+  transition: background-color .25s ease, color .25s ease, border-color .25s ease;
+}
+
 .hide-scrollbar {
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none;  /* Internet Explorer 10+ */
@@ -9,3 +14,36 @@
 .hide-scrollbar::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Opera */
 }
+
+.animate-enter {
+  animation: enter 0.25s ease-out;
+}
+
+.animate-leave {
+  animation: leave 0.25s ease-in forwards;
+}
+
+/* Hide scrollbar but allow scroll */
+::-webkit-scrollbar {
+  width: 0px;
+}
+
+
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: translateX(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes leave {
+  to {
+    opacity: 0;
+    transform: translateX(30px) scale(0.95);
+  }
+}
+

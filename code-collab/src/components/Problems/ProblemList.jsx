@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../../context/userContext';
 import { useTheme } from '../../context/ThemeContext';
+import toast from 'react-hot-toast';
 import PageSkeleton from './PageSkeleton';
 
 const API_URL = import.meta.env.VITE_API_ENDPOINT;
@@ -101,7 +102,22 @@ const ProblemList = ({ filters, searchQuery }) => {
 
   const handleToogleFavorite = async (problemId) => {
     try {
-      setLoading(true);
+
+      const updatedProblems = filteredProblems.map(p =>
+        p._id === problemId
+          ? { ...p, isFavorited: !p.isFavorited }
+          : p
+      );
+      setFilteredProblems(updatedProblems);
+
+      // Optional: also update original list to avoid mismatch
+      setProblemData(prev =>
+        prev.map(p =>
+          p._id === problemId
+            ? { ...p, isFavorited: !p.isFavorited }
+            : p
+        )
+      );
       const res = await axios.post(
         `${API_URL}/favorite/${problemId}`,
         {},
@@ -113,7 +129,22 @@ const ProblemList = ({ filters, searchQuery }) => {
       );
 
       if (res.status === 200) {
-        alert(res.data.message);
+        toast.custom((t) => (
+          <div
+            className={`
+      ${t.visible ? "animate-enter" : "animate-leave"}
+      bg-[#1a1a2e] border border-[#2a2a3e]
+      shadow-xl rounded-sm px-4 py-3
+      flex items-center gap-3 text-green-400
+    `}
+          >
+            <span className="text-lg">✓</span>
+            <span className="text-sm font-medium">
+              {res.data.message}
+            </span>
+          </div>
+        ));
+
       }
 
     } catch (err) {
@@ -129,7 +160,6 @@ const ProblemList = ({ filters, searchQuery }) => {
 
   return (
     <div className={`p-6 space-y-6 ${theme.bg.primary} min-h-screen`}>
-      {/* Header and Sort */}
       <div className="flex justify-between items-center">
         <h2 className={`text-xl font-semibold ${theme.text.primary}`}>Problems</h2>
         <div className="relative">
@@ -166,75 +196,58 @@ const ProblemList = ({ filters, searchQuery }) => {
           filteredProblems.map((problem) => (
             <div
               key={problem._id}
-              className={`${theme.bg.card} ${theme.card.hover} border ${theme.border.primary} rounded-lg p-4 cursor-pointer transition-all duration-200 group`}
+              className={`${theme.bg.card} ${theme.card.hover} border ${theme.border.primary} rounded-xl px-4 py-2 cursor-pointer transition-all duration-200 group`}
               onClick={() => handleProblemClick(problem._id)}
             >
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <div className="flex items-center space-x-3 mb-2">
-                    <h3 className={`text-lg font-medium ${theme.text.primary} group-hover:${theme.text.accent.replace('text-', '')} transition-colors`}>
+                  <div className="flex items-center gap-3">
+                    <h3 className={`text-base font-semibold ${theme.text.primary} group-hover:${theme.text.accent.replace('text-', '')} transition-colors`}>
                       {problem.title}
                     </h3>
                     <div className="flex items-center space-x-2">
                       {problem.isSolved && (
-                        <div className="flex items-center gap-1 bg-green-600 px-2 py-1 rounded text-xs font-medium text-white">
+                        <span className="flex items-center gap-1 bg-green-500/20 border border-green-500/30 text-green-400 px-2 py-[2px] rounded-full text-[11px] font-medium">
                           <CheckCircle size={12} />
-                          Solved
-                        </div>
+                          Done
+                        </span>
                       )}
+
                     </div>
-                    <div className='flex gap-2'>
+                    <div className="flex items-center gap-2">
                       <span
-                        className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${problem.difficulty === 'Easy'
-                          ? 'bg-green-500'
-                          : problem.difficulty === 'Medium'
-                            ? 'bg-yellow-500'
-                            : 'bg-red-500'
-                          } text-white`}
+                        className={`px-2 py-[2px] rounded-md text-[11px] font-medium text-white
+        ${problem.difficulty === 'Easy'
+                            ? 'bg-green-500'
+                            : problem.difficulty === 'Medium'
+                              ? 'bg-yellow-500'
+                              : 'bg-red-500'}
+      `}
                       >
                         {problem.difficulty}
                       </span>
-                      <span className="text-sm text-gray-400">
+
+                      <span className="text-xs text-gray-400">
                         {problem.acceptanceRate}%
                       </span>
                     </div>
-                  </div>
-
-                  <div className="flex items-center space-x-4 mb-3">
-
-
-                    {/* <div className="flex items-center space-x-2">
-                      {problem.tags.map((tag, index) => (
-                        <span
-                          key={index}
-                          className="text-xs text-gray-400 bg-slate-700 px-2 py-1 rounded"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div> */}
-
 
                   </div>
-
-                  {/* <p className="text-sm text-gray-300 leading-relaxed">
-                    {problem.description}
-                  </p> */}
                 </div>
 
                 <div className="ml-4 flex items-start space-x-2">
-                  <button className="p-2 hover:bg-slate-700 rounded transition-colors">
+                  <button className="p-2 hover:bg-slate-700/60 rounded-lg transition">
                     <Star
-                      className={`w-4 h-4 ${user.userFavorites.includes(problem._id)
-                        ? 'text-yellow-400 fill-current'
-                        : 'text-gray-400'
+                      className={`w-4 h-4 ${problem.isFavorited
+                        ? "text-yellow-400 fill-current"
+                        : "text-gray-400"
                         }`}
-
                       onClick={(e) => {
-                        e.stopPropagation()
-                        handleToogleFavorite(problem._id)
+                        e.stopPropagation();
+                        handleToogleFavorite(problem._id);
                       }}
                     />
+
                   </button>
                 </div>
               </div>
