@@ -38,15 +38,7 @@ const Signup = () => {
         navigate("/login");
       }
     } catch (err) {
-      const data = err.response?.data;
-
-      if (data?.errors) {
-        // This is the Zod Array
-        setMessage(data.errors);
-      } else {
-        // This is the "User already exists" or "Server error" string
-        setMessage(data?.message || "An unexpected error occurred");
-      }
+      setMessage(err.response?.data?.message || "Signup failed. Please try again.");
     }
   };
 

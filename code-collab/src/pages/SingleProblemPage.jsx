@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Users, Copy, Mic, MicOff, Video, VideoOff, X, Code } from 'lucide-react';
 import ProblemDescription from '../components/SingleProblem/ProblemDescription';
-import SimpleCodeEditor from '../components/SingleProblem/SimpleCodeEditor';
+import MonacoCodeEditor from '../components/SingleProblem/MonacoCodeEditor';
 import '../styles/SingleProblem.css';
 import OutputConsole from '../components/SingleProblem/OutputConsole';
 import LanguageSelector from '../components/SingleProblem/LanguageSelector';
@@ -346,7 +346,6 @@ const SingleProblem = () => {
         try {
             await promise;
         } catch (err) {
-            console.error(err);
         } finally {
             setIsSubmitting(false);
         }
@@ -552,7 +551,7 @@ const SingleProblem = () => {
                     {/* Code Editor - Enhanced */}
                     <div className={`${theme.bg.primary} overflow-hidden relative`} style={{ height: '60%' }}>
                         <div className="absolute inset-0 overflow-y-auto hide-scrollbar" >
-                            <SimpleCodeEditor
+                            <MonacoCodeEditor
                                 code={code}
                                 setCode={setCode}
                                 language={language}

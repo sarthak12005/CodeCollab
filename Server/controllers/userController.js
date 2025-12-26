@@ -64,11 +64,9 @@ exports.signUpUser = async (req, res) => {
 
         res.status(201).json({ message: "User registered successfully." });
     } catch (err) {
-        console.error("Signup error:", err);
        if (err instanceof ZodError) {
             return res.status(400).json({
                 success: false,
-                // We send ONLY err.errors so the frontend can .map() it easily
                 errors: err.errors 
             });
         }
