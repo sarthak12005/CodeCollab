@@ -46,7 +46,7 @@ const MonacoCodeEditor = ({ code, setCode, language }) => {
         readOnly: false,
         cursorStyle: 'line',
         automaticLayout: true,
-        theme: theme.name === 'dark' ? 'vs-dark' : 'light',
+        theme: 'vs-dark', // Always use dark theme
     };
 
     return (
