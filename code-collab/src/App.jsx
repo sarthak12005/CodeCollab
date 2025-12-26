@@ -4,7 +4,7 @@ import Home from "./pages/Home";
 import Problems from "./pages/Problems";
 import Login from "./pages/login";
 import Signup from "./pages/SignUp";
-import Profile from "./pages/ProfileNew";
+import Profile from "./pages/Profile";
 import NotFoundPage from "./pages/NotFoundPage";
 // import CodeCollaborationHub from "./pages/CodeCollaborationHub";
 import About from "./pages/About";

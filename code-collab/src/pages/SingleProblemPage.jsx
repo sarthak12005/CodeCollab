@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Users, Copy, Mic, MicOff, Video, VideoOff, X, Code } from 'lucide-react';
 import ProblemDescription from '../components/SingleProblem/ProblemDescription';
-import SimpleCodeEditor from '../components/SingleProblem/SimpleCodeEditor';
+import MonacoCodeEditor from '../components/SingleProblem/MonacoCodeEditor';
 import '../styles/SingleProblem.css';
 import OutputConsole from '../components/SingleProblem/OutputConsole';
 import LanguageSelector from '../components/SingleProblem/LanguageSelector';
@@ -346,7 +346,6 @@ const SingleProblem = () => {
         try {
             await promise;
         } catch (err) {
-            console.error(err);
         } finally {
             setIsSubmitting(false);
         }
@@ -444,14 +443,14 @@ const SingleProblem = () => {
     return (
         <div className={`min-h-screen ${theme.bg.primary} ${theme.text.primary} flex flex-col`}>
             {/* Problem Header - Enhanced */}
-            <div className={`${theme.bg.secondary} border-b ${theme.border.primary} px-6 py-4 shadow-sm`}>
+            <div className={`${theme.bg.secondary} border-b ${theme.border.primary} px-4 py-2.5 shadow-sm`}>
                 <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-3">
-                            <h1 className={`text-lg font-bold ${theme.text.primary} truncate max-w-md`}>
+                    <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2">
+                            <h1 className={`text-base font-bold ${theme.text.primary} truncate max-w-md`}>
                                 {problem?.title || 'Loading...'}
                             </h1>
-                            <span className={`text-xs px-3 py-1 rounded-full font-semibold text-white ${problem?.difficulty === 'Easy' ? 'bg-green-500' :
+                            <span className={`text-xs px-2 py-0.5 rounded-full font-semibold text-white ${problem?.difficulty === 'Easy' ? 'bg-green-500' :
                                     problem?.difficulty === 'Medium' ? 'bg-yellow-500' :
                                         'bg-red-500'
                                 }`}>
@@ -459,29 +458,29 @@ const SingleProblem = () => {
                             </span>
                         </div>
                         {problem?.tags && problem.tags.length > 0 && (
-                            <div className="hidden md:flex items-center gap-2">
-                                {problem.tags.slice(0, 3).map((tag, index) => (
-                                    <span key={index} className={`text-xs px-2 py-1 rounded ${theme.bg.tertiary} ${theme.text.secondary}`}>
+                            <div className="hidden md:flex items-center gap-1.5">
+                                {problem.tags.slice(0, 2).map((tag, index) => (
+                                    <span key={index} className={`text-xs px-2 py-0.5 rounded ${theme.bg.tertiary} ${theme.text.secondary}`}>
                                         {tag}
                                     </span>
                                 ))}
-                                {problem.tags.length > 3 && (
-                                    <span className={`text-xs ${theme.text.secondary}`}>+{problem.tags.length - 3} more</span>
+                                {problem.tags.length > 2 && (
+                                    <span className={`text-xs ${theme.text.secondary}`}>+{problem.tags.length - 2}</span>
                                 )}
                             </div>
                         )}
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
                         <button
                             onClick={() => navigate(`/problems/${problemId}/submissions`)}
-                            className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-medium transition-all duration-200 hover:shadow-lg"
+                            className="bg-blue-600 hover:bg-blue-700 px-3 py-1.5 rounded-lg flex items-center gap-1.5 text-xs font-medium transition-all duration-200 hover:shadow-lg"
                         >
                             <Code size={16} />
                             <span className="hidden sm:inline">View Submissions</span>
                         </button>
                         <button
                             onClick={() => setShowCollabModal(true)}
-                            className="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-medium transition-all duration-200 hover:shadow-lg"
+                            className="bg-purple-600 hover:bg-purple-700 px-3 py-1.5 rounded-lg flex items-center gap-1.5 text-xs font-medium transition-all duration-200 hover:shadow-lg"
                         >
                             <Users size={16} />
                             <span className="hidden sm:inline">Collaborate</span>
@@ -491,39 +490,36 @@ const SingleProblem = () => {
             </div>
 
             {/* Main Content - Enhanced Layout */}
-            <div className="flex flex-1 overflow-hidden" style={{ height: 'calc(100vh - 140px)' }}>
+            <div className="flex flex-1 overflow-hidden" style={{ height: 'calc(100vh - 65px)' }}>
                 {/* Left Sidebar - Problem Description */}
-                <div className={`w-2/5 min-w-[380px] max-w-[480px] ${theme.bg.secondary} border-r ${theme.border.primary} flex flex-col shadow-lg`}>
-                    <div className={`${theme.bg.tertiary} px-4 py-3 border-b ${theme.border.primary}`}>
-                        <div className="flex items-center gap-2">
-                            <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                            <h2 className={`font-semibold ${theme.text.primary}`}>Problem Description</h2>
+                <div className={`w-2/5 min-w-[350px] max-w-[420px] ${theme.bg.secondary} border-r ${theme.border.primary} flex flex-col`}>
+                    <div className={`${theme.bg.tertiary} px-3 py-2 border-b ${theme.border.primary}`}>
+                        <div className="flex items-center gap-1.5">
+                            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                            <h2 className={`text-sm font-semibold ${theme.text.primary}`}>Description</h2>
                         </div>
                     </div>
-                    <div className="flex-1 overflow-hidden hide-scrollbar">
+                    <div className="flex-1 overflow-y-auto">
                         <ProblemDescription problem={problem} />
                     </div>
                 </div>
 
                 {/* Center - Code Editor and Output */}
-                <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+                <div className="flex-1 flex flex-col overflow-hidden">
                     {/* Editor Header - Enhanced */}
-                    <div className={`${theme.bg.tertiary} px-4 py-3 border-b ${theme.border.primary} flex items-center justify-between shadow-sm flex-shrink-0`}>
-                        <div className="flex items-center gap-4">
-                            <div className="flex items-center gap-2">
-                                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                                <span className={`font-medium ${theme.text.primary}`}>Code Editor</span>
-                            </div>
+                    <div className={`${theme.bg.tertiary} px-3 py-1.5 border-b ${theme.border.primary} flex items-center justify-between flex-shrink-0`}>
+                        <div className="flex items-center gap-2">
                             <LanguageSelector language={language} setLanguage={setLanguage} />
                         </div>
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-1.5">
                             <button
                                 onClick={runCode}
                                 disabled={isRunning}
-                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2 ${isRunning
+                                className={`p-2 rounded-lg transition-all duration-200 flex items-center justify-center ${isRunning
                                         ? 'bg-gray-600 cursor-not-allowed opacity-70'
-                                        : 'bg-green-600 hover:bg-green-700 hover:shadow-lg transform hover:scale-105'
+                                        : 'bg-green-600 hover:bg-green-700 hover:shadow-md'
                                     }`}
+                                title={isRunning ? 'Running...' : 'Run Code'}
                             >
                                 {isRunning ? (
                                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -532,36 +528,32 @@ const SingleProblem = () => {
                                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
                                     </svg>
                                 )}
-                                <span className="hidden sm:inline">{isRunning ? 'Running...' : 'Run Code'}</span>
                             </button>
                             <button
                                 onClick={handleSubmit}
                                 disabled={!lastExecutionSuccess}
-                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${lastExecutionSuccess
-                                        ? 'bg-purple-600 hover:bg-purple-700 hover:shadow-lg transform hover:scale-105'
-                                        : 'bg-gray-600 cursor-not-allowed opacity-70'
+                                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 ${lastExecutionSuccess
+                                        ? 'bg-emerald-600 hover:bg-emerald-700 hover:shadow-md text-white'
+                                        : 'bg-gray-600 cursor-not-allowed opacity-50 text-gray-300'
                                     }`}
                                 title={!lastExecutionSuccess ? 'Run your code successfully first' : 'Submit your solution'}
                             >
-                                <span className="hidden sm:inline">Submit</span>
-                                <span className="sm:hidden">Submit</span>
+                                Submit
                             </button>
                         </div>
                     </div>
 
                     {/* Code Editor - Enhanced */}
-                    <div className={`${theme.bg.primary} overflow-hidden relative`} style={{ height: '60%' }}>
-                        <div className="absolute inset-0 overflow-y-auto hide-scrollbar" >
-                            <SimpleCodeEditor
-                                code={code}
-                                setCode={setCode}
-                                language={language}
-                            />
-                        </div>
+                    <div className="flex-1" style={{ minHeight: 0 }}>
+                        <MonacoCodeEditor
+                            code={code}
+                            setCode={setCode}
+                            language={language}
+                        />
                     </div>
 
                     {/* Output Console - Enhanced */}
-                    <div className={`${theme.bg.secondary} border-t ${theme.border.primary} relative`} style={{ height: '40%' }}>
+                    <div className="flex-shrink-0" style={{ height: '35vh' }}>
                         <OutputConsole
                             output={output}
                             isRunning={isRunning}

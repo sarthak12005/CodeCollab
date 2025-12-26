@@ -343,11 +343,8 @@ const CollaborationModal = ({
             const hasVideo = !!videoTrack;
             const hasAudio = !!audioTrack;
             if (hasVideo && hasAudio) {
-                console.log('Call started with video and audio');
             } else if (hasAudio) {
-                console.log('Call started with audio only');
             } else if (hasVideo) {
-                console.log('Call started with video only');
             }
         } catch (error) {
             console.error('Error starting call:', error);
