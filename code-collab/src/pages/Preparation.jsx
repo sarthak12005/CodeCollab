@@ -54,46 +54,7 @@ const Preparation = () => {
         <div className={`min-h-screen ${theme.bg.primary}`}>
             <Header />
 
-            {/* Header Section */}
-            <div className={`${theme.bg.secondary} ${theme.shadow.sm}`}>
-                <div className="max-w-7xl mx-auto mobile-padding sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
-                    <div className="text-center">
-                        <h1 className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold ${theme.text.primary} mb-4 selectable-text`}>
-                            Interview Preparation Hub
-                        </h1>
-                        <p className={`text-base sm:text-lg lg:text-xl ${theme.text.secondary} max-w-3xl mx-auto selectable-text`}>
-                            Master your interview skills with our comprehensive collection of questions from top companies.
-                            Practice, learn, and succeed in your dream job interviews.
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            {/* Stats Section */}
             <div className="max-w-7xl mx-auto mobile-padding sm:px-6 lg:px-8 py-6 sm:py-8">
-                <div className="responsive-grid gap-4 sm:gap-6 mb-8 sm:mb-12">
-                    <div className={`${theme.bg.card} rounded-lg ${theme.shadow.md} p-4 sm:p-6 text-center`}>
-                        <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-lg mx-auto mb-3 sm:mb-4">
-                            <Users className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
-                        </div>
-                        <h3 className={`text-xl sm:text-2xl font-bold ${theme.text.primary}`}>50+</h3>
-                        <p className={`${theme.text.secondary} text-sm sm:text-base`}>Top Companies</p>
-                    </div>
-                    <div className={`${theme.bg.card} rounded-lg ${theme.shadow.md} p-4 sm:p-6 text-center`}>
-                        <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-green-100 rounded-lg mx-auto mb-3 sm:mb-4">
-                            <Trophy className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
-                        </div>
-                        <h3 className={`text-xl sm:text-2xl font-bold ${theme.text.primary}`}>1600+</h3>
-                        <p className={`${theme.text.secondary} text-sm sm:text-base`}>Practice Questions</p>
-                    </div>
-                    <div className={`${theme.bg.card} rounded-lg ${theme.shadow.md} p-4 sm:p-6 text-center`}>
-                        <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-purple-100 rounded-lg mx-auto mb-3 sm:mb-4">
-                            <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" />
-                        </div>
-                        <h3 className={`text-xl sm:text-2xl font-bold ${theme.text.primary}`}>24/7</h3>
-                        <p className={`${theme.text.secondary} text-sm sm:text-base`}>Available Practice</p>
-                    </div>
-                </div>
 
                 {/* Category Cards */}
                 <div className="responsive-grid gap-6 sm:gap-8">
