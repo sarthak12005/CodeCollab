@@ -151,14 +151,17 @@ const CollaborationModal = ({
 
             // WebRTC signaling handlers
             newSocket.on('webrtc-offer', async (data) => {
+                console.debug('[Collab] webrtc-offer', data);
                 await handleReceiveOffer(data.offer, data.from);
             });
 
             newSocket.on('webrtc-answer', async (data) => {
+                console.debug('[Collab] webrtc-answer', data);
                 await handleReceiveAnswer(data.answer);
             });
 
             newSocket.on('webrtc-ice-candidate', async (data) => {
+                console.debug('[Collab] webrtc-ice-candidate', data);
                 await handleReceiveIceCandidate(data.candidate);
             });
 
@@ -326,9 +329,26 @@ const CollaborationModal = ({
         };
 
         peerConnection.ontrack = (event) => {
-            if (remoteVideoRef.current) {
-                remoteVideoRef.current.srcObject = event.streams[0];
+            console.debug('[Collab] ontrack event', event);
+            // Prefer provided streams, otherwise assemble one from tracks
+            const remoteStream = (event.streams && event.streams[0]) || null;
+            if (remoteStream && remoteVideoRef.current) {
+                remoteVideoRef.current.srcObject = remoteStream;
+            } else if (event.track) {
+                // Fallback: create or reuse a MediaStream and add the incoming track
+                try {
+                    const existing = remoteVideoRef.current && remoteVideoRef.current.srcObject;
+                    const inboundStream = existing instanceof MediaStream ? existing : new MediaStream();
+                    inboundStream.addTrack(event.track);
+                    if (remoteVideoRef.current) remoteVideoRef.current.srcObject = inboundStream;
+                } catch (err) {
+                    console.error('[Collab] error attaching remote track', err);
+                }
             }
+        };
+
+        peerConnection.onconnectionstatechange = () => {
+            console.debug('[Collab] PeerConnection state:', peerConnection.connectionState);
         };
 
         return peerConnection;
@@ -371,9 +391,43 @@ const CollaborationModal = ({
 
             localVideoRef.current.play().then(() => {
             }).catch(error => {
+                console.warn('[Collab] local video play failed:', error);
             });
         }
     }, [localStream]);
+
+    // Effect to play and debug remote video when it arrives
+    useEffect(() => {
+        const tryPlayRemote = async () => {
+            if (remoteVideoRef.current && remoteVideoRef.current.srcObject) {
+                try {
+                    await remoteVideoRef.current.play();
+                    console.debug('[Collab] remote video playing');
+                } catch (err) {
+                    console.warn('[Collab] remote video play failed:', err);
+                }
+            }
+        };
+        tryPlayRemote();
+    }, [remoteVideoRef.current && remoteVideoRef.current.srcObject]);
+
+    // Debug helper to inspect local/remote video elements and streams
+    const debugVideoElement = () => {
+        try {
+            console.debug('[Collab] debugVideoElement -> localVideoRef', localVideoRef.current);
+            console.debug('[Collab] debugVideoElement -> remoteVideoRef', remoteVideoRef.current);
+            if (localVideoRef.current) {
+                const s = localVideoRef.current.srcObject;
+                console.debug('[Collab] local srcObject', s, 'videoTracks', s ? s.getVideoTracks() : 'no-stream');
+            }
+            if (remoteVideoRef.current) {
+                const s2 = remoteVideoRef.current.srcObject;
+                console.debug('[Collab] remote srcObject', s2, 'videoTracks', s2 ? s2.getVideoTracks() : 'no-stream');
+            }
+        } catch (err) {
+            console.error('[Collab] debugVideoElement error', err);
+        }
+    };
 
     const startCall = async () => {
         try {
@@ -402,17 +456,17 @@ const CollaborationModal = ({
 
             setIsCallActive(true);
 
-            // Debug the video element after a short delay
+n            // Debug the video element after a short delay
             setTimeout(() => {
                 debugVideoElement();
             }, 1000);
 
-            // Show success message
-            const hasVideo = !!videoTrack;
-            const hasAudio = !!audioTrack;
-            if (hasVideo && hasAudio) {
-            } else if (hasAudio) {
-            } else if (hasVideo) {
+            // Show success message: derive from tracks on the acquired stream
+            const hasVideo = stream && stream.getVideoTracks && stream.getVideoTracks().length > 0;
+            const hasAudio = stream && stream.getAudioTracks && stream.getAudioTracks().length > 0;
+            console.debug('[Collab] startCall: hasVideo=', hasVideo, 'hasAudio=', hasAudio);
+            if (!hasVideo && !hasAudio) {
+                console.warn('[Collab] No media tracks were obtained');
             }
         } catch (error) {
             console.error('Error starting call:', error);
@@ -422,14 +476,29 @@ const CollaborationModal = ({
 
     const handleReceiveOffer = async (offer, from) => {
         try {
+            console.debug('[Collab] handleReceiveOffer from', from);
             const peerConnection = initializePeerConnection();
             peerConnectionRef.current = peerConnection;
 
+            console.debug('[Collab] setting remote description');
             await peerConnection.setRemoteDescription(offer);
+
+            // Make sure we have a local stream to send back (prompt for permissions if needed)
+            if (!localStreamRef.current) {
+                try {
+                    await setupVideo();
+                } catch (err) {
+                    console.warn('[Collab] setupVideo failed while answering offer', err);
+                }
+            }
 
             if (localStreamRef.current) {
                 localStreamRef.current.getTracks().forEach(track => {
-                    peerConnection.addTrack(track, localStreamRef.current);
+                    try {
+                        peerConnection.addTrack(track, localStreamRef.current);
+                    } catch (err) {
+                        console.warn('[Collab] addTrack failed', err);
+                    }
                 });
             }
 
@@ -449,6 +518,7 @@ const CollaborationModal = ({
 
     const handleReceiveAnswer = async (answer) => {
         try {
+            console.debug('[Collab] handleReceiveAnswer');
             if (peerConnectionRef.current) {
                 await peerConnectionRef.current.setRemoteDescription(answer);
             }
