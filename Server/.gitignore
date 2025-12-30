@@ -14,7 +14,7 @@ dist-ssr
 *.local
 
 .env
-
+scripts
 testJudge0.js
 seedPreparation.js
 seedProblems.js
