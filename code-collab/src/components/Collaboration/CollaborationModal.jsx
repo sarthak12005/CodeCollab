@@ -36,6 +36,10 @@ const CollaborationModal = ({
     const [isCallActive, setIsCallActive] = useState(false);
     const [remoteUsers, setRemoteUsers] = useState([]);
     const [localStream, setLocalStream] = useState(null);
+    // Debug counters for media tracks and peer state
+    const [localVideoTrackCount, setLocalVideoTrackCount] = useState(0);
+    const [remoteVideoTrackCount, setRemoteVideoTrackCount] = useState(0);
+    const [peerConnectionState, setPeerConnectionState] = useState('new');
     // Join timeout/ref to avoid stuck "Joining..." UI
     const joinTimeoutRef = useRef(null);
 
@@ -334,6 +338,7 @@ const CollaborationModal = ({
             const remoteStream = (event.streams && event.streams[0]) || null;
             if (remoteStream && remoteVideoRef.current) {
                 remoteVideoRef.current.srcObject = remoteStream;
+                setRemoteVideoTrackCount(remoteStream.getVideoTracks().length);
             } else if (event.track) {
                 // Fallback: create or reuse a MediaStream and add the incoming track
                 try {
@@ -341,6 +346,7 @@ const CollaborationModal = ({
                     const inboundStream = existing instanceof MediaStream ? existing : new MediaStream();
                     inboundStream.addTrack(event.track);
                     if (remoteVideoRef.current) remoteVideoRef.current.srcObject = inboundStream;
+                    setRemoteVideoTrackCount(inboundStream.getVideoTracks().length);
                 } catch (err) {
                     console.error('[Collab] error attaching remote track', err);
                 }
@@ -349,6 +355,7 @@ const CollaborationModal = ({
 
         peerConnection.onconnectionstatechange = () => {
             console.debug('[Collab] PeerConnection state:', peerConnection.connectionState);
+            setPeerConnectionState(peerConnection.connectionState);
         };
 
         return peerConnection;
@@ -374,6 +381,7 @@ const CollaborationModal = ({
             // Store the stream
             localStreamRef.current = stream;
             setLocalStream(stream);
+            setLocalVideoTrackCount(stream.getVideoTracks ? stream.getVideoTracks().length : 0);
 
             return stream;
         } catch (error) {
@@ -456,9 +464,17 @@ const CollaborationModal = ({
 
             setIsCallActive(true);
 
-n            // Debug the video element after a short delay
+            // Debug the video element after a short delay (defensive call)
             setTimeout(() => {
-                debugVideoElement();
+                try {
+                    if (typeof debugVideoElement === 'function') {
+                        debugVideoElement();
+                    } else {
+                        console.warn('[Collab] debugVideoElement is not a function');
+                    }
+                } catch (err) {
+                    console.error('[Collab] debugVideoElement invocation failed', err);
+                }
             }, 1000);
 
             // Show success message: derive from tracks on the acquired stream
@@ -601,8 +617,12 @@ n            // Debug the video element after a short delay
                             <span className="text-xs bg-blue-600 px-2 py-1 rounded-full animate-pulse">
                                 Syncing...
                             </span>
-                        )}
-                    </h2>
+                        )}                        {/* Small debug status for call */}
+                        <div className="ml-4 text-xs text-gray-400 hidden sm:inline">
+                            Peer: <span className="font-medium text-gray-200">{peerConnectionState}</span>
+                            &nbsp;•&nbsp; LocalVT: <span className="font-medium text-gray-200">{localVideoTrackCount}</span>
+                            &nbsp;•&nbsp; RemoteVT: <span className="font-medium text-gray-200">{remoteVideoTrackCount}</span>
+                        </div>                    </h2>
                     <button
                         onClick={onClose}
                         className="text-gray-400 hover:text-white"
