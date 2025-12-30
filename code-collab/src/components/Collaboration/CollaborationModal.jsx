@@ -42,6 +42,8 @@ const CollaborationModal = ({
     const [peerConnectionState, setPeerConnectionState] = useState('new');
     // Join timeout/ref to avoid stuck "Joining..." UI
     const joinTimeoutRef = useRef(null);
+    // Queue ICE candidates received before a remote description is set
+    const pendingIceCandidatesRef = useRef([]);
 
     // Code synchronization
     const [lastCodeUpdate, setLastCodeUpdate] = useState(Date.now());
@@ -198,6 +200,10 @@ const CollaborationModal = ({
                 clearTimeout(joinTimeoutRef.current);
                 joinTimeoutRef.current = null;
             }
+            // Clear pending ICE candidates
+            if (pendingIceCandidatesRef.current) {
+                pendingIceCandidatesRef.current = [];
+            }
             // Clean up WebRTC
             if (localStreamRef.current) {
                 localStreamRef.current.getTracks().forEach(track => track.stop());
@@ -339,6 +345,19 @@ const CollaborationModal = ({
             if (remoteStream && remoteVideoRef.current) {
                 remoteVideoRef.current.srcObject = remoteStream;
                 setRemoteVideoTrackCount(remoteStream.getVideoTracks().length);
+                // Ensure remote video is not muted so audio can play when allowed by the browser
+                try { if (remoteVideoRef.current) remoteVideoRef.current.muted = false; } catch (err) {}
+                // Try to autoplay the incoming media (may be blocked without user gesture)
+                setTimeout(async () => {
+                    try {
+                        if (remoteVideoRef.current) {
+                            await remoteVideoRef.current.play();
+                            console.debug('[Collab] remote video autoplay succeeded');
+                        }
+                    } catch (err) {
+                        console.warn('[Collab] remote video autoplay failed:', err);
+                    }
+                }, 50);
             } else if (event.track) {
                 // Fallback: create or reuse a MediaStream and add the incoming track
                 try {
@@ -347,6 +366,16 @@ const CollaborationModal = ({
                     inboundStream.addTrack(event.track);
                     if (remoteVideoRef.current) remoteVideoRef.current.srcObject = inboundStream;
                     setRemoteVideoTrackCount(inboundStream.getVideoTracks().length);
+                    setTimeout(async () => {
+                        try {
+                            if (remoteVideoRef.current) {
+                                await remoteVideoRef.current.play();
+                                console.debug('[Collab] remote video autoplay succeeded (track fallback)');
+                            }
+                        } catch (err) {
+                            console.warn('[Collab] remote video autoplay failed (track fallback):', err);
+                        }
+                    }, 50);
                 } catch (err) {
                     console.error('[Collab] error attaching remote track', err);
                 }
@@ -356,6 +385,10 @@ const CollaborationModal = ({
         peerConnection.onconnectionstatechange = () => {
             console.debug('[Collab] PeerConnection state:', peerConnection.connectionState);
             setPeerConnectionState(peerConnection.connectionState);
+        };
+
+        peerConnection.oniceconnectionstatechange = () => {
+            console.debug('[Collab] ICE connection state:', peerConnection.iceConnectionState);
         };
 
         return peerConnection;
@@ -499,6 +532,19 @@ const CollaborationModal = ({
             console.debug('[Collab] setting remote description');
             await peerConnection.setRemoteDescription(offer);
 
+            // Process any ICE candidates that arrived early
+            try {
+                if (pendingIceCandidatesRef.current && pendingIceCandidatesRef.current.length) {
+                    console.debug('[Collab] processing queued ICE candidates (offer path)', pendingIceCandidatesRef.current.length);
+                    for (const c of pendingIceCandidatesRef.current) {
+                        try { await peerConnection.addIceCandidate(c); } catch (err) { console.warn('[Collab] queued addIceCandidate failed', err); }
+                    }
+                    pendingIceCandidatesRef.current = [];
+                }
+            } catch (err) {
+                console.warn('[Collab] processing queued ICE candidates failed', err);
+            }
+
             // Make sure we have a local stream to send back (prompt for permissions if needed)
             if (!localStreamRef.current) {
                 try {
@@ -537,6 +583,18 @@ const CollaborationModal = ({
             console.debug('[Collab] handleReceiveAnswer');
             if (peerConnectionRef.current) {
                 await peerConnectionRef.current.setRemoteDescription(answer);
+                // Process any queued ICE candidates after setting remote description
+                try {
+                    if (pendingIceCandidatesRef.current && pendingIceCandidatesRef.current.length) {
+                        console.debug('[Collab] processing queued ICE candidates (answer path)', pendingIceCandidatesRef.current.length);
+                        for (const c of pendingIceCandidatesRef.current) {
+                            try { await peerConnectionRef.current.addIceCandidate(c); } catch (err) { console.warn('[Collab] queued addIceCandidate failed', err); }
+                        }
+                        pendingIceCandidatesRef.current = [];
+                    }
+                } catch (err) {
+                    console.warn('[Collab] processing queued ICE candidates after answer failed', err);
+                }
             }
         } catch (error) {
             console.error('Error handling answer:', error);
@@ -545,8 +603,18 @@ const CollaborationModal = ({
 
     const handleReceiveIceCandidate = async (candidate) => {
         try {
-            if (peerConnectionRef.current) {
-                await peerConnectionRef.current.addIceCandidate(candidate);
+            const pc = peerConnectionRef.current;
+            if (pc && pc.remoteDescription && pc.remoteDescription.type) {
+                try {
+                    await pc.addIceCandidate(candidate);
+                } catch (err) {
+                    console.warn('[Collab] addIceCandidate failed:', err);
+                }
+            } else {
+                // Queue candidate until remote description is available
+                console.debug('[Collab] queuing ICE candidate until remote description is set');
+                pendingIceCandidatesRef.current = pendingIceCandidatesRef.current || [];
+                pendingIceCandidatesRef.current.push(candidate);
             }
         } catch (error) {
             console.error('Error handling ICE candidate:', error);
@@ -697,13 +765,13 @@ const CollaborationModal = ({
                                         Participants ({participants.length})
                                     </h4>
                                     <div className="space-y-2">
-                                        {participants.map((participant) => (
-                                            <div key={participant.id} className="flex items-center gap-2">
+                                        {participants.map((participant, idx) => (
+                                            <div key={participant.id ?? participant.username ?? `participant-${idx}`} className="flex items-center gap-2">
                                                 <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-sm font-medium">
                                                     {participant.username?.[0]?.toUpperCase()}
                                                 </div>
-                                                <span className="text-white text-sm">{participant.username}</span>
-                                                {participant.id === currentRoom.host.id && (
+                                                <span className="text-white text-sm">{participant.username || participant.name || 'Guest'}</span>
+                                                {participant.id === currentRoom?.host?.id && (
                                                     <span className="text-xs bg-yellow-600 px-1 py-0.5 rounded text-white">Host</span>
                                                 )}
                                             </div>
@@ -894,19 +962,19 @@ const CollaborationModal = ({
                                 {/* Chat Messages */}
                                 <div className="flex-1 p-4 overflow-y-auto">
                                     <div className="space-y-3">
-                                        {chatMessages.map((message) => (
-                                            <div key={message.id} className={`flex gap-3 ${message.isSystem ? 'opacity-75' : ''}`}>
+                                        {chatMessages.map((message, idx) => (
+                                            <div key={message.id ?? `msg-${message.timestamp ? new Date(message.timestamp).getTime() : idx}`} className={`flex gap-3 ${message.isSystem ? 'opacity-75' : ''}`}>
                                                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium flex-shrink-0 ${
                                                     message.isSystem ? 'bg-gray-600' : 'bg-blue-600'
                                                 }`}>
-                                                    {message.isSystem ? '🤖' : message.user.username?.[0]?.toUpperCase()}
+                                                    {message.isSystem ? '🤖' : message.user?.username?.[0]?.toUpperCase()}
                                                 </div>
                                                 <div className="flex-1">
                                                     <div className="flex items-center gap-2 mb-1">
                                                         <span className={`text-sm font-medium ${
                                                             message.isSystem ? 'text-gray-400' : 'text-white'
                                                         }`}>
-                                                            {message.user.username}
+                                                            {message.user?.username || (message.isSystem ? 'System' : 'Anonymous')}
                                                         </span>
                                                         <span className="text-xs text-gray-400">
                                                             {new Date(message.timestamp).toLocaleTimeString()}
