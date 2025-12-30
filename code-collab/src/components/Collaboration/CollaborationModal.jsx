@@ -36,6 +36,8 @@ const CollaborationModal = ({
     const [isCallActive, setIsCallActive] = useState(false);
     const [remoteUsers, setRemoteUsers] = useState([]);
     const [localStream, setLocalStream] = useState(null);
+    // Join timeout/ref to avoid stuck "Joining..." UI
+    const joinTimeoutRef = useRef(null);
 
     // Code synchronization
     const [lastCodeUpdate, setLastCodeUpdate] = useState(Date.now());
@@ -61,6 +63,12 @@ const CollaborationModal = ({
             });
 
             newSocket.on('room-joined', (data) => {
+                console.debug('[Collab] received room-joined', data);
+                // Clear join timeout if present
+                if (joinTimeoutRef.current) {
+                    clearTimeout(joinTimeoutRef.current);
+                    joinTimeoutRef.current = null;
+                }
                 if (data.success) {
                     setCurrentRoom(data.room);
                     setParticipants(data.room.participants);
@@ -75,16 +83,43 @@ const CollaborationModal = ({
                     if (data.room.language && data.room.language !== language) {
                         onLanguageChange(data.room.language);
                     }
+                } else {
+                    // Defensive: treat as an error if success flag is false
+                    alert(data.message || 'Failed to join room');
+                    setIsConnecting(false);
                 }
             });
 
             newSocket.on('join-room-error', (data) => {
+                console.warn('[Collab] join-room-error', data);
+                if (joinTimeoutRef.current) {
+                    clearTimeout(joinTimeoutRef.current);
+                    joinTimeoutRef.current = null;
+                }
                 alert(data.message);
                 setIsConnecting(false);
             });
 
             newSocket.on('user-joined', (data) => {
+                console.debug('[Collab] user-joined', data);
                 setParticipants(data.participants);
+                // Fallback: if joining client didn't receive 'room-joined' but server included this user in participants,
+                // treat it as a successful join and enter the room view to avoid getting stuck in the "Joining..." state.
+                try {
+                    const amPresent = data.participants && user && data.participants.some(p => p.id === user.id);
+                    if (!currentRoom && amPresent) {
+                        console.debug('[Collab] fallback: detected join via user-joined, entering room');
+                        setCurrentRoom(prev => prev || { id: roomId.trim().toUpperCase(), participants: data.participants });
+                        setView('room');
+                        setIsConnecting(false);
+                        if (joinTimeoutRef.current) {
+                            clearTimeout(joinTimeoutRef.current);
+                            joinTimeoutRef.current = null;
+                        }
+                    }
+                } catch (err) {
+                    // ignore
+                }
             });
 
             newSocket.on('user-left', (data) => {
@@ -151,6 +186,11 @@ const CollaborationModal = ({
                 socket.disconnect();
                 setSocket(null);
             }
+            // Clear join timeout if still pending
+            if (joinTimeoutRef.current) {
+                clearTimeout(joinTimeoutRef.current);
+                joinTimeoutRef.current = null;
+            }
             // Clean up WebRTC
             if (localStreamRef.current) {
                 localStreamRef.current.getTracks().forEach(track => track.stop());
@@ -175,16 +215,44 @@ const CollaborationModal = ({
     };
 
     const joinRoom = () => {
-        if (!socket || !user || !roomId.trim()) {
+        if (!user || !roomId.trim()) {
             alert('Please enter a room ID');
+            return;
+        }
+        if (!socket) {
+            alert('Socket not initialized yet. Please try again in a moment.');
             return;
         }
         
         setIsConnecting(true);
-        socket.emit('join-room', {
-            roomId: roomId.trim().toUpperCase(),
-            user: user
-        });
+        console.debug('[Collab] joinRoom -> attempting to join', roomId, 'socket.connected=', socket.connected);
+        const emitJoin = () => {
+            socket.emit('join-room', {
+                roomId: roomId.trim().toUpperCase(),
+                user: user
+            });
+        };
+
+        if (socket.connected) {
+            emitJoin();
+        } else {
+            // Wait for socket connect to emit join (helps if connection is not ready yet)
+            const onConnect = () => {
+                console.debug('[Collab] socket connected, emitting join-room');
+                emitJoin();
+                socket.off('connect', onConnect);
+            };
+            socket.on('connect', onConnect);
+        }
+
+        // Safety timeout: if no response in X ms, stop loading and show error
+        if (joinTimeoutRef.current) clearTimeout(joinTimeoutRef.current);
+        joinTimeoutRef.current = setTimeout(() => {
+            console.warn('[Collab] joinRoom timeout for', roomId);
+            setIsConnecting(false);
+            alert('Timed out while joining room. Please check the Room ID and try again.');
+            joinTimeoutRef.current = null;
+        }, 10000);
     };
 
     const leaveRoom = () => {

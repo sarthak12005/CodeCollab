@@ -40,7 +40,7 @@ const aptitudeQuestionSchema = new mongoose.Schema({
         type: String
     },
     timeLimit: {
-        type: Number, // in seconds
+        type: Number,
         default: 60
     },
     tags: [{

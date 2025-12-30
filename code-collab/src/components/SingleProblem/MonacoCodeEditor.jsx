@@ -21,7 +21,7 @@ const MonacoCodeEditor = ({ code, setCode, language }) => {
     const handleEditorDidMount = (editor, monaco) => {
         editorRef.current = editor;
         
-        // Configure editor options
+        // Configure editor options (disable some features that can cause cancelled async work when models switch)
         editor.updateOptions({
             fontSize: 14,
             minimap: { enabled: false },
@@ -36,7 +36,10 @@ const MonacoCodeEditor = ({ code, setCode, language }) => {
             glyphMargin: false,
             lineDecorationsWidth: 0,
             lineNumbersMinChars: 3,
-            padding: { top: 16, bottom: 16 }
+            padding: { top: 16, bottom: 16 },
+            // reduce background async contributions that may be cancelled when models are swapped or disposed
+            occurrencesHighlight: false,
+            selectionHighlight: false,
         });
     };
 
@@ -47,7 +50,31 @@ const MonacoCodeEditor = ({ code, setCode, language }) => {
         cursorStyle: 'line',
         automaticLayout: true,
         theme: 'vs-dark', // Always use dark theme
+        // disable occurrence/selection highlights to avoid Monaco producing "Canceled" async rejections during model switches
+        occurrencesHighlight: false,
+        selectionHighlight: false,
     };
+
+    // Attach a scoped handler to silence harmless "Canceled" unhandled promise rejections
+    // emitted by Monaco when models are disposed or switched rapidly.
+    // We only prevent default for errors that are clearly the Monaco "Canceled" token.
+    useEffect(() => {
+        const handler = (e) => {
+            try {
+                const reason = e && e.reason;
+                if (
+                    reason === 'Canceled' ||
+                    (reason && (reason.message === 'Canceled' || String(reason).includes('Canceled')))
+                ) {
+                    e.preventDefault(); // silence the console noise
+                }
+            } catch (err) {
+                // ignore any inspection errors here
+            }
+        };
+        window.addEventListener('unhandledrejection', handler);
+        return () => window.removeEventListener('unhandledrejection', handler);
+    }, []);
 
     return (
         <div className="h-full w-full bg-slate-900">
