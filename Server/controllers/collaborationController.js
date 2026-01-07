@@ -12,6 +12,7 @@ class CollaborationController {
 
     setupSocketHandlers() {
         this.io.on('connection', (socket) => {
+            console.log('[Collab Server] New connection:', socket.id);
 
             // Store user socket
             socket.on('user-connected', (userData) => {
@@ -19,6 +20,7 @@ class CollaborationController {
                     ...userData,
                     socketId: socket.id
                 });
+                console.log('[Collab Server] User connected:', userData.username || userData.id);
             });
 
             // Create room
@@ -34,24 +36,29 @@ class CollaborationController {
                     language: data.language || 'python',
                     createdAt: new Date(),
                     isActive: true,
-                    chat: []
+                    chat: [],
+                    // NEW: Track socket IDs for WebRTC signaling
+                    socketMap: new Map([[data.user.id, socket.id]])
                 };
 
                 rooms.set(roomId, room);
                 socket.join(roomId);
+
+                console.log('[Collab Server] Room created:', roomId);
 
                 socket.emit('room-created', {
                     success: true,
                     roomId: roomId,
                     room: room
                 });
-
             });
 
             // Join room
             socket.on('join-room', (data) => {
                 const { roomId, user } = data;
                 const room = rooms.get(roomId);
+
+                console.log('[Collab Server] User attempting to join room:', roomId, user.username);
 
                 if (!room) {
                     socket.emit('join-room-error', {
@@ -75,18 +82,30 @@ class CollaborationController {
                     room.participants.push(user);
                 }
 
+                // NEW: Map user ID to socket ID for WebRTC
+                if (!room.socketMap) {
+                    room.socketMap = new Map();
+                }
+                room.socketMap.set(user.id, socket.id);
+
                 socket.join(roomId);
+
+                console.log('[Collab Server] User joined room:', roomId, 'Total participants:', room.participants.length);
 
                 // Notify user of successful join
                 socket.emit('room-joined', {
                     success: true,
-                    room: room
+                    room: {
+                        ...room,
+                        socketMap: undefined // Don't send Map to client
+                    }
                 });
 
                 // Notify other participants
                 socket.to(roomId).emit('user-joined', {
                     user: user,
-                    participants: room.participants
+                    participants: room.participants,
+                    socketId: socket.id // NEW: Send socket ID so others can initiate WebRTC
                 });
             });
 
@@ -142,30 +161,61 @@ class CollaborationController {
                 }
             });
 
-            // Handle WebRTC signaling
+            // ===== FIXED WEBRTC SIGNALING =====
+            
+            // Handle WebRTC offer
             socket.on('webrtc-offer', (data) => {
-                socket.to(data.roomId).emit('webrtc-offer', {
-                    offer: data.offer,
-                    from: socket.id
-                });
+                console.log('[Collab Server] WebRTC offer from', socket.id, 'to room', data.roomId);
+                
+                // If 'to' is specified, send only to that peer (for targeted offers)
+                if (data.to) {
+                    console.log('[Collab Server] Sending offer to specific peer:', data.to);
+                    this.io.to(data.to).emit('webrtc-offer', {
+                        offer: data.offer,
+                        from: socket.id
+                    });
+                } else {
+                    // Broadcast to room (excluding sender)
+                    console.log('[Collab Server] Broadcasting offer to room');
+                    socket.to(data.roomId).emit('webrtc-offer', {
+                        offer: data.offer,
+                        from: socket.id
+                    });
+                }
             });
 
+            // Handle WebRTC answer
             socket.on('webrtc-answer', (data) => {
-                socket.to(data.to).emit('webrtc-answer', {
+                console.log('[Collab Server] WebRTC answer from', socket.id, 'to', data.to);
+                
+                // Send answer to specific peer
+                this.io.to(data.to).emit('webrtc-answer', {
                     answer: data.answer,
                     from: socket.id
                 });
             });
 
+            // Handle WebRTC ICE candidate
             socket.on('webrtc-ice-candidate', (data) => {
-                socket.to(data.roomId).emit('webrtc-ice-candidate', {
-                    candidate: data.candidate,
-                    from: socket.id
-                });
+                console.log('[Collab Server] ICE candidate from', socket.id);
+                
+                // FIXED: Send to specific peer if 'to' is provided, otherwise broadcast to room
+                if (data.to) {
+                    this.io.to(data.to).emit('webrtc-ice-candidate', {
+                        candidate: data.candidate,
+                        from: socket.id
+                    });
+                } else {
+                    socket.to(data.roomId).emit('webrtc-ice-candidate', {
+                        candidate: data.candidate,
+                        from: socket.id
+                    });
+                }
             });
 
             // Handle video/audio toggle
             socket.on('toggle-video', (data) => {
+                console.log('[Collab Server] Video toggle from', socket.id, 'isVideoOn:', data.isVideoOn);
                 socket.to(data.roomId).emit('user-video-toggle', {
                     userId: socket.id,
                     isVideoOn: data.isVideoOn
@@ -173,6 +223,7 @@ class CollaborationController {
             });
 
             socket.on('toggle-audio', (data) => {
+                console.log('[Collab Server] Audio toggle from', socket.id, 'isAudioOn:', data.isAudioOn);
                 socket.to(data.roomId).emit('user-audio-toggle', {
                     userId: socket.id,
                     isAudioOn: data.isAudioOn
@@ -195,6 +246,7 @@ class CollaborationController {
 
             // Handle disconnect
             socket.on('disconnect', () => {
+                console.log('[Collab Server] User disconnected:', socket.id);
                 
                 // Remove user from all rooms
                 for (const [roomId, room] of rooms.entries()) {
@@ -206,15 +258,24 @@ class CollaborationController {
                         const user = room.participants[userIndex];
                         room.participants.splice(userIndex, 1);
                         
+                        // Remove from socket map
+                        if (room.socketMap) {
+                            room.socketMap.delete(user.id);
+                        }
+                        
                         // Notify other participants
                         socket.to(roomId).emit('user-left', {
                             user: user,
-                            participants: room.participants
+                            participants: room.participants,
+                            socketId: socket.id
                         });
+
+                        console.log('[Collab Server] User left room:', roomId, 'Remaining:', room.participants.length);
 
                         // If room is empty, mark as inactive
                         if (room.participants.length === 0) {
                             room.isActive = false;
+                            console.log('[Collab Server] Room inactive:', roomId);
                         }
                     }
                 }
@@ -227,6 +288,8 @@ class CollaborationController {
                 const { roomId } = data;
                 const room = rooms.get(roomId);
                 
+                console.log('[Collab Server] User leaving room:', roomId);
+                
                 if (room) {
                     const user = userSockets.get(socket.id);
                     const userIndex = room.participants.findIndex(p => p.id === user?.id);
@@ -235,15 +298,22 @@ class CollaborationController {
                         room.participants.splice(userIndex, 1);
                         socket.leave(roomId);
                         
+                        // Remove from socket map
+                        if (room.socketMap) {
+                            room.socketMap.delete(user.id);
+                        }
+                        
                         // Notify other participants
                         socket.to(roomId).emit('user-left', {
                             user: user,
-                            participants: room.participants
+                            participants: room.participants,
+                            socketId: socket.id
                         });
 
                         // If room is empty, mark as inactive
                         if (room.participants.length === 0) {
                             room.isActive = false;
+                            console.log('[Collab Server] Room inactive after leave:', roomId);
                         }
                     }
                 }

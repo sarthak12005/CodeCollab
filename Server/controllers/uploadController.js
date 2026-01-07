@@ -27,11 +27,9 @@ exports.uploadProfilePicture = async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
-        console.log("image upload successfully")
         res.status(200).json({ message: "Image upload successfully", url: result.secure_url });
 
     } catch (error) {
-        console.log("error in uploading image", error);
         res.status(500).json("Internal server error", error);
     }
 

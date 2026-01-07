@@ -3,11 +3,13 @@ const userController = require('../controllers/userController');
 const uploadController = require('../controllers/uploadController');
 const authMiddelware = require('../middleware/authMiddleware');
 const User = require('../models/user');
+const zodMiddleware = require('../middleware/zod.middleware');
+const { RegisterZodSchema } = require('../validations/registerUser.zod');
 const router = express.Router();
 
 
 router.post('/login', userController.loginUser);
-router.post('/register', userController.signUpUser);
+router.post('/register',zodMiddleware(RegisterZodSchema), userController.signUpUser);
 router.get('/getUser', authMiddelware, userController.getUser);
 router.put('/editProfile', userController.editUser);
 router.put('/change-picture/:userId',uploadController.uploadProfilePicture);

@@ -11,7 +11,6 @@ const authMiddelware = (req, res, next) => {
 
 
         if (!decoded.id) {
-             console.log("the userId is not provided ");
              res.status(404).json({message: "the userid is not found"});
         }
 

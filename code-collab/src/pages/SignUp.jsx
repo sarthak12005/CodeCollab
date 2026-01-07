@@ -33,12 +33,17 @@ const Signup = () => {
         password,
       });
 
-      if (res.status !== 201) {
+      // If registration succeeded, show success and navigate
+      if (res.status === 201) {
+        // clear any previous server errors
+        setMessage("");
         toast.success(res.data.message);
         navigate("/login");
       }
     } catch (err) {
-      setMessage(err.response?.data?.message || "Signup failed. Please try again.");
+      const data = err.response?.data;
+      // Zod validation errors come back as an `errors` array; fall back to `message`, or network error (err.message)
+      setMessage(data?.errors || data?.message || err.message || "Signup failed. Please try again.");
     }
   };
 

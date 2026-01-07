@@ -11,7 +11,6 @@ exports.getProblems = async (req, res) => {
         const problems = await Problem.find();
 
         if (!problems) {
-            console.log("No problems found");
             return res.status(404).json({ message: "no problems found" });
         }
 
@@ -33,7 +32,6 @@ exports.getProblems = async (req, res) => {
             problems: problemsWithStatus
         });
     } catch (err) {
-        console.log("The error in getting all problems is: ", err);
         res.status(500).json({ message: "internal server error", err });
     }
 }
@@ -133,7 +131,6 @@ exports.deleteProblem = async (req, res) => {
         const { problemId } = req.body;
 
         if (!problemId) {
-            console.log("the problem id is undefined");
             return res.status(400).json({ message: "problem id is undefined" });
         }
 
@@ -142,7 +139,6 @@ exports.deleteProblem = async (req, res) => {
 
 
     } catch (err) {
-        console.log("The error in deleting problem is : ", err);
         res.status(500).json({ message: "Internal Server error", err });
     }
 }
@@ -225,7 +221,7 @@ rl.on('close', () => {
         const result = ${functionName}(...testData);
         console.log(JSON.stringify(result));
     } catch (error) {
-        console.log(JSON.stringify([]));
+        // removed debug logging
     }
 });`,
 
@@ -432,7 +428,6 @@ exports.editProblem = async (req, res) => {
 
         res.status(200).json({ message: "successfully updated the problem " });
     } catch (err) {
-        console.log("the error in editing problem is ", err)
         res.status(500).json({ message: "internal server error" });
     }
 }

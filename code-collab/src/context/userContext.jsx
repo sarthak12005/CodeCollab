@@ -46,7 +46,7 @@ export const UserProvider = ({ children }) => {
     } catch (err) {
       console.error("Error logging in with Google:", err);
       if (err.code === 'auth/popup-closed-by-user') {
-        console.log("Popup closed by user");
+        // popup closed by user
       } else {
         alert("Failed to login with Google. Please try again.");
       }

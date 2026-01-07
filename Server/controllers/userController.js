@@ -1,7 +1,7 @@
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { RegisterZodSchema } = require('../validations/authValidation.zod');
+const { RegisterZodSchema } = require('../validations/registerUser.zod');
 const { ZodError } = require('zod');
 
 const generateToken = (userId, username, secret, expiry) => {
@@ -20,13 +20,11 @@ exports.loginUser = async (req, res) => {
         const user = await User.findOne({ username }).select('+password');
 
         if (!user) {
-            console.log("User not found");
             return res.status(404).json({ message: "User not found" });
         }
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
-            console.log("Incorrect password");
             return res.status(400).json({ message: "Incorrect password" });
         }
 
@@ -43,7 +41,7 @@ exports.loginUser = async (req, res) => {
 
 exports.signUpUser = async (req, res) => {
     try {
-        const { username, email, password } = RegisterZodSchema.parse(req.body);
+        const { username, email, password } = req.body;
 
 
         const existingUser = await User.findOne({ $or: [{ email }, { username }] });
@@ -101,7 +99,6 @@ exports.getUser = async (req, res) => {
 exports.addUser = async (req, res) => {
     try {
         const { username, email, password, userImage } = req.body;
-        console.log("addUser called with data:", req.body);
 
         if (!username || !email || !password) {
             return res.status(400).json({ message: "Username, email, and password are required." });
@@ -203,7 +200,6 @@ exports.toogleFavorite = async (req, res) => {
         });
 
     } catch (err) {
-        console.log("the error in adding the problem to favorite: ", err);
         res.status(500).json({ message: "internal server errro" });
     }
 }

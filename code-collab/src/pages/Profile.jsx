@@ -22,9 +22,8 @@ const Profile = () => {
   const { theme } = useTheme();
   const navigate = useNavigate();
 
-  console.log(user);
 
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState("profile");
   const [isEditing, setIsEditing] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [userInfo, setUserInfo] = useState({
@@ -71,7 +70,7 @@ const Profile = () => {
   const updateProfilePicture = async (image) => {
     try {
       if (!image) {
-        console.log("image is not provided");
+        // image not provided
       }
 
       const res = await axios.put(`${API_URL}/change-picture/${user._id}`, image);
