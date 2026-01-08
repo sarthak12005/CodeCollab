@@ -4,7 +4,6 @@ import { useTheme } from '../../context/ThemeContext';
 
 const MonacoCodeEditor = ({ code, setCode, language }) => {
     const editorRef = useRef(null);
-    const { theme } = useTheme();
 
     // Map our language IDs to Monaco language IDs
     const getMonacoLanguage = (lang) => {

@@ -15,7 +15,6 @@ const ProblemList = ({ filters, searchQuery }) => {
   const [problemData, setProblemData] = useState([]);
   const [filteredProblems, setFilteredProblems] = useState([]);
   const [loading, setLoading] = useState(false);
-  const { user } = useAuth();
   const { theme } = useTheme();
   const navigate = useNavigate();
 

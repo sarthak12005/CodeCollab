@@ -1,4 +1,3 @@
-import React from 'react';
 import { ChevronDown } from 'lucide-react';
 
 const LanguageSelector = ({ language, setLanguage }) => {
@@ -11,7 +10,6 @@ const LanguageSelector = ({ language, setLanguage }) => {
         { id: 'c', name: 'C', extension: '.c' }
     ];
 
-    const currentLanguage = languages.find(lang => lang.id === language) || languages[0];
 
     return (
         <div className="relative">

@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect} from "react";
 import {
   ArrowLeft,
   Search,
-  Filter,
   Building,
   Calendar,
   Tag,
 } from "lucide-react";
+
+
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../context/ThemeContext";
 import Header from "../../components/Header";
@@ -16,7 +17,9 @@ const Interview = () => {
   const { theme } = useTheme();
   const [questions, setQuestions] = useState([]);
   const [filteredQuestions, setFilteredQuestions] = useState([]);
+  const [searchInput, setSearchInput] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+
   const [selectedCompany, setSelectedCompany] = useState("all");
   const [selectedYear, setSelectedYear] = useState("all");
   const [loading, setLoading] = useState(true);
@@ -90,6 +93,15 @@ const Interview = () => {
 
     setFilteredQuestions(filtered);
   }, [searchTerm, selectedCompany, selectedYear, questions]);
+
+  useEffect(() => {
+  const timeout = setTimeout(() => {
+    setSearchTerm(searchInput);
+  }, 500); // wait 500ms AFTER typing stops
+
+  return () => clearTimeout(timeout);
+}, [searchInput]);
+
 
   const getDifficultyColor = (difficulty) => {
     switch (difficulty) {
@@ -167,32 +179,32 @@ const Interview = () => {
       {/* Filters */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div
-          className={`${theme.bg.card} rounded-lg ${theme.shadow.sm} p-6 mb-6`}
+          className={` rounded-xl shadow-md p-6 mb-8`}
         >
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Search */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Search Input */}
             <div className="relative">
               <Search
-                className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${theme.text.tertiary} w-5 h-5`}
+                className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${theme.text.tertiary}`}
               />
               <input
                 type="text"
-                placeholder="Search questions..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className={`w-full pl-10 pr-4 py-2 rounded-lg ${theme.input.base}`}
+                placeholder="Search interview questions..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                className={`w-full pl-12 pr-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all ${theme.input.base}`}
               />
             </div>
 
             {/* Company Filter */}
             <div className="relative">
               <Building
-                className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${theme.text.tertiary} w-5 h-5`}
+                className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${theme.text.tertiary}`}
               />
               <select
                 value={selectedCompany}
                 onChange={(e) => setSelectedCompany(e.target.value)}
-                className={`w-full pl-10 pr-4 py-2 rounded-lg ${theme.input.base} appearance-none`}
+                className={`w-full pl-12 pr-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 transition-all appearance-none ${theme.input.base}`}
               >
                 {companies.map((company) => (
                   <option key={company} value={company}>
@@ -200,17 +212,20 @@ const Interview = () => {
                   </option>
                 ))}
               </select>
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                ▼
+              </span>
             </div>
 
             {/* Year Filter */}
             <div className="relative">
               <Calendar
-                className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${theme.text.tertiary} w-5 h-5`}
+                className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${theme.text.tertiary}`}
               />
               <select
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(e.target.value)}
-                className={`w-full pl-10 pr-4 py-2 rounded-lg ${theme.input.base} appearance-none`}
+                className={`w-full pl-12 pr-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 transition-all appearance-none ${theme.input.base}`}
               >
                 {years.map((year) => (
                   <option key={year} value={year}>
@@ -218,6 +233,9 @@ const Interview = () => {
                   </option>
                 ))}
               </select>
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                ▼
+              </span>
             </div>
           </div>
         </div>

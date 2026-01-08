@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useAuth } from "../context/userContext";
 import { useTheme } from "../context/ThemeContext";
 import Header from "../components/Header";
@@ -19,12 +19,10 @@ const API_URL = import.meta.env.VITE_API_ENDPOINT;
 
 const Profile = () => {
   const { logout, user } = useAuth();
-  const { theme } = useTheme();
   const navigate = useNavigate();
 
 
   const [activeTab, setActiveTab] = useState("profile");
-  const [isEditing, setIsEditing] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [userInfo, setUserInfo] = useState({
     name: user?.name || "",
@@ -98,7 +96,7 @@ const Profile = () => {
         const solveProblems = userInfo.solveProblems.slice().reverse().slice(0, 3);
         setRecentProblemSolve(solveProblems);
       }
-    } catch (err) {
+    } catch (e) {
     }
   }, [user]);
 

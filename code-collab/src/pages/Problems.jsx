@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Search, Filter, X
+  X
 } from "lucide-react";
 
 import FilterSidebar from "../components/Problems/FilterSidebar";
@@ -29,7 +29,7 @@ const Problems = () => {
   }, [user, navigate]);
 
   const handleFilterChange = (newFilters) => setFilters(newFilters);
-  const toggleFilter = () => setIsFilterOpen(prev => !prev);
+  // const toggleFilter = () => setIsFilterOpen(prev => !prev);
 
   return (
     <div className={`min-h-screen ${theme.bg.primary}`}>

@@ -8,7 +8,6 @@ import useDeviceDetection from '../hooks/useDeviceDetection';
 const Preparation = () => {
     const navigate = useNavigate();
     const { theme } = useTheme();
-    const deviceInfo = useDeviceDetection();
 
     const categories = [
         {

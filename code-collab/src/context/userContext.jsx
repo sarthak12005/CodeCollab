@@ -29,7 +29,6 @@ export const UserProvider = ({ children }) => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const userData = result.user;
-      const token = await userData.getIdToken();
 
       const response = await axios.post(`${API_URL}/addUser`, {
         username: userData.displayName,
