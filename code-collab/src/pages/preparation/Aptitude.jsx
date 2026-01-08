@@ -11,10 +11,15 @@ import { useTheme } from "../../context/ThemeContext";
 import Header from "../../components/Header";
 import axios from "axios";
 import TestSidebar from "../../components/preparation/TestSidebar";
+import { useAuth } from "../../context/userContext";
 
 const Aptitude = () => {
   const navigate = useNavigate();
   const { theme } = useTheme();
+  const { user } = useAuth();
+  useEffect(() => {
+    if (!user) navigate("/login");
+  }, [user, navigate]);
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -199,7 +204,7 @@ const Aptitude = () => {
               <div className="bg-blue-100 p-4 rounded-lg">
                 <h3 className="font-semibold">Total</h3>
                 <p className="text-2xl font-bold text-blue-600">
-                  {filteredQuestions.length} 
+                  {filteredQuestions.length}
                 </p>
               </div>
             </div>

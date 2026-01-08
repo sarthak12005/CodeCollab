@@ -73,7 +73,7 @@ const Header = () => {
                 <button
                   key={item.name}
                   onClick={() => handleNavigation(item.path)}
-                  className={`relative px-4 py-2 text-sm font-semibold transition-all duration-300 rounded-full
+                  className={`relative px-4 py-2 text-sm font-semibold transition-all duration-300 rounded-full cursor-pointer
                     ${isActive ? theme.text.accent : theme.text.secondary}
                     hover:${theme.text.accent} group`}
                 >
