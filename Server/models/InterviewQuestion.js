@@ -34,6 +34,10 @@ const interviewQuestionSchema = new mongoose.Schema({
         type: String,
         trim: true
     },
+    exampleAnswer: {
+        type:String,
+        trim:true,
+    },
     tips: [{
         type: String,
         trim: true

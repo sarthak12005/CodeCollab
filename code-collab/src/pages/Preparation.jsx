@@ -124,28 +124,28 @@ const Preparation = () => {
                             <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <Brain className="w-8 h-8 text-blue-600" />
                             </div>
-                            <h3 className="font-semibold text-gray-900 mb-2">Real Questions</h3>
+                            <h3 className={`font-semibold ${theme.text.primary} mb-2`}>Real Questions</h3>
                             <p className="text-gray-600 text-sm">Actual questions from recent interviews</p>
                         </div>
                         <div className="text-center">
                             <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <Trophy className="w-8 h-8 text-green-600" />
                             </div>
-                            <h3 className="font-semibold text-gray-900 mb-2">Track Progress</h3>
+                            <h3 className={`font-semibold ${theme.text.primary} mb-2`}>Track Progress</h3>
                             <p className="text-gray-600 text-sm">Monitor your improvement over time</p>
                         </div>
                         <div className="text-center">
                             <div className="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <Code className="w-8 h-8 text-purple-600" />
                             </div>
-                            <h3 className="font-semibold text-gray-900 mb-2">Multiple Formats</h3>
+                            <h3 className={`font-semibold ${theme.text.primary} mb-2`}>Multiple Formats</h3>
                             <p className="text-gray-600 text-sm">MCQs, coding problems, and more</p>
                         </div>
                         <div className="text-center">
                             <div className="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <Users className="w-8 h-8 text-orange-600" />
                             </div>
-                            <h3 className="font-semibold text-gray-900 mb-2">Community</h3>
+                            <h3 className={`font-semibold ${theme.text.primary} mb-2`}>Community</h3>
                             <p className="text-gray-600 text-sm">Learn with thousands of students</p>
                         </div>
                     </div>
