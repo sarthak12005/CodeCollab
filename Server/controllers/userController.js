@@ -1,7 +1,7 @@
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { RegisterZodSchema } = require('../validations/registerUser.zod');
+
 const { ZodError } = require('zod');
 
 const generateToken = (userId, username, secret, expiry) => {

@@ -21,7 +21,6 @@ const Profile = () => {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
 
-
   const [activeTab, setActiveTab] = useState("profile");
   const [showPassword, setShowPassword] = useState(false);
   const [userInfo, setUserInfo] = useState({
@@ -34,33 +33,30 @@ const Profile = () => {
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
-    solveProblems: user?.solveProblems
+    solveProblems: user?.solveProblems,
   });
 
   const [profileImage, setProfileImage] = useState(
     user?.userImage ||
-    "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
+      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
   );
   const fileInputRef = useRef(null);
-
-  // Mock stats data - replace with real data from API
 
 
   const handleImageClick = () => {
     fileInputRef.current.click();
   };
 
-
-
-
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (event) => {
-        setProfileImage(event.target.result);
-        updateProfilePicture(profileImage);
+        const base64 = event.target.result;
+        setProfileImage(base64);
+        updateProfilePicture(base64);
       };
+
       reader.readAsDataURL(file);
     }
   };
@@ -71,16 +67,18 @@ const Profile = () => {
         // image not provided
       }
 
-      const res = await axios.put(`${API_URL}/change-picture/${user._id}`, image);
+      const res = await axios.put(
+        `${API_URL}/change-picture/${user._id}`,
+        image
+      );
 
       const message = res.data.message;
 
       alert(message);
-
     } catch (err) {
       console.error("the error in the uploading image is", err);
     }
-  }
+  };
 
   const removeImage = () => {
     setProfileImage(""); // or set to a default avatar
@@ -93,14 +91,14 @@ const Profile = () => {
   useEffect(() => {
     try {
       if (user && user.solveProblems.length !== 0) {
-        const solveProblems = userInfo.solveProblems.slice().reverse().slice(0, 3);
+        const solveProblems = userInfo.solveProblems
+          .slice()
+          .reverse()
+          .slice(0, 3);
         setRecentProblemSolve(solveProblems);
       }
-    } catch (e) {
-    }
+    } catch (e) {}
   }, [user]);
-
-
 
   const activityData = [
     { day: "Sun", problems: [1, 1, 1] },
@@ -184,6 +182,27 @@ const Profile = () => {
         <div>
           <h1 className="text-3xl font-bold text-white">{userInfo.name}</h1>
           <p className="text-blue-400">@{userInfo.username}</p>
+          <div className="mt-3">
+            <div className="flex gap-3 mb-2">
+              <span className="px-3 py-1 text-xs bg-indigo-600 text-white rounded-full">
+                Pro User
+              </span>
+              <span className="px-3 py-1 text-xs bg-orange-600 text-white rounded-full">
+                7-Day Streak 🔥
+              </span>
+            </div>
+
+            <div className="w-full bg-gray-700 rounded-full h-2">
+              <div
+                className="bg-indigo-500 h-2 rounded-full"
+                style={{ width: "65%" }}
+              ></div>
+            </div>
+            <p className="text-xs text-gray-400 mt-1">
+              Level 5 — 65% to next level
+            </p>
+          </div>
+
           <p className="text-gray-400 text-sm">Member since Jan 2023</p>
           <div className="flex items-center space-x-4 mt-2">
             <div className="flex items-center space-x-1">
@@ -210,28 +229,30 @@ const Profile = () => {
       <div>
         <h2 className="text-xl font-semibold text-white mb-4">Statistics</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+          <div className="bg-[#1f2937] rounded-xl p-6 border border-gray-700 shadow-md hover:scale-[1.02] transition-transform cursor-pointer">
             <div className="flex items-center justify-center w-12 h-12 bg-blue-600 rounded-lg mb-4">
               <Code className="w-6 h-6 text-white" />
             </div>
-            <div className="text-3xl font-bold text-white mb-1">{user?.solveProblems.length}</div>
+            <div className="text-3xl font-bold text-white mb-1">
+              {user?.solveProblems.length}
+            </div>
             <div className="text-gray-400 text-sm">Problems Solved</div>
           </div>
-          <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+          <div className="bg-[#1f2937] rounded-xl p-6 border border-gray-700 shadow-md hover:scale-[1.02] transition-transform cursor-pointer">
             <div className="flex items-center justify-center w-12 h-12 bg-green-600 rounded-lg mb-4">
               <BarChart3 className="w-6 h-6 text-white" />
             </div>
             <div className="text-3xl font-bold text-white mb-1">80%</div>
             <div className="text-gray-400 text-sm">Acceptance Rate</div>
           </div>
-          <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+          <div className="bg-[#1f2937] rounded-xl p-6 border border-gray-700 shadow-md hover:scale-[1.02] transition-transform cursor-pointer">
             <div className="flex items-center justify-center w-12 h-12 bg-purple-600 rounded-lg mb-4">
               <Clock className="w-6 h-6 text-white" />
             </div>
             <div className="text-3xl font-bold text-white mb-1">156h</div>
             <div className="text-gray-400 text-sm">Coding Time</div>
           </div>
-          <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+          <div className="bg-[#1f2937] rounded-xl p-6 border border-gray-700 shadow-md hover:scale-[1.02] transition-transform cursor-pointer">
             <div className="flex items-center justify-center w-12 h-12 bg-cyan-600 rounded-lg mb-4">
               <Users className="w-6 h-6 text-white" />
             </div>
@@ -254,12 +275,13 @@ const Profile = () => {
                   {day.problems.map((level, pIndex) => (
                     <div
                       key={pIndex}
-                      className={`w-4 h-4 rounded ${level === 1
-                        ? "bg-green-400"
-                        : level === 2
+                      className={`w-4 h-4 rounded ${
+                        level === 1
+                          ? "bg-green-400"
+                          : level === 2
                           ? "bg-green-500"
                           : "bg-green-600"
-                        }`}
+                      }`}
                     />
                   ))}
                 </div>
@@ -331,12 +353,13 @@ const Profile = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
-                        className={`px-3 py-1 rounded-full text-xs font-semibold ${problem.difficulty === "EASY"
-                          ? "bg-green-900 text-green-300"
-                          : problem.difficulty === "MEDIUM"
+                        className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                          problem.difficulty === "EASY"
+                            ? "bg-green-900 text-green-300"
+                            : problem.difficulty === "MEDIUM"
                             ? "bg-orange-900 text-orange-300"
                             : "bg-red-900 text-red-300"
-                          }`}
+                        }`}
                       >
                         {problem.difficulty}
                       </span>
@@ -512,7 +535,7 @@ const Profile = () => {
         {/* Sidebar - Fixed to left edge */}
         <div className="w-64 bg-[#0a0a12] border-r border-gray-700 flex-shrink-0 sticky top-0 h-screen z-10">
           <div className="p-4 border-b border-gray-700">
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center gap-6 bg-[#111827] p-6 rounded-xl border border-gray-700 shadow-lg">
               <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                 <Code className="w-5 h-5 text-white" />
               </div>
@@ -529,10 +552,11 @@ const Profile = () => {
                   <button
                     key={item.id}
                     onClick={() => setActiveTab(item.id)}
-                    className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors ${activeTab === item.id
-                      ? "bg-blue-600 text-white"
-                      : "text-gray-300 hover:bg-gray-700 hover:text-white"
-                      }`}
+                    className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors ${
+                      activeTab === item.id
+                        ? "bg-blue-600 text-white"
+                        : "text-gray-300 hover:bg-gray-700 hover:text-white"
+                    }`}
                   >
                     <Icon className="w-5 h-5" />
                     <span>{item.label}</span>
