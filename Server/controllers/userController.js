@@ -31,7 +31,18 @@ exports.loginUser = async (req, res) => {
         const token = generateToken(user._id, user.username, process.env.JWT_SECRET, process.env.JWT_EXPIRY);
         // console.log("User login successfull", token);
 
-        res.status(200).json({ message: "User login successful", token });
+        const userResponse = {
+            _id: user._id,
+            name: user.name,
+            username: user.username,
+            email: user.email,
+            role: user.role,
+            userImage: user.userImage,
+            solveProblems: user.solveProblems,
+            userFavorites: user.userFavorites
+        };
+
+        res.status(200).json({ message: "User login successful", token, user: userResponse });
     } catch (err) {
         console.error("Login error:", err);
         res.status(500).json({ message: "Internal server error", error: err.message });
@@ -135,9 +146,21 @@ exports.addUser = async (req, res) => {
             expiresIn: "7d",
         });
 
+        const userResponse = {
+            _id: user._id,
+            name: user.name,
+            username: user.username,
+            email: user.email,
+            role: user.role,
+            userImage: user.userImage,
+            solveProblems: user.solveProblems,
+            userFavorites: user.userFavorites
+        };
+
         res.status(200).json({
             message: "User logged in successfully.",
             token,
+            user: userResponse,
         });
 
     } catch (error) {

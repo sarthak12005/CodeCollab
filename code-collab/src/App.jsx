@@ -5,6 +5,8 @@ import Problems from "./pages/Problems";
 import Login from "./pages/login";
 import Signup from "./pages/SignUp";
 import Profile from "./pages/Profile";
+import ProfileNew from "./pages/ProfileNew";
+import AdminPanel from "./pages/AdminPanel";
 import NotFoundPage from "./pages/NotFoundPage";
 // import CodeCollaborationHub from "./pages/CodeCollaborationHub";
 import About from "./pages/About";
@@ -23,10 +25,11 @@ function App() {
       <Route path="/" element={<Home />} />
       <Route path="/problems" element={<Problems />} />
       <Route path="/problems/singleProblem/:problemId" element={<SingleProblemPage />} />
-      <Route path="/problems/:problemId/submissions" element={<SubmissionResults />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/profile" element={<Profile />} />
+      <Route path="/admin" element={<AdminPanel />} />
+      <Route path="/about" element={<About />} />
       <Route path="/about" element={<About />} />
       <Route path="/preparation" element={<Preparation />} />
       <Route path="/preparation/interview" element={<Interview />} />

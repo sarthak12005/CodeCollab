@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Code,
   BarChart3,
@@ -30,7 +31,8 @@ import {
 import { useAuth } from "../context/userContext";
 
 const ProfessionalProfile = () => {
- const {user} = useAuth();
+ const {user, logout} = useAuth();
+ const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("profile");
   const [showPassword, setShowPassword] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -48,7 +50,7 @@ const ProfessionalProfile = () => {
   });
 
   const [profileImage, setProfileImage] = useState(
-    "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
+    user?.userImage || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
   );
   const fileInputRef = useRef(null);
 
@@ -528,9 +530,18 @@ const ProfessionalProfile = () => {
               <Settings className="w-5 h-5" />
               <span className="font-medium">Settings</span>
             </button>
+            {user?.role === 'Admin' && (
+              <button
+                onClick={() => navigate('/admin')}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-800 hover:text-white transition-all"
+              >
+                <Shield className="w-5 h-5" />
+                <span className="font-medium">Admin Panel</span>
+              </button>
+            )}
           </nav>
           <div className="p-4 mt-auto border-t border-gray-800">
-            <button className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium">
+            <button onClick={logout} className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium">
               <LogOut className="w-5 h-5" />
               Logout
             </button>

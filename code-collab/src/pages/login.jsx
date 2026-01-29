@@ -45,7 +45,12 @@ const Login = () => {
 
 
       updateUser(data.user, data.token);
-      navigate('/');
+      // Redirect admin users to admin panel
+      if (data.user.role === 'Admin') {
+        navigate('/admin');
+      } else {
+        navigate('/');
+      }
       toast.success("Login Successfully! Welcome Back");
 
     } catch (err) {

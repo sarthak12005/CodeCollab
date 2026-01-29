@@ -12,6 +12,7 @@ import {
   EyeOff,
   User,
   Settings,
+  Shield,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -149,158 +150,142 @@ const Profile = () => {
   };
 
   const renderProfileTab = () => (
-    <div className="space-y-8 w-full">
+    <div className="space-y-10 w-full max-w-6xl">
       {/* Header */}
-      <div className="flex items-center space-x-6">
-        <div className="relative">
-          <div
-            className="group relative cursor-pointer"
-            onClick={handleImageClick}
-          >
-            <img
-              src={profileImage || "/default-avatar.png"}
-              alt={userInfo.name}
-              className="w-20 h-20 rounded-full border-4 border-blue-500 group-hover:opacity-80 transition-opacity"
-            />
-            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-              <span className="text-white text-xs font-medium bg-black bg-opacity-50 px-2 py-1 rounded">
-                Change
-              </span>
-            </div>
-          </div>
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleFileChange}
-            accept="image/*"
-            className="hidden"
-          />
-          <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
-            <Code className="w-3 h-3 text-white" />
-          </div>
-        </div>
-        <div>
-          <h1 className="text-3xl font-bold text-white">{userInfo.name}</h1>
-          <p className="text-blue-400">@{userInfo.username}</p>
-          <div className="mt-3">
-            <div className="flex gap-3 mb-2">
-              <span className="px-3 py-1 text-xs bg-indigo-600 text-white rounded-full">
-                Pro User
-              </span>
-              <span className="px-3 py-1 text-xs bg-orange-600 text-white rounded-full">
-                7-Day Streak 🔥
-              </span>
-            </div>
-
-            <div className="w-full bg-gray-700 rounded-full h-2">
-              <div
-                className="bg-indigo-500 h-2 rounded-full"
-                style={{ width: "65%" }}
-              ></div>
-            </div>
-            <p className="text-xs text-gray-400 mt-1">
-              Level 5 — 65% to next level
-            </p>
-          </div>
-
-          <p className="text-gray-400 text-sm">Member since Jan 2023</p>
-          <div className="flex items-center space-x-4 mt-2">
-            <div className="flex items-center space-x-1">
-              <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
-              <span className="text-sm text-gray-300">7-day streak</span>
-            </div>
-            <div className="flex items-center space-x-1">
-              <Trophy className="w-4 h-4 text-yellow-500" />
-              <span className="text-sm text-gray-300">Pro</span>
-            </div>
-          </div>
-          {profileImage && (
-            <button
-              onClick={removeImage}
-              className="mt-2 text-xs text-red-400 hover:text-red-300 cursor-pointer"
+      <div className="bg-[#111827]/40 border border-gray-800/50 rounded-xl p-8">
+        <div className="flex items-start gap-6">
+          <div className="relative">
+            <div
+              className="group relative cursor-pointer"
+              onClick={handleImageClick}
             >
-              Remove profile image
-            </button>
-          )}
+              <img
+                src={profileImage || "/default-avatar.png"}
+                alt={userInfo.name}
+                className="w-24 h-24 rounded-full border-2 border-gray-700/50 group-hover:border-gray-600 transition-all"
+              />
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/40 rounded-full">
+                <span className="text-white text-xs font-medium">Edit</span>
+              </div>
+            </div>
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              accept="image/*"
+              className="hidden"
+            />
+          </div>
+          <div className="flex-1">
+            <h1 className="text-2xl font-semibold text-white mb-1">{userInfo.name}</h1>
+            <p className="text-gray-400 text-sm mb-4">@{userInfo.username}</p>
+            
+            <div className="flex items-center gap-6 mb-6 text-sm text-gray-400">
+              <div className="flex items-center gap-2">
+                <span>Member since Jan 2023</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+                <span>Level 5</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Trophy className="w-4 h-4 text-gray-500" />
+                <span>Pro</span>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-gray-400">Progress to Level 6</span>
+                <span className="text-gray-400">65%</span>
+              </div>
+              <div className="w-full bg-gray-800/60 rounded-full h-1.5">
+                <div
+                  className="bg-blue-600 h-1.5 rounded-full transition-all"
+                  style={{ width: "65%" }}
+                ></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Statistics */}
       <div>
-        <h2 className="text-xl font-semibold text-white mb-4">Statistics</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="bg-[#1f2937] rounded-xl p-6 border border-gray-700 shadow-md hover:scale-[1.02] transition-transform cursor-pointer">
-            <div className="flex items-center justify-center w-12 h-12 bg-blue-600 rounded-lg mb-4">
-              <Code className="w-6 h-6 text-white" />
+        <h2 className="text-base font-medium text-white mb-6">Statistics</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-[#111827]/40 border border-gray-800/50 rounded-lg p-6 hover:border-gray-700/50 transition-all">
+            <div className="flex items-center justify-between mb-4">
+              <Code className="w-5 h-5 text-gray-500" />
             </div>
-            <div className="text-3xl font-bold text-white mb-1">
+            <div className="text-3xl font-semibold text-white mb-1">
               {user?.solveProblems.length}
             </div>
-            <div className="text-gray-400 text-sm">Problems Solved</div>
+            <div className="text-gray-500 text-sm">Problems Solved</div>
           </div>
-          <div className="bg-[#1f2937] rounded-xl p-6 border border-gray-700 shadow-md hover:scale-[1.02] transition-transform cursor-pointer">
-            <div className="flex items-center justify-center w-12 h-12 bg-green-600 rounded-lg mb-4">
-              <BarChart3 className="w-6 h-6 text-white" />
+          <div className="bg-[#111827]/40 border border-gray-800/50 rounded-lg p-6 hover:border-gray-700/50 transition-all">
+            <div className="flex items-center justify-between mb-4">
+              <BarChart3 className="w-5 h-5 text-gray-500" />
             </div>
-            <div className="text-3xl font-bold text-white mb-1">80%</div>
-            <div className="text-gray-400 text-sm">Acceptance Rate</div>
+            <div className="text-3xl font-semibold text-white mb-1">80%</div>
+            <div className="text-gray-500 text-sm">Acceptance Rate</div>
           </div>
-          <div className="bg-[#1f2937] rounded-xl p-6 border border-gray-700 shadow-md hover:scale-[1.02] transition-transform cursor-pointer">
-            <div className="flex items-center justify-center w-12 h-12 bg-purple-600 rounded-lg mb-4">
-              <Clock className="w-6 h-6 text-white" />
+          <div className="bg-[#111827]/40 border border-gray-800/50 rounded-lg p-6 hover:border-gray-700/50 transition-all">
+            <div className="flex items-center justify-between mb-4">
+              <Clock className="w-5 h-5 text-gray-500" />
             </div>
-            <div className="text-3xl font-bold text-white mb-1">156h</div>
-            <div className="text-gray-400 text-sm">Coding Time</div>
+            <div className="text-3xl font-semibold text-white mb-1">156h</div>
+            <div className="text-gray-500 text-sm">Coding Time</div>
           </div>
-          <div className="bg-[#1f2937] rounded-xl p-6 border border-gray-700 shadow-md hover:scale-[1.02] transition-transform cursor-pointer">
-            <div className="flex items-center justify-center w-12 h-12 bg-cyan-600 rounded-lg mb-4">
-              <Users className="w-6 h-6 text-white" />
+          <div className="bg-[#111827]/40 border border-gray-800/50 rounded-lg p-6 hover:border-gray-700/50 transition-all">
+            <div className="flex items-center justify-between mb-4">
+              <Users className="w-5 h-5 text-gray-500" />
             </div>
-            <div className="text-3xl font-bold text-white mb-1">92</div>
-            <div className="text-gray-400 text-sm">Collaboration Score</div>
+            <div className="text-3xl font-semibold text-white mb-1">92</div>
+            <div className="text-gray-500 text-sm">Collaboration Score</div>
           </div>
         </div>
       </div>
 
       {/* 30-Day Activity */}
       <div>
-        <h2 className="text-xl font-semibold text-white mb-4">
-          30-Day Activity
+        <h2 className="text-base font-medium text-white mb-6">
+          Activity
         </h2>
-        <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-          <div className="flex justify-between items-end space-x-4 mb-4">
+        <div className="bg-[#111827]/40 border border-gray-800/50 rounded-lg p-6">
+          <div className="flex justify-between items-end gap-3 mb-6">
             {activityData.map((day, index) => (
-              <div key={index} className="flex flex-col items-center space-y-2">
-                <div className="flex flex-col space-y-1">
+              <div key={index} className="flex flex-col items-center gap-2">
+                <div className="flex flex-col gap-1">
                   {day.problems.map((level, pIndex) => (
                     <div
                       key={pIndex}
-                      className={`w-4 h-4 rounded ${
+                      className={`w-3 h-3 rounded-sm ${
                         level === 1
-                          ? "bg-green-400"
+                          ? "bg-emerald-900/60"
                           : level === 2
-                          ? "bg-green-500"
-                          : "bg-green-600"
+                          ? "bg-emerald-700/80"
+                          : "bg-emerald-500"
                       }`}
                     />
                   ))}
                 </div>
-                <span className="text-xs text-gray-400">{day.day}</span>
+                <span className="text-xs text-gray-500">{day.day}</span>
               </div>
             ))}
           </div>
-          <div className="flex items-center justify-end space-x-4 text-xs text-gray-400">
-            <div className="flex items-center space-x-1">
-              <div className="w-3 h-3 bg-green-400 rounded"></div>
-              <span>1 problem</span>
+          <div className="flex items-center gap-6 text-xs text-gray-500 pt-4 border-t border-gray-800/50">
+            <div className="flex items-center gap-2">
+              <div className="w-2.5 h-2.5 bg-emerald-900/60 rounded-sm"></div>
+              <span>Light</span>
             </div>
-            <div className="flex items-center space-x-1">
-              <div className="w-3 h-3 bg-green-500 rounded"></div>
-              <span>2 problems</span>
+            <div className="flex items-center gap-2">
+              <div className="w-2.5 h-2.5 bg-emerald-700/80 rounded-sm"></div>
+              <span>Medium</span>
             </div>
-            <div className="flex items-center space-x-1">
-              <div className="w-3 h-3 bg-green-600 rounded"></div>
-              <span>3+ problems</span>
+            <div className="flex items-center gap-2">
+              <div className="w-2.5 h-2.5 bg-emerald-500 rounded-sm"></div>
+              <span>High</span>
             </div>
           </div>
         </div>
@@ -308,80 +293,70 @@ const Profile = () => {
 
       {/* Recent Solved Problems */}
       <div>
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-white">
-            Recent Solved Problems
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-base font-medium text-white">
+            Recent Activity
           </h2>
           <button
             onClick={() => navigate("/problems")}
-            className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-4 py-2 rounded-md hover:opacity-90 transition-opacity"
+            className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
           >
-            Solve Problems
+            View All Problems
           </button>
         </div>
 
-        <div className="bg-gray-800 rounded-lg border border-gray-700 overflow-x-auto">
+        <div className="bg-[#111827]/40 border border-gray-800/50 rounded-lg overflow-hidden">
           {recentProblemSolve.length > 0 ? (
-            <table className="min-w-full divide-y divide-gray-700">
-              <thead className="bg-gradient-to-r from-blue-600 to-cyan-600">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
-                    #
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
+            <table className="min-w-full">
+              <thead className="bg-[#0a0a12]/60">
+                <tr className="border-b border-gray-800/50">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
                     Problem
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
                     Difficulty
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
-                    Time
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
-                    Date
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
+                    Status
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-700">
+              <tbody className="divide-y divide-gray-800/50">
                 {recentProblemSolve.map((problem) => (
-                  <tr key={problem.id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-gray-400">
-                      {problem._id}
+                  <tr key={problem.id} className="hover:bg-[#0a0a12]/40 transition-colors">
+                    <td className="px-6 py-4">
+                      <div className="text-sm font-medium text-white">{problem.title}</div>
+                      <div className="text-xs text-gray-500 mt-0.5">{problem.date}</div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-white font-medium">
-                      {problem.title}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4">
                       <span
-                        className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                        className={`inline-flex px-2.5 py-1 rounded-md text-xs font-medium ${
                           problem.difficulty === "EASY"
-                            ? "bg-green-900 text-green-300"
+                            ? "bg-emerald-950/60 text-emerald-400 border border-emerald-900/50"
                             : problem.difficulty === "MEDIUM"
-                            ? "bg-orange-900 text-orange-300"
-                            : "bg-red-900 text-red-300"
+                            ? "bg-amber-950/60 text-amber-400 border border-amber-900/50"
+                            : "bg-rose-950/60 text-rose-400 border border-rose-900/50"
                         }`}
                       >
                         {problem.difficulty}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-gray-400">
-                      {problem.time}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-gray-400">
-                      {problem.date}
+                    <td className="px-6 py-4">
+                      <span className="text-sm text-gray-400">{problem.time}</span>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           ) : (
-            <div className="p-8 text-center">
-              <p className="text-gray-400 mb-4">No problems solved yet</p>
+            <div className="p-16 text-center">
+              <Code className="w-12 h-12 text-gray-700 mx-auto mb-4" />
+              <p className="text-gray-400 text-sm mb-6">Start your coding journey</p>
               <button
                 onClick={() => navigate("/problems")}
-                className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-4 py-2 rounded-md hover:opacity-90 transition-opacity"
+                className="px-6 py-2.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
               >
-                Start Solving Problems
+                Browse Problems
               </button>
             </div>
           )}
@@ -391,67 +366,72 @@ const Profile = () => {
   );
 
   const renderSettingsTab = () => (
-    <div className="space-y-8 w-full">
-      <h1 className="text-3xl font-bold text-white">Settings</h1>
+    <div className="space-y-8 w-full max-w-4xl">
+      <div>
+        <h1 className="text-2xl font-semibold text-white mb-2">Settings</h1>
+        <p className="text-sm text-gray-500">Manage your account settings and preferences</p>
+      </div>
 
       {/* Profile Information */}
-      <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-        <h2 className="text-xl font-semibold text-white mb-4">
+      <div className="bg-[#111827]/40 border border-gray-800/50 rounded-lg p-6">
+        <h2 className="text-base font-medium text-white mb-6">
           Profile Information
         </h2>
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-400 mb-2">
                 Full Name
               </label>
               <input
                 type="text"
                 value={userInfo.name}
                 onChange={(e) => handleInputChange("name", e.target.value)}
-                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2.5 bg-[#0a0a12]/60 border border-gray-800 rounded-lg text-white text-sm focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600 transition-all"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-400 mb-2">
                 Username
               </label>
               <input
                 type="text"
                 value={userInfo.username}
                 onChange={(e) => handleInputChange("username", e.target.value)}
-                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2.5 bg-[#0a0a12]/60 border border-gray-800 rounded-lg text-white text-sm focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600 transition-all"
               />
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-400 mb-2">
               Email
             </label>
             <input
               type="email"
               value={userInfo.email}
               onChange={(e) => handleInputChange("email", e.target.value)}
-              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2.5 bg-[#0a0a12]/60 border border-gray-800 rounded-lg text-white text-sm focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600 transition-all"
             />
           </div>
-          <button
-            onClick={handleSaveProfile}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Save Profile
-          </button>
+          <div className="pt-2">
+            <button
+              onClick={handleSaveProfile}
+              className="px-5 py-2.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Save Changes
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Change Password */}
-      <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-        <h2 className="text-xl font-semibold text-white mb-4">
+      <div className="bg-[#111827]/40 border border-gray-800/50 rounded-lg p-6">
+        <h2 className="text-base font-medium text-white mb-6">
           Change Password
         </h2>
-        <div className="space-y-4">
+        <div className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-400 mb-2">
               Current Password
             </label>
             <div className="relative">
@@ -461,12 +441,12 @@ const Profile = () => {
                 onChange={(e) =>
                   handleInputChange("currentPassword", e.target.value)
                 }
-                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10"
+                className="w-full px-4 py-2.5 bg-[#0a0a12]/60 border border-gray-800 rounded-lg text-white text-sm focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600 transition-all pr-10"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-400 transition-colors"
               >
                 {showPassword ? (
                   <EyeOff className="w-4 h-4" />
@@ -477,18 +457,18 @@ const Profile = () => {
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-400 mb-2">
               New Password
             </label>
             <input
               type="password"
               value={userInfo.newPassword}
               onChange={(e) => handleInputChange("newPassword", e.target.value)}
-              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2.5 bg-[#0a0a12]/60 border border-gray-800 rounded-lg text-white text-sm focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600 transition-all"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-400 mb-2">
               Confirm New Password
             </label>
             <input
@@ -497,33 +477,32 @@ const Profile = () => {
               onChange={(e) =>
                 handleInputChange("confirmPassword", e.target.value)
               }
-              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2.5 bg-[#0a0a12]/60 border border-gray-800 rounded-lg text-white text-sm focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600 transition-all"
             />
           </div>
-          <button
-            onClick={handleChangePassword}
-            className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-          >
-            Change Password
-          </button>
+          <div className="pt-2">
+            <button
+              onClick={handleChangePassword}
+              className="px-5 py-2.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Update Password
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Delete Account */}
-      <div className="bg-gray-800 rounded-lg p-6 border border-red-700">
-        <h2 className="text-xl font-semibold text-red-400 mb-4">Danger Zone</h2>
-        <div className="space-y-4">
-          <p className="text-gray-300">
-            Once you delete your account, there is no going back. Please be
-            certain.
-          </p>
-          <button
-            onClick={handleDeleteAccount}
-            className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-          >
-            Delete Account
-          </button>
-        </div>
+      <div className="bg-[#111827]/40 border border-rose-900/30 rounded-lg p-6">
+        <h2 className="text-base font-medium text-rose-400 mb-2">Delete Account</h2>
+        <p className="text-sm text-gray-400 mb-6">
+          Permanently delete your account and all associated data. This action cannot be undone.
+        </p>
+        <button
+          onClick={handleDeleteAccount}
+          className="px-5 py-2.5 bg-rose-600/20 border border-rose-900/50 text-rose-400 text-sm rounded-lg hover:bg-rose-600/30 transition-colors"
+        >
+          Delete Account
+        </button>
       </div>
     </div>
   );
@@ -531,71 +510,80 @@ const Profile = () => {
   return (
     <>
       <Header />
-      <div className="min-h-[91.1vh] bg-gradient-to-b from-[#0a0a12] to-[#2a2a4a] flex">
-        {/* Sidebar - Fixed to left edge */}
-        <div className="w-64 bg-[#0a0a12] border-r border-gray-700 flex-shrink-0 sticky top-0 h-screen z-10">
-          <div className="p-4 border-b border-gray-700">
-            <div className="flex items-center gap-6 bg-[#111827] p-6 rounded-xl border border-gray-700 shadow-lg">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <Code className="w-5 h-5 text-white" />
+      <div className="min-h-screen bg-gradient-to-b from-[#0a0a12] to-[#2a2a4a] flex">
+        {/* Sidebar */}
+        <div className="w-64 bg-[#0a0a12] border-r border-gray-900/50 flex-shrink-0 sticky top-0 h-screen">
+          <div className="p-6 border-b border-gray-900/50">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-blue-600/10 border border-blue-600/20 rounded-lg flex items-center justify-center">
+                <Code className="w-4 h-4 text-blue-500" />
               </div>
-              <div>
-                <div className="text-white font-semibold">CODE COLLAB</div>
-              </div>
+              <div className="text-sm font-medium text-white">CODE COLLAB</div>
             </div>
           </div>
           <nav className="flex-1 p-4">
-            <div className="space-y-2">
+            <div className="space-y-1">
               {sidebarItems.map((item) => {
                 const Icon = item.icon;
                 return (
                   <button
                     key={item.id}
                     onClick={() => setActiveTab(item.id)}
-                    className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors ${
+                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all ${
                       activeTab === item.id
-                        ? "bg-blue-600 text-white"
-                        : "text-gray-300 hover:bg-gray-700 hover:text-white"
+                        ? "bg-blue-600/10 text-blue-400 border border-blue-600/20"
+                        : "text-gray-400 hover:text-gray-300 hover:bg-white/5"
                     }`}
                   >
-                    <Icon className="w-5 h-5" />
-                    <span>{item.label}</span>
+                    <Icon className="w-4 h-4" />
+                    <span className="font-medium">{item.label}</span>
                   </button>
                 );
               })}
+              {user?.role === 'Admin' && (
+                <button
+                  onClick={() => navigate('/admin')}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all text-gray-400 hover:text-gray-300 hover:bg-white/5"
+                >
+                  <Shield className="w-4 h-4" />
+                  <span className="font-medium">Admin Panel</span>
+                </button>
+              )}
             </div>
           </nav>
-          <div className="p-4 border-t border-gray-700">
+          <div className="p-4 border-t border-gray-900/50">
             <button
               onClick={logout}
-              className="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-gradient-to-r from-[#6e44ff] to-[#1cb8ff] text-white rounded-lg hover:shadow-[0_0_15px_rgba(110,68,255,0.5)] transition duration-300"
+              className="w-full px-4 py-2.5 bg-white/5 hover:bg-white/10 border border-gray-800 text-gray-300 text-sm rounded-lg transition-all"
             >
-              <span>Logout</span>
+              Logout
             </button>
           </div>
         </div>
 
-        {/* Main Content - Takes remaining space */}
-        <div className="flex-1 overflow-y-auto p-8">
-          {activeTab === "profile" ? (
-            renderProfileTab()
-          ) : activeTab === "settings" ? (
-            renderSettingsTab()
-          ) : (
-            <div className="space-y-8 w-full">
-              <h1 className="text-3xl font-bold text-white">
-                {sidebarItems.find((item) => item.id === activeTab)?.label}
-              </h1>
-              <div className="bg-gray-800 rounded-lg p-8 border border-gray-700 text-center">
-                <p className="text-gray-400 text-lg">
-                  This section is under development
-                </p>
-                <p className="text-gray-500 mt-2">
-                  Content will be available soon
-                </p>
+        {/* Main Content */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="max-w-7xl mx-auto p-8 lg:p-12">
+            {activeTab === "profile" ? (
+              renderProfileTab()
+            ) : activeTab === "settings" ? (
+              renderSettingsTab()
+            ) : (
+              <div className="space-y-8 w-full">
+                <h1 className="text-2xl font-semibold text-white">
+                  {sidebarItems.find((item) => item.id === activeTab)?.label}
+                </h1>
+                <div className="bg-[#111827]/40 border border-gray-800/50 rounded-lg p-12 text-center">
+                  <p className="text-gray-400 text-sm">
+                    This section is under development
+                  </p>
+                  <p className="text-gray-600 text-xs mt-2">
+                    Content will be available soon
+                  </p>
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
     </>
