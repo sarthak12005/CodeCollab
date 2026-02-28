@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true,
+        required: false,
     },
     role: {
         type: String,
@@ -27,6 +27,11 @@ const userSchema = new mongoose.Schema({
     userImage: {
         type: String,
         default: ""
+    },
+    provider: {
+        type: String,
+        enum: ["google","github", "local"],
+        default: "local",
     },
     userActivity: {
         type: [String],
@@ -42,12 +47,12 @@ const userSchema = new mongoose.Schema({
         ref: 'Problem',
         default: [],
     },
-    rank :{
-       points: {type: Number, default: 0},
-       badge: {
-          type: String,
-          default: "Bronze",
-       }
+    rank: {
+        points: { type: Number, default: 0 },
+        badge: {
+            type: String,
+            default: "Bronze",
+        }
     },
     Verified: {
         type: Boolean,

@@ -36,6 +36,7 @@ const startAPI = process.env.API_START;
 
 // adding routes
 const authRoutes = require('./routes/authRoute');
+const usersRoutes = require('./routes/users.route');
 const problemRoutes = require('./routes/problemRoute');
 const codeExecutionRoutes = require('./routes/codeExecutionRoute');
 const preparationRoutes = require('./routes/preparationRoute');
@@ -59,6 +60,7 @@ app.use(errorMiddleware);
 
 // declare route with end point
 app.use(`${startAPI}`, authRoutes);
+app.use(`${startAPI}/users`, usersRoutes);
 app.use(`${startAPI}/problem`, problemRoutes);
 app.use(`${startAPI}/code`, codeExecutionRoutes);
 app.use(`${startAPI}/preparation`, preparationRoutes);

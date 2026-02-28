@@ -15,11 +15,13 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import toast from "react-hot-toast";
 const API_URL = import.meta.env.VITE_API_ENDPOINT;
 
 const Profile = () => {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
+
 
   const [activeTab, setActiveTab] = useState("profile");
   const [showPassword, setShowPassword] = useState(false);
@@ -38,10 +40,31 @@ const Profile = () => {
 
   const [profileImage, setProfileImage] = useState(
     user?.userImage ||
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
+      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
   );
   const fileInputRef = useRef(null);
 
+  useEffect(() => {
+    if (!user) return;
+
+    setUserInfo({
+      name: user.name || "",
+      username: user.username || "",
+      email: user.email || "",
+      bio: user.bio || "Passionate developer and problem solver",
+      location: user.location || "",
+      website: user.website || "",
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+      solveProblems: user.solveProblems || [],
+    });
+
+    setProfileImage(
+      user.userImage ||
+        "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
+    );
+  }, [user]);
 
   const handleImageClick = () => {
     fileInputRef.current.click();
@@ -69,12 +92,12 @@ const Profile = () => {
 
       const res = await axios.put(
         `${API_URL}/change-picture/${user._id}`,
-        image
+        {image},
       );
 
       const message = res.data.message;
 
-      alert(message);
+      toast.success(message);
     } catch (err) {
       console.error("the error in the uploading image is", err);
     }
@@ -89,16 +112,15 @@ const Profile = () => {
   const [recentProblemSolve, setRecentProblemSolve] = useState([]);
 
   useEffect(() => {
-    try {
-      if (user && user.solveProblems.length !== 0) {
-        const solveProblems = userInfo.solveProblems
-          .slice()
-          .reverse()
-          .slice(0, 3);
-        setRecentProblemSolve(solveProblems);
-      }
-    } catch (e) {}
-  }, [user]);
+    if (!userInfo.solveProblems?.length) {
+      setRecentProblemSolve([]);
+      return;
+    }
+
+    const recent = [...userInfo.solveProblems].reverse().slice(0, 3);
+
+    setRecentProblemSolve(recent);
+  }, [userInfo.solveProblems]);
 
   const activityData = [
     { day: "Sun", problems: [1, 1, 1] },
@@ -140,7 +162,7 @@ const Profile = () => {
   const handleDeleteAccount = () => {
     if (
       window.confirm(
-        "Are you sure you want to delete your account? This action cannot be undone."
+        "Are you sure you want to delete your account? This action cannot be undone.",
       )
     ) {
       alert("Account deletion process initiated. You will be logged out.");
@@ -279,8 +301,8 @@ const Profile = () => {
                         level === 1
                           ? "bg-green-400"
                           : level === 2
-                          ? "bg-green-500"
-                          : "bg-green-600"
+                            ? "bg-green-500"
+                            : "bg-green-600"
                       }`}
                     />
                   ))}
@@ -357,8 +379,8 @@ const Profile = () => {
                           problem.difficulty === "EASY"
                             ? "bg-green-900 text-green-300"
                             : problem.difficulty === "MEDIUM"
-                            ? "bg-orange-900 text-orange-300"
-                            : "bg-red-900 text-red-300"
+                              ? "bg-orange-900 text-orange-300"
+                              : "bg-red-900 text-red-300"
                         }`}
                       >
                         {problem.difficulty}

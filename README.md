@@ -62,7 +62,7 @@ A modern, full-stack web application designed for collaborative coding, problem-
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/sarthak12005/code-collab.git
+git clone https://github.com/sarthak12005/CodeCollab.git
 cd code-collab
 ```
 

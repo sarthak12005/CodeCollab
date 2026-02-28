@@ -16,26 +16,72 @@ import Aptitude from "./pages/preparation/Aptitude";
 import Coding from "./pages/preparation/Coding";
 import { Toaster } from "react-hot-toast";
 
+// Admin Panel Imports
+import { AdminProvider } from "./context/AdminContext";
+import ProtectedAdminRoute from "./components/Admin/ProtectedAdminRoute";
+import AdminDashboard from "./pages/Admin/AdminDashboard";
+import AdminUsers from "./pages/Admin/AdminUsers";
+import AdminProblems from "./pages/Admin/AdminProblems";
+import AdminPreparation from "./pages/Admin/AdminPreparation";
+
 function App() {
   return (
-    <div>
-      <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/problems" element={<Problems />} />
-      <Route path="/problems/singleProblem/:problemId" element={<SingleProblemPage />} />
-      <Route path="/problems/:problemId/submissions" element={<SubmissionResults />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/signup" element={<Signup />} />
-      <Route path="/profile" element={<Profile />} />
-      <Route path="/about" element={<About />} />
-      <Route path="/preparation" element={<Preparation />} />
-      <Route path="/preparation/interview" element={<Interview />} />
-      <Route path="/preparation/aptitude" element={<Aptitude />} />
-      <Route path="/preparation/coding" element={<Coding />} />
-      <Route path="/*" element={<NotFoundPage />} />
-    </Routes>
-    <Toaster position="top-right" reverseOrder={false}/>
-    </div>
+    <AdminProvider>
+      <div>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/problems" element={<Problems />} />
+          <Route path="/problems/singleProblem/:problemId" element={<SingleProblemPage />} />
+          <Route path="/problems/:problemId/submissions" element={<SubmissionResults />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/preparation" element={<Preparation />} />
+          <Route path="/preparation/interview" element={<Interview />} />
+          <Route path="/preparation/aptitude" element={<Aptitude />} />
+          <Route path="/preparation/coding" element={<Coding />} />
+
+          {/* Admin Routes */}
+          <Route
+            path="/admin/dashboard"
+            element={
+              <ProtectedAdminRoute>
+                <AdminDashboard />
+              </ProtectedAdminRoute>
+            }
+          />
+          <Route
+            path="/admin/users"
+            element={
+              <ProtectedAdminRoute>
+                <AdminUsers />
+              </ProtectedAdminRoute>
+            }
+          />
+          <Route
+            path="/admin/problems"
+            element={
+              <ProtectedAdminRoute>
+                <AdminProblems />
+              </ProtectedAdminRoute>
+            }
+          />
+          <Route
+            path="/admin/preparation"
+            element={
+              <ProtectedAdminRoute>
+                <AdminPreparation />
+              </ProtectedAdminRoute>
+            }
+          />
+          <Route path="/admin" element={<ProtectedAdminRoute><AdminDashboard /></ProtectedAdminRoute>} />
+
+          <Route path="/*" element={<NotFoundPage />} />
+        </Routes>
+        <Toaster position="top-right" reverseOrder={false} />
+      </div>
+    </AdminProvider>
   );
 }
 

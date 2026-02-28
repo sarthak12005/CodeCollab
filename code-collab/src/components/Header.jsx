@@ -118,7 +118,7 @@ const Header = () => {
                   onClick={() => handleNavigation("/profile")}
                 >
                   <img
-                    src={user?.userImage || "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"}
+                    src={user.userImage}
                     alt="profile"
                     className="w-9 h-9 rounded-full border-2 border-[#6e44ff] object-cover"
                   />

@@ -10,14 +10,7 @@ const userContext = createContext();
 // Export the context for direct use
 export const UserContext = userContext;
 
-// const userdata = {
-//     name: "John Doe",
-//     email: "johndoe@example.com",
-//     id: "12345",
-//     profilePicture: "https://example.com/profile.jpg",
-//     bio: "A passionate coder and tech enthusiast.",
-//     skills: ["JavaScript", "React", "Node.js"],
-// }
+
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -33,7 +26,7 @@ export const UserProvider = ({ children }) => {
       const response = await axios.post(`${API_URL}/addUser`, {
         username: userData.displayName,
         email: userData.email,
-        password: userData.uid, // ✅ Fixed the typo here
+        provider: "google",
         userImage: userData.photoURL,
       });
 

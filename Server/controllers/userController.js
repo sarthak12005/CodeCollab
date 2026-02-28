@@ -17,7 +17,10 @@ exports.loginUser = async (req, res) => {
             return res.status(400).json({ message: "Username and password are required." });
         }
 
-        const user = await User.findOne({ username }).select('+password');
+        // Accept both username and email for login
+        const user = await User.findOne({ 
+            $or: [{ username }, { email: username }] 
+        }).select('+password');
 
         if (!user) {
             return res.status(404).json({ message: "User not found" });
@@ -31,11 +34,108 @@ exports.loginUser = async (req, res) => {
         const token = generateToken(user._id, user.username, process.env.JWT_SECRET, process.env.JWT_EXPIRY);
         // console.log("User login successfull", token);
 
-        res.status(200).json({ message: "User login successful", token });
+        // Return user object with all necessary fields
+        const userResponse = {
+            _id: user._id,
+            name: user.name,
+            username: user.username,
+            email: user.email,
+            role: user.role,
+            userImage: user.userImage,
+            Verified: user.Verified,
+            premium: user.premium
+        };
+
+        res.status(200).json({ message: "User login successful", token, user: userResponse });
     } catch (err) {
         console.error("Login error:", err);
         res.status(500).json({ message: "Internal server error", error: err.message });
     }
+};
+
+exports.getUsers = async (req, res) => {
+  try {
+    // -----------------------------
+    // 1. Extract & sanitize query params
+    // -----------------------------
+    let {
+      page = 1,
+      limit = 5,
+      username,
+      email,
+      role,
+      status,
+    } = req.query;
+
+    page = parseInt(page);
+    limit = parseInt(limit);
+
+    if (page < 1) page = 1;
+    if (limit < 1 || limit > 100) limit = 10;
+
+    const skip = (page - 1) * limit;
+
+    // -----------------------------
+    // 2. Base filter (soft delete)
+    // -----------------------------
+    const filter = {
+    //   isDeleted: false,
+    };
+
+    // -----------------------------
+    // 3. Apply allowed filters ONLY
+    // -----------------------------
+    if (username) {
+      filter.username = { $regex: username, $options: "i" };
+    }
+
+    if (email) {
+      filter.email = { $regex: email, $options: "i" };
+    }
+
+    if (role && role !== "All") {
+      filter.role = role;
+    }
+
+    if (status && status !== "All") {
+      filter.status = status;
+    }
+
+    // -----------------------------
+    // 4. Fetch users + count
+    // -----------------------------
+    const [users, totalUsers] = await Promise.all([
+      User.find(filter)
+        .select("username email role status createdAt")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+
+      User.countDocuments(filter),
+    ]);
+
+    // -----------------------------
+    // 5. Send response
+    // -----------------------------
+    res.status(200).json({
+      success: true,
+      message: "Users fetched successfully",
+      data: users,
+      pagination: {
+        total: totalUsers,
+        page,
+        limit,
+        totalPages: Math.ceil(totalUsers / limit),
+      },
+    });
+  } catch (error) {
+    console.error("Get Users Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
 };
 
 
@@ -55,7 +155,8 @@ exports.signUpUser = async (req, res) => {
         const newUser = new User({
             username,
             email,
-            password: hashPassword
+            password: hashPassword,
+            role: "User"
         });
 
         await newUser.save();
@@ -97,53 +198,42 @@ exports.getUser = async (req, res) => {
 }
 
 exports.addUser = async (req, res) => {
-    try {
-        const { username, email, password, userImage } = req.body;
+  try {
+    const { username, email,provider, userImage } = req.body;
 
-        if (!username || !email || !password) {
-            return res.status(400).json({ message: "Username, email, and password are required." });
-        }
-
-        // Check if user already exists
-        let user = await User.findOne({ $or: [{ email }, { username }] });
-
-        if (!user) {
-            // Register new user
-            const hashedPassword = await bcrypt.hash(password, 10);
-
-            user = new User({
-                username,
-                email,
-                password: hashedPassword,
-                userImage: userImage || "https://example.com/default-avatar.png", // Default image if not provided
-            });
-
-            await user.save();
-        } else {
-            // Login existing user: check password match
-            const isMatch = await bcrypt.compare(password, user.password);
-            if (!isMatch) {
-                return res.status(401).json({ message: "Invalid password." });
-            }
-        }
-
-        // Generate token for both login & register
-        const token = jwt.sign({
-            id: user._id,
-            username: user.username
-        }, process.env.JWT_SECRET, {
-            expiresIn: "7d",
-        });
-
-        res.status(200).json({
-            message: "User logged in successfully.",
-            token,
-        });
-
-    } catch (error) {
-        console.error("Error in addUser:", error);
-        res.status(500).json({ message: "Server error" });
+    if (!email) {
+      return res.status(400).json({ message: "Email is required." });
     }
+
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      user = new User({
+        username,
+        email,
+        provider,
+        userImage: userImage,
+        role: "User"
+      });
+
+      await user.save();
+    }
+
+    const token = jwt.sign(
+      { id: user._id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    res.status(200).json({
+      message: "login successful",
+      token,
+    });
+
+  } catch (error) {
+    console.error("Error in addUser:", error);
+    res.status(500).json({ message: "Server error" });
+  }
 };
 
 exports.editUser = async (req, res) => {

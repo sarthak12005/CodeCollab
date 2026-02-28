@@ -30,6 +30,7 @@ exports.uploadProfilePicture = async (req, res) => {
         res.status(200).json({ message: "Image upload successfully", url: result.secure_url });
 
     } catch (error) {
+        console.log(error)
         res.status(500).json("Internal server error", error);
     }
 
