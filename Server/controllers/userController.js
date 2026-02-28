@@ -34,7 +34,6 @@ exports.loginUser = async (req, res) => {
         const token = generateToken(user._id, user.username, process.env.JWT_SECRET, process.env.JWT_EXPIRY);
         // console.log("User login successfull", token);
 
-        // Return user object with all necessary fields
         const userResponse = {
             _id: user._id,
             name: user.name,

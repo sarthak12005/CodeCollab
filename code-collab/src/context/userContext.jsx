@@ -32,7 +32,19 @@ export const UserProvider = ({ children }) => {
 
       if (response.data.token) {
         localStorage.setItem("token", response.data.token); // ✅ also fixed `res` → `response`
-        navigate("/");
+        // Update user state with returned user data
+        if (response.data.user) {
+          setUser(response.data.user);
+          localStorage.setItem("user", JSON.stringify(response.data.user));
+          // Redirect based on role
+          if (response.data.user.role === 'Admin') {
+            navigate("/admin");
+          } else {
+            navigate("/");
+          }
+        } else {
+          navigate("/");
+        }
       }
 
     } catch (err) {
@@ -62,7 +74,19 @@ export const UserProvider = ({ children }) => {
       if (response.data.token) {
 
         localStorage.setItem("token", response.data.token);
-        navigate("/");
+        // Update user state with returned user data
+        if (response.data.user) {
+          setUser(response.data.user);
+          localStorage.setItem("user", JSON.stringify(response.data.user));
+          // Redirect based on role
+          if (response.data.user.role === 'Admin') {
+            navigate("/admin");
+          } else {
+            navigate("/");
+          }
+        } else {
+          navigate("/");
+        }
       }
     } catch (err) {
       console.error("the error in login user", err);
