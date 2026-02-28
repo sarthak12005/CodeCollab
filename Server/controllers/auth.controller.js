@@ -15,6 +15,7 @@ exports.signUpUser = async (req, res) => {
             email,
             password,
             userImage,
+            status = "INACTIVE",
             isAdminCreated = false,
             premium = false // admin-controlled
         } = req.body;
@@ -41,7 +42,6 @@ exports.signUpUser = async (req, res) => {
         let finalPasswordHash;
         let resetPasswordToken = null;
         let resetPasswordExpiry = null;
-        let status = "ACTIVE";
 
         // 🔁 ADMIN FLOW
         if (isAdminCreated) {
@@ -53,10 +53,8 @@ exports.signUpUser = async (req, res) => {
             const { base64Token, hashedToken } = generateResetToken(email);
             resetPasswordToken = hashedToken;
             resetPasswordExpiry = Date.now() + 48 * 60 * 60 * 1000;
-            status = "INACTIVE";
 
             // 👉 Send reset link via email
-            console.log("Reset Password Token:", base64Token);
 
             //send email to user
             // 3️⃣ Create reset password link
@@ -238,7 +236,6 @@ exports.forgotPassword = async (req, res) => {
     user.resetPasswordExpiry = Date.now() + 48 * 60 * 60 * 1000;
     await user.save();
 
-    console.log("Reset Token:", base64Token); // send via email
 
     res.json({
         message: "Reset password link sent"

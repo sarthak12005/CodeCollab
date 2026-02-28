@@ -19,7 +19,6 @@ export const AdminProvider = ({ children }) => {
           const adminData = JSON.parse(storedAdmin);
           setAdminUser(adminData);
           setIsAdmin(true);
-          console.log('Admin restored from localStorage:', adminData);
         } else {
           setIsAdmin(false);
         }
@@ -37,16 +36,13 @@ export const AdminProvider = ({ children }) => {
   }, []);
 
   const setAdminData = useCallback((admin) => {
-    console.log('Setting admin data:', admin);
     setAdminUser(admin);
     setIsAdmin(true);
     localStorage.setItem('adminUser', JSON.stringify(admin));
     localStorage.setItem('isAdmin', 'true');
-    console.log('Admin data saved to localStorage');
   }, []);
 
   const clearAdminData = useCallback(() => {
-    console.log('Clearing admin data');
     setAdminUser(null);
     setIsAdmin(false);
     localStorage.removeItem('adminUser');

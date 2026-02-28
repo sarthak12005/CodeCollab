@@ -45,24 +45,20 @@ const Login = () => {
 
       const data = response.data;
 
-      console.log('Login successful. User role:', data.user.role);
 
       // Update user in auth context
       updateUser(data.user, data.token);
       
       // Check if user is admin
       if (data.user.role === 'Admin') {
-        console.log('Setting admin data for admin user');
         setAdminData(data.user);
         
         // Navigate after a short delay to ensure state is updated
         setTimeout(() => {
-          console.log('Navigating to admin dashboard');
           navigate('/admin/dashboard', { replace: true });
           toast.success("Admin Login Successful!");
         }, 150);
       } else {
-        console.log('Regular user login - navigating to home');
         // Use setTimeout to ensure state is updated before navigation
         setTimeout(() => {
           navigate('/', { replace: true });
@@ -71,7 +67,6 @@ const Login = () => {
       }
 
     } catch (err) {
-      console.error('Login error:', err);
       toast.error("Login error! please try again");
     } finally {
       setLoginLoading(false)

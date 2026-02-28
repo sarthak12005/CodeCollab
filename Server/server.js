@@ -49,7 +49,7 @@ const errorMiddleware = require('./middleware/error.middleware');
 
 app.use(cors({
   origin: [`${origin_enpoint1}`, `${origin_enpoint2}`, `${origin_enpoint3}`, `${origin_enpoint4}`], // Your frontend URL
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
 }));
 
 

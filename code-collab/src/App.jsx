@@ -35,8 +35,14 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/problems" element={<Problems />} />
-          <Route path="/problems/singleProblem/:problemId" element={<SingleProblemPage />} />
-          <Route path="/problems/:problemId/submissions" element={<SubmissionResults />} />
+          <Route
+            path="/problems/singleProblem/:problemId"
+            element={<SingleProblemPage />}
+          />
+          <Route
+            path="/problems/:problemId/submissions"
+            element={<SubmissionResults />}
+          />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/reset-password" element={<ResetPassword />} />
@@ -58,6 +64,14 @@ function App() {
           />
           <Route
             path="/admin/users/add"
+            element={
+              <ProtectedAdminRoute>
+                <AddEditUser />
+              </ProtectedAdminRoute>
+            }
+          />
+          <Route
+            path="/admin/users/edit/:id"
             element={
               <ProtectedAdminRoute>
                 <AddEditUser />
@@ -88,7 +102,14 @@ function App() {
               </ProtectedAdminRoute>
             }
           />
-          <Route path="/admin" element={<ProtectedAdminRoute><AdminDashboard /></ProtectedAdminRoute>} />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedAdminRoute>
+                <AdminDashboard />
+              </ProtectedAdminRoute>
+            }
+          />
 
           <Route path="/*" element={<NotFoundPage />} />
         </Routes>

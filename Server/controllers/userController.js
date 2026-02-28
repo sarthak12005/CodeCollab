@@ -261,9 +261,10 @@ exports.toogleFavorite = async (req, res) => {
 
 exports.editUser = async (req, res) => {
     try {
-        const userId = req.params;
+        const {userId} = req.params;
 
-        if (userId) return res.status(400).json({ message: "UserId required" });
+
+        if (!userId) return res.status(400).json({ message: "UserId required" });
 
         const user = await User.findByIdAndUpdate(
             userId,
@@ -331,6 +332,30 @@ exports.deleteUser = async (req, res) => {
   }
 };
 
+
+exports.getUserById = async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        if (!userId) {
+            return res.status(400).json({ message: "User id is required." });
+        }
+
+        const user = await User.findById(userId)
+            .select('-password')
+            .populate('solveProblems');
+
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found." });
+        }
+
+        res.status(200).json({ message: "User retrieved successfully.", user });
+    } catch (err) {
+        console.error("Get user error:", err);
+        res.status(500).json({ message: "Internal Server Error", err });
+    }
+}
 
 
 
