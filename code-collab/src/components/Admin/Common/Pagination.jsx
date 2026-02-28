@@ -12,16 +12,16 @@ export const Pagination = ({
 
   return (
     <div className="flex items-center justify-between gap-4 mt-6">
-      <div className="text-sm text-gray-600">
+      <div className="text-sm text-white">
         Showing {startItem} to {endItem} of {totalItems} items
       </div>
       <div className="flex gap-2">
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className="px-4 py-2 rounded-lg bg-gray-200 text-gray-800 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="rounded-lg text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
-          Previous
+          &lt;
         </button>
 
         {/* Page Numbers */}
@@ -34,10 +34,10 @@ export const Pagination = ({
               <button
                 key={pageNum}
                 onClick={() => onPageChange(pageNum)}
-                className={`px-3 py-2 rounded-lg transition-colors ${
+                className={`px-1 py-1 rounded-lg transition-colors ${
                   currentPage === pageNum
                     ? 'bg-blue-600 text-white'
-                    : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+                    : ' text-white '
                 }`}
               >
                 {pageNum}
@@ -49,9 +49,9 @@ export const Pagination = ({
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className="px-4 py-2 rounded-lg bg-gray-200 text-gray-800 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="rounded-lg text-white  disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
-          Next
+          &gt;
         </button>
       </div>
     </div>

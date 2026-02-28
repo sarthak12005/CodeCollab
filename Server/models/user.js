@@ -24,13 +24,18 @@ const userSchema = new mongoose.Schema({
         default: "User",
         enum: ["User", "Admin"]
     },
+    status: {
+        type: String,
+        default: "INACTIVE",
+        enum: ["ACTIVE", "INACTIVE"]
+    },
     userImage: {
         type: String,
         default: ""
     },
     provider: {
         type: String,
-        enum: ["google","github", "local"],
+        enum: ["google", "github", "local"],
         default: "local",
     },
     userActivity: {
@@ -61,8 +66,30 @@ const userSchema = new mongoose.Schema({
     premium: {
         type: Boolean,
         default: false,
+    },
+    isDeleted: {
+        type: Boolean,
+        default: false
+    },
+    deletedAt: {
+        type: Date,
+        default: null,
+    },
+    lastLoginAt: {
+        type: Date,
+        default: null,
+    },
+    resetPasswordToken: {
+        type: String, 
+        default: ""
+    }, 
+    resetPasswordExpiry: {
+        type: Date, 
+        default: new Date()
     }
 
+}, {
+    timestamps: true
 });
 
 

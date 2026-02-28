@@ -5,7 +5,6 @@ import { useAdmin } from "../../hooks/useAdmin.js";
 
 const AdminLayout = ({ children }) => {
   const { theme } = useTheme();
-  const { adminUser } = useAdmin();
 
   return (
     <div className={`flex min-h-screen ${theme.bg.primary}`}>

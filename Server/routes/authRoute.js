@@ -1,5 +1,6 @@
 const express = require('express');
 const userController = require('../controllers/userController');
+const authController = require('../controllers/auth.controller');
 const uploadController = require('../controllers/uploadController');
 const authMiddelware = require('../middleware/authMiddleware');
 const User = require('../models/user');
@@ -9,9 +10,10 @@ const router = express.Router();
 
 
 router.post('/login', userController.loginUser);
-router.post('/register',zodMiddleware(RegisterZodSchema), userController.signUpUser);
+router.post('/register', authController.signUpUser);
+router.post('/reset-password', authController.resetPassword);
 router.get('/getUser', authMiddelware, userController.getUser);
-router.put('/editProfile', userController.editUser);
+router.put('/editProfile', authMiddelware, userController.editProfile);
 router.put('/change-picture/:userId',uploadController.uploadProfilePicture);
 router.post('/addUser', userController.addUser);
 router.post('/favorite/:problemId', authMiddelware, userController.toogleFavorite);

@@ -25,6 +25,7 @@ import AdminDashboard from "./pages/Admin/AdminDashboard";
 import AdminUsers from "./pages/Admin/AdminUsers";
 import AdminProblems from "./pages/Admin/AdminProblems";
 import AdminPreparation from "./pages/Admin/AdminPreparation";
+import ResetPassword from "./pages/ResetPassword";
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
           <Route path="/problems/:problemId/submissions" element={<SubmissionResults />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/about" element={<About />} />
           <Route path="/preparation" element={<Preparation />} />

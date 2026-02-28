@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import AdminLayout from "../../components/Admin/AdminLayout";
 import { LoadingSpinner } from "../../components/Admin/Common/LoadingSpinner";
-import { SearchBar } from "../../components/Admin/Common/SearchBar";
 import { Pagination } from "../../components/Admin/Common/Pagination";
 import { ConfirmationModal } from "../../components/Admin/Common/ConfirmationModal";
 import axios from "axios";
+import { formatDate } from "../../utils/helper";
+
 const API_URL = import.meta.env.VITE_API_ENDPOINT;
 
 const AdminUsers = () => {
@@ -18,7 +19,14 @@ const AdminUsers = () => {
     },
   });
   const [isLoading, setIsLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
+
+  // ── 4 separate filter states ──────────────────────────────────────────────
+  const [searchUsername, setSearchUsername] = useState("");
+  const [searchEmail, setSearchEmail] = useState("");
+  const [filterRole, setFilterRole] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
+  // ─────────────────────────────────────────────────────────────────────────
+
   const [currentPage, setCurrentPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -26,53 +34,61 @@ const AdminUsers = () => {
   const [formData, setFormData] = useState({
     username: "",
     email: "",
-    password: "",
-    role: "user",
   });
   const itemsPerPage = 5;
-  let totalUsers = 0;
 
-  // Load users
+  // Re-fetch whenever any filter or page changes
   useEffect(() => {
-  fetchUsers();
-}, [currentPage, searchQuery]);
+    const debounceTimer = setTimeout(() => {
+      fetchUsers();
+    }, 500); // ⏱ debounce delay (300–500ms ideal)
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
+    return () => clearTimeout(debounceTimer);
+  }, [currentPage, searchUsername, searchEmail, filterRole, filterStatus]);
 
- const fetchUsers = async () => {
-  try {
-    setIsLoading(true);
+  const fetchUsers = async () => {
+    try {
+      setIsLoading(true);
 
-    const result = await axios.get(`${API_URL}/users`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-      params: {
-        page: currentPage,
-        limit: itemsPerPage,
-        username: searchQuery || undefined,
-        email: searchQuery || undefined,
-      },
-    });
+      const result = await axios.get(`${API_URL}/users`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        params: {
+          page: currentPage,
+          limit: itemsPerPage,
+          username: searchUsername || undefined,
+          email: searchEmail || undefined,
+          status: filterStatus || undefined,
+        },
+      });
 
-    setUsers(result.data);
-  } catch (error) {
-    console.error("Fetch users error:", error);
-  } finally {
-    setIsLoading(false);
-  }
-};
+      console.log(result.data.data);
 
-  // const filteredUsers = users.data.filter(
-  //   (user) =>
-  //     user.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
-  //     user.email.toLowerCase().includes(searchQuery.toLowerCase()),
-  // );
+      setUsers(result.data);
+    } catch (error) {
+      console.error("Fetch users error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Reset to page 1 when any filter changes
+  const handleUsernameChange = (val) => {
+    setSearchUsername(val);
+    setCurrentPage(1);
+  };
+  const handleEmailChange = (val) => {
+    setSearchEmail(val);
+    setCurrentPage(1);
+  };
+  const handleStatusChange = (val) => {
+    setFilterStatus(val);
+    setCurrentPage(1);
+  };
 
   const handleAddUser = () => {
-    setFormData({ username: "", email: "", password: "", role: "user" });
+    setFormData({ username: "", email: ""});
     setShowAddForm(true);
   };
 
@@ -82,27 +98,49 @@ const AdminUsers = () => {
     setShowAddForm(true);
   };
 
-  const handleSaveUser = () => {
-    if (selectedUser) {
-      // Update existing user
-      setUsers(
-        users.data.map((u) =>
-          u._id === selectedUser._id ? { ...selectedUser, ...formData } : u,
-        ),
-      );
-    } else {
-      // Add new user
-      const newUser = {
-        _id: String(users.length + 1),
-        ...formData,
-        status: "active",
-        createdAt: new Date().toISOString().split("T")[0],
-      };
-      setUsers([...users, newUser]);
+ const handleSaveUser = async () => {
+  try {
+    // ---------------------------
+    // ADD NEW USER (REGISTER)
+    // ---------------------------
+    if (!formData.username || !formData.email) {
+      alert("All fields are required");
+      return;
     }
+
+    await axios.post(
+      `${API_URL}/register`,
+      {
+        username: formData.username,
+        email: formData.email,
+        isAdminCreated: true,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+
+    // ✅ Refresh users from backend
+    await fetchUsers();
+
+    // ✅ Reset UI
     setShowAddForm(false);
+    setFormData({
+      username: "",
+      email: "",
+      role: "user",
+    });
+  } catch (error) {
+    console.error("Add user error:", error);
+    alert(
+      error.response?.data?.message || "Failed to create user"
+    );
+  } finally {
     setSelectedUser(null);
-  };
+  }
+};
 
   const handleDeleteUser = (user) => {
     setSelectedUser(user);
@@ -110,7 +148,10 @@ const AdminUsers = () => {
   };
 
   const confirmDelete = () => {
-    setUsers(users.data.filter((u) => u._id !== selectedUser._id));
+    setUsers((prev) => ({
+      ...prev,
+      data: prev.data.filter((u) => u._id !== selectedUser._id),
+    }));
     setShowModal(false);
     setSelectedUser(null);
   };
@@ -129,10 +170,10 @@ const AdminUsers = () => {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-800">
+            <h1 className="text-3xl font-bold text-white">
               User Management
             </h1>
-            <p className="text-gray-600 mt-1">
+            <p className="text-gray-300 mt-1">
               Manage system users and their roles
             </p>
           </div>
@@ -144,12 +185,83 @@ const AdminUsers = () => {
           </button>
         </div>
 
-        {/* Search Bar */}
-        <SearchBar
-          placeholder="Search by username or email..."
-          value={searchQuery}
-          onChange={setSearchQuery}
-        />
+        {/* ── 4-Filter Row ─────────────────────────────────────────────────── */}
+        <div className="flex flex-wrap gap-3">
+          {/* Search by Username */}
+          <div className="relative flex-1 min-w-[160px]">
+            <span className="absolute inset-y-0 left-3 flex items-center text-gray-400">
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"
+                />
+              </svg>
+            </span>
+            <input
+              type="text"
+              placeholder="Search by username..."
+              value={searchUsername}
+              onChange={(e) => handleUsernameChange(e.target.value)}
+              className="w-full pl-9 pr-3 py-2 rounded-lg border text-white border-gray-300 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          {/* Search by Email */}
+          <div className="relative flex-1 min-w-[160px]">
+            <span className="absolute inset-y-0 left-3 flex items-center text-gray-400">
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"
+                />
+              </svg>
+            </span>
+            <input
+              type="text"
+              placeholder="Search by email..."
+              value={searchEmail}
+              onChange={(e) => handleEmailChange(e.target.value)}
+              className="w-full pl-9 pr-3 py-2 rounded-lg border border-gray-300 placeholder-gray-400 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          {/* Role Dropdown
+          <select
+            value={filterRole}
+            onChange={(e) => handleRoleChange(e.target.value)}
+            className="px-3 py-2 rounded-lg border placeholder-gray-400 text-white border-gray-300 text-sm  focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[130px]"
+          >
+            <option className="bg-black" value="">All Roles</option>
+            <option className="bg-black" value="Admin">Admin</option>
+            <option className="bg-black" value="User">User</option>
+          </select> */}
+
+          {/* Status Dropdown */}
+          <select
+            value={filterStatus}
+            onChange={(e) => handleStatusChange(e.target.value)}
+            className="px-3 py-2 rounded-lg border border-gray-300 placeholder-gray-400 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[130px]"
+          >
+            <option className="bg-black" value="">All Status</option>
+            <option className="bg-black" value="ACTIVE">Active</option>
+            <option className="bg-black" value="INACTIVE">Inactive</option>
+          </select>
+        </div>
+        {/* ─────────────────────────────────────────────────────────────────── */}
 
         {/* Users Table */}
         <div className="bg-white rounded-lg shadow overflow-hidden">
@@ -211,7 +323,7 @@ const AdminUsers = () => {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600">
-                    {user.createdAt}
+                    {formatDate(user.createdAt)}
                   </td>
                   <td className="px-6 py-4 text-sm">
                     <div className="flex gap-2">
@@ -246,7 +358,7 @@ const AdminUsers = () => {
 
         {/* Add/Edit Modal */}
         {showAddForm && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full mx-4">
               <h3 className="text-lg font-bold text-gray-800 mb-4">
                 {selectedUser ? "Edit User" : "Add New User"}
@@ -280,37 +392,7 @@ const AdminUsers = () => {
                     placeholder="Enter email"
                   />
                 </div>
-                {!selectedUser && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Password
-                    </label>
-                    <input
-                      type="password"
-                      value={formData.password}
-                      onChange={(e) =>
-                        setFormData({ ...formData, password: e.target.value })
-                      }
-                      className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="Enter password"
-                    />
-                  </div>
-                )}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Role
-                  </label>
-                  <select
-                    value={formData.role}
-                    onChange={(e) =>
-                      setFormData({ ...formData, role: e.target.value })
-                    }
-                    className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="user">User</option>
-                    <option value="admin">Admin</option>
-                  </select>
-                </div>
+               
               </div>
               <div className="flex gap-3 justify-end mt-6">
                 <button

@@ -3,6 +3,8 @@ import AdminLayout from '../../components/Admin/AdminLayout';
 import { LoadingSpinner } from '../../components/Admin/Common/LoadingSpinner';
 import { useTheme } from '../../context/ThemeContext';
 import { Users, BookOpen, CheckCircle, TrendingUp } from 'lucide-react';
+import axios from 'axios'
+const API_URL = import.meta.env.VITE_API_ENDPOINT;
 
 const AdminDashboard = () => {
   const { theme } = useTheme();
@@ -14,19 +16,25 @@ const AdminDashboard = () => {
   });
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setStats({
-        totalUsers: 1234,
-        totalProblems: 156,
-        totalSubmissions: 8934,
-        averageDifficulty: 'Medium',
+ useEffect(() => {
+  const fetchStats = async () => {
+    try {
+      const res = await axios.get(`${API_URL}/users/stats`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       });
-      setIsLoading(false);
-    }, 1000);
 
-    return () => clearTimeout(timer);
-  }, []);
+      setStats(res.data.data);
+    } catch (error) {
+      console.error("Stats fetch error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  fetchStats();
+}, []);
 
   if (isLoading) {
     return (
@@ -62,7 +70,6 @@ const AdminDashboard = () => {
           <StatCard title="Total Users" value={stats.totalUsers} description="Active users in the platform" icon={Users} color="bg-gradient-to-br from-blue-500 to-blue-600" />
           <StatCard title="Total Problems" value={stats.totalProblems} description="Available coding problems" icon={BookOpen} color="bg-gradient-to-br from-green-500 to-green-600" />
           <StatCard title="Total Submissions" value={stats.totalSubmissions} description="Code submissions by users" icon={CheckCircle} color="bg-gradient-to-br from-purple-500 to-purple-600" />
-          <StatCard title="Avg Difficulty" value="Med" description="Average problem difficulty" icon={TrendingUp} color="bg-gradient-to-br from-orange-500 to-orange-600" />
         </div>
 
         <div className={`${theme.bg.secondary} rounded-xl shadow-lg p-8 border ${theme.border.primary}`}>
@@ -80,10 +87,6 @@ const AdminDashboard = () => {
               <div className="flex items-center justify-between pb-4 border-b border-opacity-20 border-gray-400">
                 <span className={theme.text.secondary}>Total Submissions</span>
                 <span className={`text-lg font-bold ${theme.text.primary}`}>{stats.totalSubmissions.toLocaleString()}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className={theme.text.secondary}>Success Rate</span>
-                <span className={`text-lg font-bold text-green-500`}>78.5%</span>
               </div>
             </div>
 

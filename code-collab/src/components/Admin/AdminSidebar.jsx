@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAdmin } from '../../hooks/useAdmin.js';
 import { LayoutDashboard, Users, BookOpen, Settings, LogOut, Menu, X } from 'lucide-react';
@@ -6,7 +6,6 @@ import { useTheme } from '../../context/ThemeContext';
 
 const AdminSidebar = () => {
   const location = useLocation();
-  const { adminUser, clearAdminData } = useAdmin();
   const { theme } = useTheme();
   const [isCollapsed, setIsCollapsed] = useState(false);
 
@@ -20,8 +19,7 @@ const AdminSidebar = () => {
   const isActive = (path) => location.pathname === path;
 
   const handleLogout = () => {
-    clearAdminData();
-    window.location.href = '/login';
+    window.location.href = '/';
   };
 
   return (
@@ -77,7 +75,7 @@ const AdminSidebar = () => {
           className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 ${theme.text.error} hover:bg-red-500 hover:bg-opacity-10 font-medium`}
         >
           <LogOut size={20} className="flex-shrink-0" />
-          {!isCollapsed && <span className="text-sm">Logout</span>}
+          {!isCollapsed && <span className="text-sm">Exit</span>}
         </button>
       </div>
     </aside>
