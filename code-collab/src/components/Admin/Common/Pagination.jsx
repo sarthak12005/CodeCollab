@@ -1,44 +1,59 @@
-import React from 'react';
-
-export const Pagination = ({ 
-  currentPage, 
-  totalPages, 
+export const Pagination = ({
+  currentPage,
+  totalPages,
   onPageChange,
-  itemsPerPage = 10,
-  totalItems = 0
+  itemsPerPage = 5,
+  totalItems = 0,
 }) => {
   const startItem = (currentPage - 1) * itemsPerPage + 1;
   const endItem = Math.min(currentPage * itemsPerPage, totalItems);
 
+
   return (
-    <div className="flex items-center justify-between gap-4 mt-6">
-      <div className="text-sm text-white">
-        Showing {startItem} to {endItem} of {totalItems} items
-      </div>
-      <div className="flex gap-2">
+    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6">
+      {/* INFO */}
+      <p className="text-sm text-gray-400">
+        Showing <span className="font-medium text-white">{startItem}</span>–
+        <span className="font-medium text-white">{endItem}</span> of{" "}
+        <span className="font-medium text-white">{totalItems}</span> users
+      </p>
+
+      {/* CONTROLS */}
+      <div className="flex items-center gap-2">
+        {/* PREV */}
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className="rounded-lg text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="
+            px-3 py-2 rounded-md text-sm font-medium
+            bg-gray-700 text-gray-300
+            hover:bg-gray-600 hover:text-white
+            disabled:opacity-40 disabled:cursor-not-allowed
+            transition
+          "
         >
-          &lt;
+          ←
         </button>
 
-        {/* Page Numbers */}
+        {/* PAGE NUMBERS */}
         <div className="flex gap-1">
           {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
             const pageNum = Math.max(1, currentPage - 2) + i;
             if (pageNum > totalPages) return null;
-            
+
             return (
               <button
                 key={pageNum}
                 onClick={() => onPageChange(pageNum)}
-                className={`px-1 py-1 rounded-lg transition-colors ${
-                  currentPage === pageNum
-                    ? 'bg-blue-600 text-white'
-                    : ' text-white '
-                }`}
+                className={`
+                  w-9 h-9 rounded-md text-sm font-medium
+                  transition
+                  ${
+                    currentPage === pageNum
+                      ? "bg-blue-600 text-white shadow-sm"
+                      : "bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white"
+                  }
+                `}
               >
                 {pageNum}
               </button>
@@ -46,12 +61,19 @@ export const Pagination = ({
           })}
         </div>
 
+        {/* NEXT */}
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className="rounded-lg text-white  disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="
+            px-3 py-2 rounded-md text-sm font-medium
+            bg-gray-700 text-gray-300
+            hover:bg-gray-600 hover:text-white
+            disabled:opacity-40 disabled:cursor-not-allowed
+            transition
+          "
         >
-          &gt;
+          →
         </button>
       </div>
     </div>

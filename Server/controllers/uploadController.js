@@ -35,3 +35,41 @@ exports.uploadProfilePicture = async (req, res) => {
     }
 
 }
+
+exports.uploadImage = async (req, res) => {
+  try {
+    const { image, folder } = req.body;
+
+    if (!image) {
+      return res.status(400).json({
+        success: false,
+        message: "Image is required"
+      });
+    }
+
+    const uploadResult = await Cloudinary.uploader.upload(image, {
+      folder: folder || "uploads",
+    });
+
+    if (!uploadResult?.secure_url) {
+      return res.status(500).json({
+        success: false,
+        message: "Cloudinary upload failed"
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Image uploaded successfully",
+      url: uploadResult.secure_url,
+      public_id: uploadResult.public_id
+    });
+
+  } catch (error) {
+    console.error("Image upload error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error"
+    });
+  }
+};

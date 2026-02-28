@@ -5,10 +5,14 @@ import { Pagination } from "../../components/Admin/Common/Pagination";
 import { ConfirmationModal } from "../../components/Admin/Common/ConfirmationModal";
 import axios from "axios";
 import { formatDate } from "../../utils/helper";
+import toast from "react-hot-toast";
+import { useTheme } from "../../context/ThemeContext";
+import { useNavigate } from "react-router-dom";
 
 const API_URL = import.meta.env.VITE_API_ENDPOINT;
 
 const AdminUsers = () => {
+  const {theme} = useTheme();
   const [users, setUsers] = useState({
     data: [],
     pagination: {
@@ -19,7 +23,7 @@ const AdminUsers = () => {
     },
   });
   const [isLoading, setIsLoading] = useState(true);
-
+  const navigate = useNavigate();
   // ── 4 separate filter states ──────────────────────────────────────────────
   const [searchUsername, setSearchUsername] = useState("");
   const [searchEmail, setSearchEmail] = useState("");
@@ -88,7 +92,7 @@ const AdminUsers = () => {
   };
 
   const handleAddUser = () => {
-    setFormData({ username: "", email: ""});
+    setFormData({ username: "", email: "" });
     setShowAddForm(true);
   };
 
@@ -98,64 +102,78 @@ const AdminUsers = () => {
     setShowAddForm(true);
   };
 
- const handleSaveUser = async () => {
-  try {
-    // ---------------------------
-    // ADD NEW USER (REGISTER)
-    // ---------------------------
-    if (!formData.username || !formData.email) {
-      alert("All fields are required");
-      return;
-    }
-
-    await axios.post(
-      `${API_URL}/register`,
-      {
-        username: formData.username,
-        email: formData.email,
-        isAdminCreated: true,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
+  const handleSaveUser = async () => {
+    try {
+      // ---------------------------
+      // ADD NEW USER (REGISTER)
+      // ---------------------------
+      if (!formData.username || !formData.email) {
+        alert("All fields are required");
+        return;
       }
-    );
 
-    // ✅ Refresh users from backend
-    await fetchUsers();
+      await axios.post(
+        `${API_URL}/register`,
+        {
+          username: formData.username,
+          email: formData.email,
+          isAdminCreated: true,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        },
+      );
 
-    // ✅ Reset UI
-    setShowAddForm(false);
-    setFormData({
-      username: "",
-      email: "",
-      role: "user",
-    });
-  } catch (error) {
-    console.error("Add user error:", error);
-    alert(
-      error.response?.data?.message || "Failed to create user"
-    );
-  } finally {
-    setSelectedUser(null);
-  }
-};
+      // ✅ Refresh users from backend
+      await fetchUsers();
+
+      // ✅ Reset UI
+      setShowAddForm(false);
+      setFormData({
+        username: "",
+        email: "",
+        role: "user",
+      });
+    } catch (error) {
+      console.error("Add user error:", error);
+      alert(error.response?.data?.message || "Failed to create user");
+    } finally {
+      setSelectedUser(null);
+    }
+  };
 
   const handleDeleteUser = (user) => {
     setSelectedUser(user);
     setShowModal(true);
   };
 
-  const confirmDelete = () => {
-    setUsers((prev) => ({
-      ...prev,
-      data: prev.data.filter((u) => u._id !== selectedUser._id),
-    }));
-    setShowModal(false);
-    setSelectedUser(null);
-  };
+  const confirmDelete = async () => {
+    if (!selectedUser?._id) {
+      toast.error("Invalid user selected");
+      return;
+    }
 
+    try {
+      // Call backend API
+      await axios.delete(`${API_URL}/users/${selectedUser._id}`);
+
+      // Update UI after successful delete
+      setUsers((prev) => ({
+        ...prev,
+        data: prev.data.filter((u) => u._id !== selectedUser._id),
+      }));
+
+      toast.success("User deleted successfully");
+    } catch (error) {
+      console.error("Delete user error:", error);
+      toast.error(error.response?.data?.message || "Failed to delete user");
+    } finally {
+      setShowModal(false);
+      setSelectedUser(null);
+    }
+  };
   if (isLoading) {
     return (
       <AdminLayout>
@@ -170,15 +188,13 @@ const AdminUsers = () => {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-white">
-              User Management
-            </h1>
+            <h1 className="text-3xl font-bold text-white">User Management</h1>
             <p className="text-gray-300 mt-1">
               Manage system users and their roles
             </p>
           </div>
           <button
-            onClick={handleAddUser}
+            onClick={() => navigate('/admin/users/add')}
             className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors font-medium"
           >
             + Add New User
@@ -256,86 +272,123 @@ const AdminUsers = () => {
             onChange={(e) => handleStatusChange(e.target.value)}
             className="px-3 py-2 rounded-lg border border-gray-300 placeholder-gray-400 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[130px]"
           >
-            <option className="bg-black" value="">All Status</option>
-            <option className="bg-black" value="ACTIVE">Active</option>
-            <option className="bg-black" value="INACTIVE">Inactive</option>
+            <option className="bg-black" value="">
+              All Status
+            </option>
+            <option className="bg-black" value="ACTIVE">
+              Active
+            </option>
+            <option className="bg-black" value="INACTIVE">
+              Inactive
+            </option>
           </select>
         </div>
         {/* ─────────────────────────────────────────────────────────────────── */}
 
         {/* Users Table */}
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
+        <div
+          className={`${theme.bg.secondary} rounded-xl border ${theme.border.primary} shadow-sm overflow-hidden`}
+        >
+          <table className="w-full border-collapse">
+            {/* TABLE HEADER */}
+            <thead
+              className={`text-xs uppercase tracking-wide ${theme.text.muted} bg-opacity-60 ${theme.bg.primary}`}
+            >
               <tr>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
-                  Username
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
-                  Email
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
-                  Role
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
-                  Joined
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
-                  Actions
-                </th>
+                <th className="px-6 py-4 text-left text-white font-semibold">User</th>
+                <th className="px-6 py-4 text-left text-white font-semibold">Email</th>
+                <th className="px-6 py-4 text-left text-white font-semibold">Role</th>
+                <th className="px-6 py-4 text-left text-white font-semibold">Status</th>
+                <th className="px-6 py-4 text-left text-white font-semibold">Joined</th>
+                <th className="px-6 py-4 text-right text-white font-semibold">Actions</th>
               </tr>
             </thead>
+
+            {/* TABLE BODY */}
             <tbody>
-              {users?.data.map((user) => (
+              {users?.data.map((user, index) => (
                 <tr
                   key={user._id}
-                  className="border-b border-gray-200 hover:bg-gray-50 transition-colors"
+                  className={`
+            border-t ${theme.border.primary}
+            transition-all duration-150
+            hover:${theme.bg.primary}
+          `}
                 >
-                  <td className="px-6 py-4 text-sm text-gray-800 font-medium">
-                    {user.username}
+                  {/* USER */}
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-3">
+                      <div
+                        className={`w-9 h-9 rounded-full flex items-center justify-center font-semibold text-sm ${theme.button.primary}`}
+                      >
+                        {user.username.charAt(0).toUpperCase()}
+                      </div>
+                      <div>
+                        <p className={`${theme.text.primary} font-medium`}>
+                          {user.username}
+                        </p>
+                        <p className="text-xs text-gray-400">
+                          ID: {user._id.slice(-6)}
+                        </p>
+                      </div>
+                    </div>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
+
+                  {/* EMAIL */}
+                  <td className="px-6 py-4 text-sm text-gray-400">
                     {user.email}
                   </td>
-                  <td className="px-6 py-4 text-sm">
+
+                  {/* ROLE */}
+                  <td className="px-6 py-4">
                     <span
-                      className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                        user.role === "admin"
-                          ? "bg-red-100 text-red-800"
-                          : "bg-blue-100 text-blue-800"
-                      }`}
+                      className={`px-3 py-1 rounded-full text-xs font-semibold
+                ${
+                  user.role === "Admin"
+                    ? "bg-red-500/10 text-red-400 border border-red-500/20"
+                    : "bg-blue-500/10 text-blue-400 border border-blue-500/20"
+                }`}
                     >
                       {user.role}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-sm">
+
+                  {/* STATUS */}
+                  <td className="px-6 py-4">
                     <span
-                      className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                        user.status === "active"
-                          ? "bg-green-100 text-green-800"
-                          : "bg-gray-100 text-gray-800"
-                      }`}
+                      className={`px-3 py-1 rounded-full text-xs font-semibold
+                ${
+                  user.status === "ACTIVE"
+                    ? "bg-green-500/10 text-green-400 border border-green-500/20"
+                    : "bg-gray-500/10 text-gray-400 border border-gray-500/20"
+                }`}
                     >
                       {user.status}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
+
+                  {/* JOINED */}
+                  <td className="px-6 py-4 text-sm text-gray-400">
                     {formatDate(user.createdAt)}
                   </td>
-                  <td className="px-6 py-4 text-sm">
-                    <div className="flex gap-2">
+
+                  {/* ACTIONS */}
+                  <td className="px-6 py-4">
+                    <div className="flex justify-end gap-2">
                       <button
                         onClick={() => handleEditUser(user)}
-                        className="px-3 py-1 rounded bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors text-xs font-medium"
+                        className="px-3 py-1.5 rounded-md text-xs font-medium
+                  bg-blue-500/10 text-blue-400
+                  hover:bg-blue-500/20 transition"
                       >
                         Edit
                       </button>
+
                       <button
                         onClick={() => handleDeleteUser(user)}
-                        className="px-3 py-1 rounded bg-red-100 text-red-700 hover:bg-red-200 transition-colors text-xs font-medium"
+                        className="px-3 py-1.5 rounded-md text-xs font-medium
+                  bg-red-500/10 text-red-400
+                  hover:bg-red-500/20 transition"
                       >
                         Delete
                       </button>
@@ -350,8 +403,8 @@ const AdminUsers = () => {
         {/* Pagination */}
         <Pagination
           currentPage={currentPage}
-          totalPages={users.pagination.totalPages}
-          totalItems={users.pagination.total}
+          totalPages={users.pagination.totalPages || 0}
+          totalItems={users.pagination.total || 0}
           itemsPerPage={itemsPerPage}
           onPageChange={setCurrentPage}
         />
@@ -392,7 +445,6 @@ const AdminUsers = () => {
                     placeholder="Enter email"
                   />
                 </div>
-               
               </div>
               <div className="flex gap-3 justify-end mt-6">
                 <button

@@ -5,5 +5,6 @@ const userController = require('../controllers/userController');
 router.get('/', userController.getUsers);
 router.patch('/', userController.editUser);
 router.get('/stats', userController.getStats);
+router.delete('/:userId', userController.deleteUser);
 
 module.exports = router;

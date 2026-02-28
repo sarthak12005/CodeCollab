@@ -241,7 +241,7 @@ const Profile = () => {
               <Code className="w-5 h-5 text-gray-500" />
             </div>
             <div className="text-3xl font-semibold text-white mb-1">
-              {user?.solveProblems.length}
+              {user?.solveProblems?.length}
             </div>
             <div className="text-gray-500 text-sm">Problems Solved</div>
           </div>

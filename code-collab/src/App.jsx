@@ -26,6 +26,7 @@ import AdminUsers from "./pages/Admin/AdminUsers";
 import AdminProblems from "./pages/Admin/AdminProblems";
 import AdminPreparation from "./pages/Admin/AdminPreparation";
 import ResetPassword from "./pages/ResetPassword";
+import AddEditUser from "./pages/Admin/AdminAddEditUser";
 
 function App() {
   return (
@@ -52,6 +53,14 @@ function App() {
             element={
               <ProtectedAdminRoute>
                 <AdminDashboard />
+              </ProtectedAdminRoute>
+            }
+          />
+          <Route
+            path="/admin/users/add"
+            element={
+              <ProtectedAdminRoute>
+                <AddEditUser />
               </ProtectedAdminRoute>
             }
           />

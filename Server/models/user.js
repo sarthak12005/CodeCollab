@@ -13,7 +13,6 @@ const userSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
-        unique: true,
     },
     password: {
         type: String,
@@ -80,17 +79,25 @@ const userSchema = new mongoose.Schema({
         default: null,
     },
     resetPasswordToken: {
-        type: String, 
+        type: String,
         default: ""
-    }, 
+    },
     resetPasswordExpiry: {
-        type: Date, 
+        type: Date,
         default: new Date()
     }
 
 }, {
     timestamps: true
 });
+
+userSchema.index(
+    { email: 1, isDeleted: 1 },
+    {
+        unique: true,
+        partialFilterExpression: { isDeleted: false }
+    }
+);
 
 
 const User = mongoose.model('User', userSchema);

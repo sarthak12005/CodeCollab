@@ -14,6 +14,7 @@ exports.signUpUser = async (req, res) => {
             username,
             email,
             password,
+            userImage,
             isAdminCreated = false,
             premium = false // admin-controlled
         } = req.body;
@@ -27,6 +28,7 @@ exports.signUpUser = async (req, res) => {
 
         // Check existing user
         const existingUser = await User.findOne({
+            isDeleted: false,
             $or: [{ email }, { username }]
         });
 
@@ -92,6 +94,7 @@ exports.signUpUser = async (req, res) => {
             role: "User",
             premium: isAdminCreated ? premium : false, // users can't fake premium
             status,
+            userImage: userImage || "https://res.cloudinary.com/dmhm7q4ow/image/upload/v1772309687/ChatGPT_Image_Mar_1_2026_01_47_34_AM_unuhue.png",
             verified: false,
             resetPasswordToken,
             resetPasswordExpiry

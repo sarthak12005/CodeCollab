@@ -10,56 +10,6 @@ const { generateToken } = require('../lib/jwt');
 
 
 
-exports.loginUser = async (req, res) => {
-    try {
-        const { username, password } = req.body;
-
-        if (!username || !password) {
-            return res.status(400).json({ message: "Username and password are required." });
-        }
-
-        // Accept both username and email for login
-        const user = await User.findOne({
-            $or: [{ username }, { email: username }]
-        }).select('+password');
-
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
-
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) {
-            return res.status(400).json({ message: "Incorrect password" });
-        }
-
-        const token = generateToken(user._id, user.username, process.env.JWT_SECRET, process.env.JWT_EXPIRY);
-
-        await User.findByIdAndUpdate(
-            user._id,
-            {
-                status: "ACTIVE",
-                lastLoginAt: new Date(),
-            },
-            {
-                new: true,           // return updated doc
-                runValidators: true  // enforce schema rules
-            }
-        );
-
-
-        const userResponse = {
-            _id: user._id,
-            username: user.username,
-            email: user.email,
-            role: user.role
-        };
-
-        res.status(200).json({ message: "User login successful", token, user: userResponse });
-    } catch (err) {
-        console.error("Login error:", err);
-        res.status(500).json({ message: "Internal server error", error: err.message });
-    }
-};
 
 exports.getUsers = async (req, res) => {
     try {
@@ -147,41 +97,6 @@ exports.getUsers = async (req, res) => {
     }
 };
 
-
-exports.signUpUser = async (req, res) => {
-    try {
-        const { username, email, password } = req.body;
-
-
-        const existingUser = await User.findOne({ $or: [{ email }, { username }] });
-        if (existingUser) {
-            return res.status(409).json({ message: "User already exists." });
-        }
-
-        const salt = await bcrypt.genSalt(10);
-        const hashPassword = await bcrypt.hash(password, salt);
-
-        const newUser = new User({
-            username,
-            email,
-            password: hashPassword,
-            role: "User"
-        });
-
-        await newUser.save();
-
-        res.status(201).json({ message: "User registered successfully." });
-    } catch (err) {
-        if (err instanceof ZodError) {
-            console.log(err);
-            return res.status(400).json({
-                success: false,
-                errors: err.errors
-            });
-        }
-        res.status(500).json({ message: "Internal server error", error: err.message });
-    }
-};
 
 exports.getUser = async (req, res) => {
     try {
@@ -273,7 +188,7 @@ exports.getStats = async (req, res) => {
         const [totalUsers, totalProblems, totalSubmissions] = await Promise.all([
             // Users (exclude super admin)
             User.countDocuments({
-                // isDeleted: false,
+                isDeleted: false,
                 role: { $ne: "Admin" },
             }),
 
@@ -372,6 +287,49 @@ exports.editUser = async (req, res) => {
         res.status(500).json({ message: "Internal Server error", error });
     }
 }
+
+exports.deleteUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    if (!userId) {
+      return res.status(400).json({
+        message: "User ID is required"
+      });
+    }
+
+    // Find active (not deleted) user
+    const user = await User.findOne({
+      _id: userId,
+      isDeleted: false
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found or already deleted"
+      });
+    }
+
+    // Soft delete
+    user.isDeleted = true;
+    user.status = "INACTIVE";
+    user.deletedAt = new Date();
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "User deleted successfully"
+    });
+
+  } catch (err) {
+    console.error("Delete user error:", err);
+    res.status(500).json({
+      message: "Internal server error",
+      error: err.message
+    });
+  }
+};
 
 
 
