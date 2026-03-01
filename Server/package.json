@@ -29,6 +29,7 @@
     "nodemailer": "^8.0.1",
     "nodemon": "^3.1.10",
     "path": "^0.12.7",
+    "resend": "^6.9.3",
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1",
     "uuid": "^11.1.0",

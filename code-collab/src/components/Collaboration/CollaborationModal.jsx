@@ -624,16 +624,6 @@ const CollaborationModal = ({
     }
 };
 
-const handleManualPlay = async () => {
-    try {
-        if (remoteVideoRef.current) {
-            await remoteVideoRef.current.play();
-            toast.success('Audio/Video enabled');
-        }
-    } catch (err) {
-        toast.error('Failed to play: ' + err.message);
-    }
-};
 
   // Effect to handle video element when stream changes
   useEffect(() => {
@@ -664,40 +654,6 @@ const handleManualPlay = async () => {
     };
     tryPlayRemote();
   }, [remoteVideoRef.current && remoteVideoRef.current.srcObject]);
-
-  // Debug helper to inspect local/remote video elements and streams
-  const debugVideoElement = () => {
-    try {
-      console.debug(
-        "[Collab] debugVideoElement -> localVideoRef",
-        localVideoRef.current
-      );
-      console.debug(
-        "[Collab] debugVideoElement -> remoteVideoRef",
-        remoteVideoRef.current
-      );
-      if (localVideoRef.current) {
-        const s = localVideoRef.current.srcObject;
-        console.debug(
-          "[Collab] local srcObject",
-          s,
-          "videoTracks",
-          s ? s.getVideoTracks() : "no-stream"
-        );
-      }
-      if (remoteVideoRef.current) {
-        const s2 = remoteVideoRef.current.srcObject;
-        console.debug(
-          "[Collab] remote srcObject",
-          s2,
-          "videoTracks",
-          s2 ? s2.getVideoTracks() : "no-stream"
-        );
-      }
-    } catch (err) {
-      console.error("[Collab] debugVideoElement error", err);
-    }
-  };
 
   const startCall = async () => {
     try {
